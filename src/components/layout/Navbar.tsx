@@ -9,7 +9,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => {
-  const { totalItems, setIsCartOpen } = useCart();
+  const { totalItems, setIsCartOpen, orders, setIsOrderHistoryOpen } = useCart();
   const { currentUser, setIsAuthModalOpen, logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -134,6 +134,18 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                         </p>
                       </div>
                       <div className="py-1">
+                        <button
+                          onClick={() => {
+                            setIsOrderHistoryOpen(true);
+                            setIsUserMenuOpen(false);
+                          }}
+                          className="w-full text-left px-3 py-2 text-xs font-semibold text-artisan-crimson hover:bg-stone-100 rounded-lg flex items-center justify-between"
+                        >
+                          <span>📦 My Order History</span>
+                          <span className="text-[10px] bg-artisan-crimson/10 text-artisan-crimson font-bold px-2 py-0.5 rounded-full">
+                            {orders.length}
+                          </span>
+                        </button>
                         <button
                           onClick={() => {
                             setActivePage('store');

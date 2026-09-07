@@ -17,7 +17,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => {
     try {
-      const saved = localStorage.getItem('aura_user');
+      const saved = localStorage.getItem('kuldeep_art_user');
       return saved ? JSON.parse(saved) : null;
     } catch {
       return null;
@@ -29,9 +29,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     try {
       if (currentUser) {
-        localStorage.setItem('aura_user', JSON.stringify(currentUser));
+        localStorage.setItem('kuldeep_art_user', JSON.stringify(currentUser));
       } else {
-        localStorage.removeItem('aura_user');
+        localStorage.removeItem('kuldeep_art_user');
       }
     } catch (e) {
       console.error(e);
@@ -58,9 +58,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const quickDemoLogin = (role: 'collector' | 'student') => {
     if (role === 'collector') {
-      login('collector.vance@gallery.com', 'Countess Vivienne', 'collector');
+      login('collector@kuldeepsingh.art', 'Countess Vivienne', 'collector');
     } else {
-      login('student.atelier@fineart.org', 'Leo Montoya', 'student');
+      login('student@kuldeepsingh.art', 'Leo Montoya', 'student');
     }
   };
 

@@ -41,7 +41,7 @@ export const AuthModal: React.FC = () => {
             <Sparkles className="w-6 h-6" />
           </div>
           <h3 className="font-display font-bold text-xl tracking-tight">
-            Aura Atelier Portal
+            Kuldeep Singh Atelier & Academy
           </h3>
           <p className="text-xs text-stone-300 mt-1">
             Access private previews, track authentications, or stream masterclasses

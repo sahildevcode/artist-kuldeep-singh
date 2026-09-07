@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { ThreeBackground } from './components/3d/ThreeBackground';
@@ -11,6 +11,8 @@ import { Footer } from './components/layout/Footer';
 import { CartDrawer } from './components/modals/CartDrawer';
 import { AuthModal } from './components/modals/AuthModal';
 import { ArtworkModal } from './components/modals/ArtworkModal';
+import { OrderHistoryModal } from './components/modals/OrderHistoryModal';
+import { COURSES } from './data/courses';
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
 import { CoursesPage } from './pages/CoursesPage';
@@ -93,6 +95,12 @@ export const App: React.FC = () => {
           {/* Global Modals & Drawers */}
           <CartDrawer />
           <AuthModal />
+          <OrderHistoryModal
+            onNavigateToCourse={(courseId) => {
+              const found = COURSES.find((c) => c.id === courseId);
+              if (found) handleSelectCourse(found);
+            }}
+          />
           <ArtworkModal
             artwork={selectedArtwork}
             onClose={() => setSelectedArtwork(null)}

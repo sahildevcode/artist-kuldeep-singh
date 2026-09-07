@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import type { Course } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import confetti from 'canvas-confetti';
 
@@ -27,6 +28,7 @@ interface CourseDetailPageProps {
 
 export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBack }) => {
   const { currentUser, setIsAuthModalOpen, unlockCourse, isCourseUnlocked } = useAuth();
+  const { addOrder } = useCart();
   const [activeModuleIndex, setActiveModuleIndex] = useState<number>(0);
   const [isPlayingTeaser, setIsPlayingTeaser] = useState<boolean>(false);
   const [isProcessingEnroll, setIsProcessingEnroll] = useState<boolean>(false);
@@ -45,6 +47,34 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
     setIsProcessingEnroll(true);
     setTimeout(() => {
       unlockCourse(course.id);
+
+      // Record in customer Order History
+      addOrder({
+        id: 'KS-2026-' + Math.floor(10000 + Math.random() * 90000),
+        customerName: currentUser.name,
+        customerEmail: currentUser.email,
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        items: [
+          {
+            id: course.id,
+            type: 'course',
+            title: course.title,
+            subtitle: `${course.durationMonths} by Artist Kuldeep Singh`,
+            price: course.price,
+            image: course.thumbnail,
+            quantity: 1,
+            mediumOrCategory: course.category,
+          }
+        ],
+        subtotal: course.price,
+        discount: 0,
+        shipping: 0,
+        totalAmount: course.price,
+        paymentMethod: 'Demo Razorpay / UPI Express',
+        paymentStatus: 'Paid',
+        orderStatus: 'Course Active & Unlocked',
+      });
+
       setIsProcessingEnroll(false);
       setShowSuccessBanner(true);
 

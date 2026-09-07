@@ -20,6 +20,8 @@ export const CartDrawer: React.FC = () => {
     setIsCartOpen,
     isCheckingOut,
     checkoutSuccess,
+    lastOrderId,
+    setIsOrderHistoryOpen,
     performCheckout,
     resetCheckout,
   } = useCart();
@@ -70,20 +72,32 @@ export const CartDrawer: React.FC = () => {
                 <div className="p-4 rounded-xl bg-stone-100 border border-stone-200/80 text-xs text-stone-700 space-y-1 text-left">
                   <div className="flex justify-between">
                     <span className="text-stone-500">Order ID:</span>
-                    <span className="font-mono font-bold">#KS-ART-{Math.floor(100000 + Math.random() * 900000)}</span>
+                    <span className="font-mono font-bold">#{lastOrderId || 'KS-2026-98124'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-stone-500">Shipping Mode:</span>
                     <span className="font-medium">Climate-Controlled Wooden Crate</span>
                   </div>
                 </div>
-                <MagneticButton
-                  onClick={resetCheckout}
-                  variant="primary"
-                  className="w-full mt-4"
-                >
-                  Continue Exploring Gallery
-                </MagneticButton>
+                <div className="flex flex-col gap-2 mt-4">
+                  <MagneticButton
+                    onClick={() => {
+                      resetCheckout();
+                      setIsOrderHistoryOpen(true);
+                    }}
+                    variant="primary"
+                    className="w-full py-3 text-xs"
+                  >
+                    View in My Order History 📦
+                  </MagneticButton>
+                  <MagneticButton
+                    onClick={resetCheckout}
+                    variant="outline"
+                    className="w-full py-3 text-xs"
+                  >
+                    Continue Exploring
+                  </MagneticButton>
+                </div>
               </div>
             ) : cart.length === 0 ? (
               <div className="py-20 text-center space-y-4">
@@ -247,7 +261,7 @@ export const CartDrawer: React.FC = () => {
               </div>
 
               <MagneticButton
-                onClick={performCheckout}
+                onClick={() => performCheckout()}
                 disabled={isCheckingOut}
                 variant="primary"
                 className="w-full py-3.5 flex items-center justify-center gap-2"

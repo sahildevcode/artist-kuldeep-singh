@@ -108,3 +108,20 @@ export interface UserProfile {
   enrolledCoursesCount?: number;
   enrolledCourseIds?: string[];
 }
+
+export interface OrderRecord {
+  id: string;
+  userId?: string;
+  customerName: string;
+  customerEmail: string;
+  date: string;
+  items: CartItem[];
+  subtotal: number;
+  discount: number;
+  shipping: number;
+  totalAmount: number;
+  paymentMethod: string;
+  paymentStatus: 'Paid' | 'Processing';
+  orderStatus: 'Delivered' | 'In Transit' | 'Course Active & Unlocked';
+  deliveryAddress?: string;
+}

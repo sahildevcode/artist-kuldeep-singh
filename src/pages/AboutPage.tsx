@@ -33,7 +33,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
             <div className="relative aspect-[16/10] rounded-3xl overflow-hidden shadow-2xl border border-stone-200">
               <img
                 src="https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=1200&auto=format&fit=crop"
-                alt="Julian Vance Studio"
+                alt="Artist Kuldeep Singh Studio"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
