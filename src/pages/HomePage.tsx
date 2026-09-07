@@ -1,12 +1,10 @@
 import React from 'react';
 import { ArrowRight, Sparkles, Star, ShieldCheck, ArrowUpRight, Palette, Eye } from 'lucide-react';
-import { STATS } from '../data/achievements';
-import { ARTWORKS } from '../data/artworks';
-import { COURSES } from '../data/courses';
 import { PRESS_LOGOS, REVIEWS } from '../data/reviews';
 import type { Artwork, Course } from '../types';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { useCart } from '../context/CartContext';
+import { useStudioData } from '../context/StudioDataContext';
 
 interface HomePageProps {
   setActivePage: (page: 'home' | 'about' | 'courses' | 'store') => void;
@@ -20,8 +18,16 @@ export const HomePage: React.FC<HomePageProps> = ({
   onSelectCourse,
 }) => {
   const { addToCart } = useCart();
-  const featuredArtworks = ARTWORKS.filter((a) => a.featured).slice(0, 4);
-  const featuredCourses = COURSES.slice(0, 3);
+  const { artworks, courses, artistProfile } = useStudioData();
+  const featuredArtworks = artworks.filter((a) => a.featured).slice(0, 4);
+  const featuredCourses = courses.slice(0, 3);
+
+  const dynamicStats = [
+    { label: 'Years of Devoted Mastery', value: artistProfile.yearsExperience, subtext: 'Continuous studio practice' },
+    { label: 'Original Works Collected', value: artistProfile.artworksCount, subtext: 'In 32 countries across the globe' },
+    { label: 'International Exhibitions', value: artistProfile.exhibitionsCount, subtext: 'Solo & curated group showcases' },
+    { label: 'Global Academy Students', value: artistProfile.studentsCount, subtext: 'Trained in oils, sketch & color theory' },
+  ];
 
   return (
     <div className="relative z-10 pt-28 sm:pt-36">
@@ -121,7 +127,9 @@ export const HomePage: React.FC<HomePageProps> = ({
                     <span>Archival Certificate</span>
                   </div>
                   <button
-                    onClick={() => onSelectArtwork(ARTWORKS[0])}
+                    onClick={() => {
+                      if (artworks[0]) onSelectArtwork(artworks[0]);
+                    }}
                     className="text-xs font-bold text-artisan-crimson hover:underline flex items-center gap-1"
                   >
                     Quick View <ArrowUpRight className="w-3.5 h-3.5" />
@@ -136,7 +144,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         {/* STATS COUNTER STRIP */}
         {/* ------------------------------------------------------------- */}
         <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-          {STATS.map((stat, idx) => (
+          {dynamicStats.map((stat, idx) => (
             <div
               key={idx}
               className="p-6 rounded-3xl bg-white/70 backdrop-blur-md border border-stone-200/80 shadow-soft-lux hover:shadow-card-lux transition-all duration-300 group hover:-translate-y-1"

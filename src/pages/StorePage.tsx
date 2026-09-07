@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Eye, ShoppingBag, ShieldCheck, Sparkles, Truck } from 'lucide-react';
-import { ARTWORKS } from '../data/artworks';
 import type { Artwork } from '../types';
 import { useCart } from '../context/CartContext';
+import { useStudioData } from '../context/StudioDataContext';
 
 interface StorePageProps {
   onSelectArtwork: (artwork: Artwork) => void;
@@ -10,6 +10,7 @@ interface StorePageProps {
 
 export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
   const { addToCart } = useCart();
+  const { artworks } = useStudioData();
   const [selectedMedium, setSelectedMedium] = useState<string>('All');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc'>('featured');
@@ -23,7 +24,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
     'Limited Edition Print',
   ];
 
-  const filteredArtworks = ARTWORKS.filter((art) => {
+  const filteredArtworks = artworks.filter((art) => {
     const matchesMedium = selectedMedium === 'All' || art.medium === selectedMedium;
     const matchesStatus = statusFilter === 'all' || art.status === statusFilter;
     return matchesMedium && matchesStatus;

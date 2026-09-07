@@ -20,12 +20,21 @@ export interface Artwork {
   varnishType?: string;
 }
 
+export interface CourseLecture {
+  id: string;
+  title: string;
+  duration: string;
+  videoUrl?: string;
+  summary?: string;
+}
+
 export interface CourseModule {
   id: string;
   title: string;
   duration: string;
   lessonsCount: number;
   topics: string[];
+  lectures?: CourseLecture[];
 }
 
 export interface Course {
@@ -125,3 +134,23 @@ export interface OrderRecord {
   orderStatus: 'Delivered' | 'In Transit' | 'Course Active & Unlocked';
   deliveryAddress?: string;
 }
+
+export interface ArtistProfile {
+  name: string;
+  title: string;
+  tagline: string;
+  yearsExperience: string;
+  artworksCount: string;
+  exhibitionsCount: string;
+  studentsCount: string;
+  portraitImage: string;
+  studioImage: string;
+  bioHeadline: string;
+  bioStory: string[];
+  philosophyQuote: string;
+  sanctuaryTitle: string;
+  sanctuaryLocation: string;
+  contactEmail: string;
+  studioAddress: string;
+}
+

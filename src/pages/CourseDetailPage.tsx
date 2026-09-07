@@ -266,13 +266,27 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
                     </button>
 
                     {activeModuleIndex === idx && (
-                      <div className="px-5 pb-5 pt-2 border-t border-stone-100 bg-stone-50/50 space-y-2">
-                        {mod.topics.map((topic, tIdx) => (
-                          <div key={tIdx} className="flex items-center gap-2.5 text-xs sm:text-sm text-stone-700">
-                            <Play className="w-3.5 h-3.5 text-artisan-gold fill-artisan-gold flex-shrink-0" />
-                            <span>{topic}</span>
-                          </div>
-                        ))}
+                      <div className="px-5 pb-5 pt-2 border-t border-stone-100 bg-stone-50/50 space-y-2.5">
+                        {mod.lectures && mod.lectures.length > 0 ? (
+                          mod.lectures.map((lec) => (
+                            <div key={lec.id} className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-stone-200/80 text-xs">
+                              <div className="flex items-center gap-2 text-stone-800 font-medium">
+                                <Play className="w-3.5 h-3.5 text-artisan-gold fill-artisan-gold flex-shrink-0" />
+                                <span>{lec.title}</span>
+                              </div>
+                              <span className="text-[11px] text-stone-500 font-mono bg-stone-100 px-2 py-0.5 rounded-md">
+                                {lec.duration}
+                              </span>
+                            </div>
+                          ))
+                        ) : (
+                          mod.topics.map((topic, tIdx) => (
+                            <div key={tIdx} className="flex items-center gap-2.5 text-xs sm:text-sm text-stone-700">
+                              <Play className="w-3.5 h-3.5 text-artisan-gold fill-artisan-gold flex-shrink-0" />
+                              <span>{topic}</span>
+                            </div>
+                          ))
+                        )}
                       </div>
                     )}
                   </div>
@@ -294,7 +308,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
                 ))}
               </ul>
               <p className="text-[11px] text-stone-500 pt-2 italic">
-                * High-resolution printable reference charts, sight-size plates, and tonal value grids are provided in digital 4K download upon enrollment.
+                * Full video streaming access in 4K quality is enabled on your account immediately upon enrollment.
               </p>
             </div>
           </div>

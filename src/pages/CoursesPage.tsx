@@ -1,13 +1,14 @@
-﻿import React, { useState } from 'react';
-import { BookOpen, Star, Clock, Sparkles, Shield, Search, Play, Download, Calendar, ArrowRight } from 'lucide-react';
-import { COURSES } from '../data/courses';
+import React, { useState } from 'react';
+import { BookOpen, Star, Clock, Sparkles, Shield, Search, Play, Calendar, ArrowRight, Video } from 'lucide-react';
 import type { Course } from '../types';
+import { useStudioData } from '../context/StudioDataContext';
 
 interface CoursesPageProps {
   onSelectCourse: (course: Course) => void;
 }
 
 export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse }) => {
+  const { courses } = useStudioData();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -19,7 +20,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse }) => {
     'Color Theory',
   ];
 
-  const filteredCourses = COURSES.filter((course) => {
+  const filteredCourses = courses.filter((course) => {
     const matchesCategory =
       selectedCategory === 'All' || course.category === selectedCategory;
     const matchesSearch =
@@ -231,13 +232,13 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse }) => {
 
             <div className="space-y-2">
               <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                <Download className="w-5 h-5" />
+                <Video className="w-5 h-5" />
               </div>
               <h4 className="font-display font-bold text-sm text-stone-900">
-                Archival Resource Sheets
+                4K Video Masterclasses
               </h4>
               <p className="text-xs text-stone-500 leading-relaxed">
-                Receive high-resolution printable sight-size plates, pigment recipe charts, and tonal value scales directly from Artist Kuldeep Singh’s studio.
+                Full HD and 4K step-by-step master demonstrations from initial ground preparation to final signature, accessible on any device.
               </p>
             </div>
 

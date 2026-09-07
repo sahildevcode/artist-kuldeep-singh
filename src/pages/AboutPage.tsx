@@ -1,13 +1,15 @@
 import React from 'react';
 import { CheckCircle2, Sparkles, MapPin, ArrowRight } from 'lucide-react';
-import { TIMELINE, AWARDS } from '../data/achievements';
 import { MagneticButton } from '../components/ui/MagneticButton';
+import { useStudioData } from '../context/StudioDataContext';
 
 interface AboutPageProps {
   setActivePage: (page: 'home' | 'about' | 'courses' | 'store') => void;
 }
 
 export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
+  const { artistProfile, timeline, awards } = useStudioData();
+
   return (
     <div className="relative z-10 pt-28 sm:pt-36 pb-28">
       {/* ------------------------------------------------------------- */}
@@ -17,13 +19,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-artisan-gold/10 border border-artisan-gold/30 text-xs font-bold text-artisan-charcoal">
             <Sparkles className="w-3.5 h-3.5 text-artisan-gold" />
-            <span>12 Years of Devoted Artistic Practice (2014 – 2026)</span>
+            <span>{artistProfile.yearsExperience} of Devoted Artistic Practice</span>
           </div>
           <h1 className="font-serif text-4xl sm:text-6xl font-bold tracking-tight text-[#1A1816] leading-[1.1]">
-            A Life Dedicated to the Alchemy of Light, Oil & Form.
+            {artistProfile.bioHeadline}
           </h1>
           <p className="text-stone-600 text-base sm:text-lg leading-relaxed">
-            Artist Kuldeep Singh has spent over a decade perfecting the discipline of classical European oil painting, anatomical draftsmanship, and pigment chemistry, bringing historical reverence into modern gallery spaces.
+            {artistProfile.bioStory[0] || 'Artist Kuldeep Singh has spent over a decade perfecting the discipline of classical fine art.'}
           </p>
         </div>
 
@@ -32,8 +34,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
           <div className="lg:col-span-7 relative group">
             <div className="relative aspect-[16/10] rounded-3xl overflow-hidden shadow-2xl border border-stone-200">
               <img
-                src="https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=1200&auto=format&fit=crop"
-                alt="Artist Kuldeep Singh Studio"
+                src={artistProfile.studioImage || 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=1200&auto=format&fit=crop'}
+                alt={artistProfile.name}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -42,10 +44,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
                   Studio Focus
                 </span>
                 <h3 className="font-serif font-bold text-xl sm:text-2xl mt-1">
-                  The Sanctuary in Chelsea, New York
+                  {artistProfile.sanctuaryTitle}
                 </h3>
                 <p className="text-xs text-stone-300">
-                  Where centuries-old techniques meet boundless contemporary scale
+                  {artistProfile.sanctuaryLocation}
                 </p>
               </div>
             </div>
@@ -56,19 +58,21 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
               <h3 className="font-serif font-bold text-2xl text-stone-900">
                 The Creative Philosophy
               </h3>
-              <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
-                "In an era dominated by instantaneous digital algorithms, the act of grinding raw mineral earth into cold-pressed oil and applying it layer-by-layer to hand-stretched linen is an act of spiritual defiance.
+              <p className="text-xs sm:text-sm text-stone-600 leading-relaxed italic">
+                "{artistProfile.philosophyQuote}"
               </p>
-              <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
-                A painting should possess physical gravity. It should change as the sun moves across your room, revealing hidden glazes at twilight that were invisible at noon."
-              </p>
+              {artistProfile.bioStory.slice(1).map((para, i) => (
+                <p key={i} className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                  {para}
+                </p>
+              ))}
               <div className="pt-2 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-artisan-charcoal text-white font-serif flex items-center justify-center font-bold">
                   KS
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-stone-900">Artist Kuldeep Singh</h4>
-                  <p className="text-[11px] text-stone-500">Master Painter & Atelier Founder</p>
+                  <h4 className="text-xs font-bold text-stone-900">{artistProfile.name}</h4>
+                  <p className="text-[11px] text-stone-500">{artistProfile.title}</p>
                 </div>
               </div>
             </div>
@@ -76,11 +80,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
             {/* Quick Metrics */}
             <div className="grid grid-cols-2 gap-4">
               <div className="p-5 bg-white rounded-2xl border border-stone-200">
-                <span className="font-serif font-bold text-3xl text-artisan-crimson">12+</span>
+                <span className="font-serif font-bold text-3xl text-artisan-crimson">{artistProfile.yearsExperience}</span>
                 <p className="text-xs text-stone-600 font-medium mt-1">Years Continuous Practice</p>
               </div>
               <div className="p-5 bg-white rounded-2xl border border-stone-200">
-                <span className="font-serif font-bold text-3xl text-artisan-gold">450+</span>
+                <span className="font-serif font-bold text-3xl text-artisan-gold">{artistProfile.artworksCount}</span>
                 <p className="text-xs text-stone-600 font-medium mt-1">Original Works in Collections</p>
               </div>
             </div>
@@ -105,7 +109,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
         </div>
 
         <div className="relative border-l-2 border-stone-200 ml-4 sm:ml-32 space-y-12">
-          {TIMELINE.map((item, idx) => (
+          {timeline.map((item, idx) => (
             <div key={idx} className="relative pl-8 sm:pl-10 group">
               {/* Timeline Indicator Dot */}
               <div className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-white border-4 border-artisan-crimson group-hover:scale-125 transition-transform" />
@@ -161,7 +165,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {AWARDS.map((award, idx) => (
+            {awards.map((award, idx) => (
               <div
                 key={idx}
                 className="p-6 bg-white rounded-3xl border border-stone-200 shadow-sm flex flex-col justify-between space-y-4 hover:-translate-y-1 transition-transform duration-300"
