@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShoppingBag, User, Menu, X, Sparkles, LogOut, BookOpen, Image as ImageIcon, Award, Compass } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
@@ -50,15 +50,15 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
               className="text-left group flex items-center gap-3 focus:outline-none"
             >
               <div className="w-10 h-10 rounded-full bg-[#1A1816] text-white flex items-center justify-center font-serif text-xl font-bold shadow-md group-hover:scale-105 transition-transform duration-300 relative overflow-hidden">
-                <span className="relative z-10">A</span>
+                <span className="relative z-10">K</span>
                 <span className="absolute inset-0 bg-gradient-to-tr from-artisan-crimson/50 to-artisan-ochre/50 opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
               <div>
                 <span className="font-display font-bold text-xl tracking-tight text-[#1A1816] block leading-none">
-                  AURA <span className="font-light text-artisan-gold">STUDIO</span>
+                  KULDEEP <span className="font-light text-artisan-gold">SINGH</span>
                 </span>
                 <span className="text-[10px] tracking-[0.2em] uppercase text-stone-500 font-medium block mt-1">
-                  Julian Vance • 12Y Atelier
+                  Artist • 12Y Fine Art Atelier
                 </span>
               </div>
             </button>

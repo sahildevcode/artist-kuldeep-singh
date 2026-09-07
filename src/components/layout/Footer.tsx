@@ -29,10 +29,10 @@ export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
           <div className="md:col-span-5 space-y-6">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-stone-100 text-[#151311] flex items-center justify-center font-serif text-xl font-bold">
-                A
+                K
               </div>
               <span className="font-display font-bold text-2xl tracking-tight text-white">
-                AURA <span className="font-light text-artisan-gold">STUDIO</span>
+                KULDEEP <span className="font-light text-artisan-gold">SINGH</span>
               </span>
             </div>
             <p className="text-sm text-stone-400 max-w-md leading-relaxed">
@@ -141,7 +141,7 @@ export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
 
         {/* Bottom Credits */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-500">
-          <p>© 2026 Julian Vance Atelier & Aura Studio Inc. All Rights Reserved.</p>
+          <p>© 2026 Artist Kuldeep Singh Atelier & Fine Art Studio. All Rights Reserved.</p>
           <div className="flex items-center gap-6">
             <span>Certificates of Authenticity Included</span>
             <span>•</span>

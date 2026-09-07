@@ -42,7 +42,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-artisan-gold/10 border border-artisan-gold/30 text-xs font-bold text-stone-800">
             <Sparkles className="w-3.5 h-3.5 text-artisan-gold" />
-            <span>Julian Vance Original Fine Art Collection</span>
+            <span>Artist Kuldeep Singh Original Fine Art Collection</span>
           </div>
           <h1 className="font-serif text-4xl sm:text-6xl font-bold tracking-tight text-[#1A1816] leading-[1.1]">
             Acquire Original Masterpieces for Your Collection.

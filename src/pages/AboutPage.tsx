@@ -23,7 +23,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
             A Life Dedicated to the Alchemy of Light, Oil & Form.
           </h1>
           <p className="text-stone-600 text-base sm:text-lg leading-relaxed">
-            Julian Vance has spent over a decade perfecting the discipline of classical European oil painting, anatomical draftsmanship, and pigment chemistry, bringing historical reverence into modern gallery spaces.
+            Artist Kuldeep Singh has spent over a decade perfecting the discipline of classical European oil painting, anatomical draftsmanship, and pigment chemistry, bringing historical reverence into modern gallery spaces.
           </p>
         </div>
 
@@ -64,10 +64,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
               </p>
               <div className="pt-2 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-artisan-charcoal text-white font-serif flex items-center justify-center font-bold">
-                  JV
+                  KS
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-stone-900">Julian Vance</h4>
+                  <h4 className="text-xs font-bold text-stone-900">Artist Kuldeep Singh</h4>
                   <p className="text-[11px] text-stone-500">Master Painter & Atelier Founder</p>
                 </div>
               </div>
@@ -200,7 +200,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
               Material Purity
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-stone-900">
-              Why an Atelier Vance Painting Endures Centuries.
+              Why an Atelier Kuldeep Singh Painting Endures Centuries.
             </h2>
             <p className="text-sm text-stone-600 leading-relaxed">
               Every canvas created in the studio follows archival conservation protocols pioneered by Renaissance masters, ensuring structural integrity and luminous permanence.

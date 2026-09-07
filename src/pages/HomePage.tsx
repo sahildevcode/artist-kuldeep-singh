@@ -48,7 +48,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
             {/* Subtitle */}
             <p className="text-base sm:text-xl text-stone-600 max-w-2xl font-normal leading-relaxed">
-              Welcome to the atelier of Julian Vance. Explore museum-grade original oil paintings, 
+              Welcome to the atelier of Artist Kuldeep Singh. Explore museum-grade original oil paintings, 
               rare anatomical charcoal studies, and intensive masterclasses designed for artists pursuing true craftsmanship.
             </p>
 
@@ -286,8 +286,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                   alt={course.title}
                   className="w-full h-full object-cover opacity-85 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500"
                 />
-                <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-wider">
-                  {course.category}
+                <div className="absolute top-3 left-3 flex items-center gap-1.5">
+                  <span className="bg-black/60 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[10px] font-bold text-white uppercase tracking-wider">
+                    {course.category}
+                  </span>
+                  <span className="bg-white/95 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[10px] font-bold text-stone-900">
+                    {course.durationMonths.split(' ')[0]} {course.durationMonths.split(' ')[1]}
+                  </span>
                 </div>
                 <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-bold text-stone-900 flex items-center gap-1">
                   <Star className="w-3 h-3 text-amber-500 fill-amber-500" />

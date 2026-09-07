@@ -8,6 +8,8 @@ interface AuthContextType {
   login: (email: string, name?: string, role?: 'collector' | 'student') => void;
   logout: () => void;
   quickDemoLogin: (role: 'collector' | 'student') => void;
+  unlockCourse: (courseId: string) => void;
+  isCourseUnlocked: (courseId: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -66,6 +68,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCurrentUser(null);
   };
 
+  const unlockCourse = (courseId: string) => {
+    if (!currentUser) return;
+    const currentList = currentUser.enrolledCourseIds || [];
+    if (!currentList.includes(courseId)) {
+      const updatedList = [...currentList, courseId];
+      const updatedUser: UserProfile = {
+        ...currentUser,
+        enrolledCourseIds: updatedList,
+        enrolledCoursesCount: updatedList.length,
+      };
+      setCurrentUser(updatedUser);
+    }
+  };
+
+  const isCourseUnlocked = (courseId: string): boolean => {
+    if (!currentUser) return false;
+    return Boolean(currentUser.enrolledCourseIds?.includes(courseId));
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -75,6 +96,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         logout,
         quickDemoLogin,
+        unlockCourse,
+        isCourseUnlocked,
       }}
     >
       {children}

@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
-import { BookOpen, Star, Clock, Sparkles, Shield, Search, Play, Download } from 'lucide-react';
+﻿import React, { useState } from 'react';
+import { BookOpen, Star, Clock, Sparkles, Shield, Search, Play, Download, Calendar, ArrowRight } from 'lucide-react';
 import { COURSES } from '../data/courses';
 import type { Course } from '../types';
-import { useCart } from '../context/CartContext';
 
 interface CoursesPageProps {
   onSelectCourse: (course: Course) => void;
 }
 
 export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse }) => {
-  const { addToCart } = useCart();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -17,8 +15,8 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse }) => {
     'All',
     'Oil Painting',
     'Realistic Sketching',
-    'Color Theory',
     'Watercolor & Fluid',
+    'Color Theory',
   ];
 
   const filteredCourses = COURSES.filter((course) => {
@@ -40,13 +38,14 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse }) => {
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-artisan-crimson/10 border border-artisan-crimson/20 text-xs font-bold text-artisan-crimson">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Julian Vance Fine Art Online Académie</span>
+            <span>Artist Kuldeep Singh Fine Art Académie</span>
           </div>
           <h1 className="font-serif text-4xl sm:text-6xl font-bold tracking-tight text-[#1A1816] leading-[1.1]">
-            Learn Classical Oil, Realistic Sketching & Pigment Mastery.
+            Learn Classical Oil, Realistic Sketching & Watercolor Mastery.
           </h1>
           <p className="text-stone-600 text-base sm:text-lg leading-relaxed">
-            Direct atelier guidance from a 12-year master painter. Stop guessing proportions, banish muddy color mixtures, and master luminous glazing techniques at your own pace.
+            Direct atelier mentorship from Artist Kuldeep Singh with 12+ years of professional practice. 
+            Choose your specialization below to view the complete monthly syllabus and enrollment details.
           </p>
         </div>
 
@@ -107,22 +106,26 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse }) => {
             {filteredCourses.map((course) => (
               <div
                 key={course.id}
-                className="bg-white rounded-3xl overflow-hidden border border-stone-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1"
+                onClick={() => onSelectCourse(course)}
+                className="bg-white rounded-3xl overflow-hidden border border-stone-200 shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1.5 cursor-pointer"
               >
+                {/* Course Banner Visual */}
                 <div className="relative h-64 overflow-hidden bg-stone-900">
                   <img
                     src={course.thumbnail}
                     alt={course.title}
                     className="w-full h-full object-cover opacity-85 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
-                  
-                  <div className="absolute top-4 left-4 flex items-center gap-2">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+
+                  {/* Top Badges */}
+                  <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2">
                     <span className="bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-wider">
                       {course.category}
                     </span>
-                    <span className="bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-stone-800">
-                      {course.level}
+                    <span className="bg-white/95 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-stone-800 flex items-center gap-1">
+                      <Calendar className="w-3 h-3 text-artisan-gold" />
+                      {course.durationMonths}
                     </span>
                   </div>
 
@@ -131,46 +134,48 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse }) => {
                       <div className="flex items-center gap-1 text-amber-400 text-xs font-bold">
                         <Star className="w-3.5 h-3.5 fill-amber-400" />
                         <span>{course.rating}</span>
-                        <span className="text-stone-300 font-normal">({course.studentsEnrolled} enrolled)</span>
+                        <span className="text-stone-300 font-normal">({course.studentsEnrolled} artists)</span>
                       </div>
+                      <p className="text-[11px] text-stone-300 mt-0.5">
+                        Mentor: Artist Kuldeep Singh
+                      </p>
                     </div>
 
-                    <button
-                      onClick={() => onSelectCourse(course)}
-                      className="px-3 py-1.5 rounded-full bg-white/95 text-stone-900 text-xs font-bold flex items-center gap-1 hover:bg-white shadow-md"
-                    >
+                    <span className="px-3 py-1.5 rounded-full bg-white/95 text-stone-900 text-xs font-bold flex items-center gap-1 group-hover:bg-white shadow-md">
                       <Play className="w-3 h-3 text-artisan-crimson fill-artisan-crimson" />
-                      Watch Preview
-                    </button>
+                      View Full Details
+                    </span>
                   </div>
                 </div>
 
+                {/* Body Details */}
                 <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between space-y-6">
                   <div className="space-y-3">
                     <h3 className="font-serif font-bold text-2xl text-stone-900 group-hover:text-artisan-crimson transition-colors">
                       {course.title}
                     </h3>
-                    <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-stone-600 leading-relaxed line-clamp-2">
                       {course.summary}
                     </p>
 
                     <div className="grid grid-cols-2 gap-2 pt-2 text-xs text-stone-600">
                       <div className="flex items-center gap-1.5">
-                        <Clock className="w-4 h-4 text-artisan-gold" />
-                        <span>{course.durationHours} Hours High-Def Video</span>
+                        <Clock className="w-4 h-4 text-artisan-gold flex-shrink-0" />
+                        <span>{course.durationHours} Hours Video Curriculum</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <BookOpen className="w-4 h-4 text-artisan-crimson" />
-                        <span>{course.totalLessons} Structured Lessons</span>
+                        <BookOpen className="w-4 h-4 text-artisan-crimson flex-shrink-0" />
+                        <span>{course.totalLessons} Step-by-Step Lessons</span>
                       </div>
                     </div>
                   </div>
 
+                  {/* Pricing & CTA */}
                   <div className="space-y-3 pt-4 border-t border-stone-100">
                     <div className="flex items-baseline justify-between">
                       <div>
                         <span className="text-[10px] text-stone-400 uppercase tracking-wider block font-bold">
-                          Tuition Fee
+                          Tuition Fee ({course.durationMonths.split(' ')[0]} {course.durationMonths.split(' ')[1]})
                         </span>
                         <div className="flex items-baseline gap-2">
                           {course.originalPrice && (
@@ -181,31 +186,20 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse }) => {
                           <span className="font-serif font-bold text-2xl text-artisan-crimson">
                             ${course.price}
                           </span>
+                          <span className="text-xs text-stone-500 font-semibold">USD</span>
                         </div>
                       </div>
 
-                      <div className="flex gap-2">
+                      <div className="flex items-center gap-2">
                         <button
-                          onClick={() => onSelectCourse(course)}
-                          className="px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-xl text-xs font-bold transition-all"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectCourse(course);
+                          }}
+                          className="px-5 py-2.5 bg-[#1A1816] group-hover:bg-artisan-crimson text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
                         >
-                          Syllabus
-                        </button>
-                        <button
-                          onClick={() =>
-                            addToCart({
-                              id: course.id,
-                              type: 'course',
-                              title: course.title,
-                              subtitle: course.subtitle,
-                              price: course.price,
-                              image: course.thumbnail,
-                              mediumOrCategory: course.category,
-                            })
-                          }
-                          className="px-5 py-2.5 bg-[#1A1816] hover:bg-black text-white rounded-xl text-xs font-bold transition-all shadow-sm"
-                        >
-                          Enroll Now
+                          <span>Full Syllabus & Enroll</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>
@@ -228,10 +222,10 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse }) => {
                 <Shield className="w-5 h-5" />
               </div>
               <h4 className="font-display font-bold text-sm text-stone-900">
-                30-Day Artistic Guarantee
+                30-Day Artistic Growth Guarantee
               </h4>
               <p className="text-xs text-stone-500 leading-relaxed">
-                If your paintings and drawings do not dramatically improve within 30 days of completing the lessons, receive a 100% full refund with no questions asked.
+                If your paintings and drawings do not dramatically improve under Kuldeep Singh’s guidance within 30 days, receive a 100% full refund with no questions asked.
               </p>
             </div>
 
@@ -243,7 +237,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse }) => {
                 Archival Resource Sheets
               </h4>
               <p className="text-xs text-stone-500 leading-relaxed">
-                Receive high-resolution printable sight-size plates, pigment recipe charts, and tonal value scales directly from Julian Vance’s personal studio.
+                Receive high-resolution printable sight-size plates, pigment recipe charts, and tonal value scales directly from Artist Kuldeep Singh’s studio.
               </p>
             </div>
 
@@ -252,10 +246,10 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse }) => {
                 <Sparkles className="w-5 h-5" />
               </div>
               <h4 className="font-display font-bold text-sm text-stone-900">
-                Lifetime Atelier Community
+                12 Years of Mentorship
               </h4>
               <p className="text-xs text-stone-500 leading-relaxed">
-                Connect with thousands of dedicated artists around the world. Submit assignments for community feedback and monthly live studio critique sessions.
+                Connect with thousands of dedicated artists worldwide. Submit assignments for personalized critique and monthly live studio feedback sessions.
               </p>
             </div>
           </div>

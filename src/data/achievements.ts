@@ -78,8 +78,8 @@ export const TIMELINE: AchievementTimelineItem[] = [
   },
   {
     year: '2014',
-    title: 'Inception of Julian Vance Studio',
-    roleOrLocation: 'New York City',
+    title: 'Inception of Artist Kuldeep Singh Studio',
+    roleOrLocation: 'New York City & New Delhi',
     description: 'Founded independent studio practice after graduating with First Class Honors in Fine Arts. Started exhibiting on raw brick gallery walls in Brooklyn.',
     milestoneType: 'Studio Milestone',
     highlightMetric: 'The start of a 12-year legacy'

@@ -70,7 +70,7 @@ export const CartDrawer: React.FC = () => {
                 <div className="p-4 rounded-xl bg-stone-100 border border-stone-200/80 text-xs text-stone-700 space-y-1 text-left">
                   <div className="flex justify-between">
                     <span className="text-stone-500">Order ID:</span>
-                    <span className="font-mono font-bold">#JV-ART-{Math.floor(100000 + Math.random() * 900000)}</span>
+                    <span className="font-mono font-bold">#KS-ART-{Math.floor(100000 + Math.random() * 900000)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-stone-500">Shipping Mode:</span>
