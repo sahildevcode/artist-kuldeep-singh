@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { ArrowUpRight, Check, MapPin, Sparkles, Lock } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { ArrowUpRight, Check, MapPin, Sparkles } from 'lucide-react';
 
 interface FooterProps {
-  setActivePage: (page: 'home' | 'about' | 'courses' | 'store' | 'admin') => void;
+  setActivePage: (page: 'home' | 'about' | 'courses' | 'store') => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
-  const { isAdminAuthenticated, setIsAdminModalOpen } = useAuth();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -148,27 +146,6 @@ export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
             <span>Certificates of Authenticity Included</span>
             <span>•</span>
             <span>Insured International Fine Art Crating</span>
-            <span>•</span>
-            {isAdminAuthenticated ? (
-              <button
-                onClick={() => {
-                  setActivePage('admin');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className="text-artisan-gold hover:underline flex items-center gap-1 font-bold"
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>👑 Studio Admin Panel</span>
-              </button>
-            ) : (
-              <button
-                onClick={() => setIsAdminModalOpen(true)}
-                className="text-stone-600 hover:text-stone-300 transition-colors flex items-center gap-1"
-              >
-                <Lock className="w-3 h-3" />
-                <span>Studio Owner Access</span>
-              </button>
-            )}
           </div>
         </div>
       </div>

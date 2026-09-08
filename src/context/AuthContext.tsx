@@ -5,13 +5,8 @@ interface AuthContextType {
   currentUser: UserProfile | null;
   isAuthModalOpen: boolean;
   setIsAuthModalOpen: (open: boolean) => void;
-  isAdminAuthenticated: boolean;
-  isAdminModalOpen: boolean;
-  setIsAdminModalOpen: (open: boolean) => void;
   login: (email: string, name?: string, role?: 'collector' | 'student') => void;
   logout: () => void;
-  adminLogin: (email: string, pass: string) => boolean;
-  adminLogout: () => void;
   quickDemoLogin: (role: 'collector' | 'student') => void;
   unlockCourse: (courseId: string) => void;
   isCourseUnlocked: (courseId: string) => boolean;
@@ -29,16 +24,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   });
 
-  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem('kuldeep_admin_session') === 'true';
-    } catch {
-      return false;
-    }
-  });
-
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -82,34 +68,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCurrentUser(null);
   };
 
-  const adminLogin = (email: string, pass: string): boolean => {
-    const cleanEmail = email.trim().toLowerCase();
-    // Default admin credentials: admin@kuldeepsingh.art / kuldeep2026
-    if (
-      (cleanEmail === 'admin@kuldeepsingh.art' || cleanEmail === 'kuldeep@art.com' || cleanEmail === 'admin') &&
-      (pass === 'kuldeep2026' || pass === 'admin123')
-    ) {
-      setIsAdminAuthenticated(true);
-      try {
-        localStorage.setItem('kuldeep_admin_session', 'true');
-      } catch (e) {
-        console.error(e);
-      }
-      setIsAdminModalOpen(false);
-      return true;
-    }
-    return false;
-  };
-
-  const adminLogout = () => {
-    setIsAdminAuthenticated(false);
-    try {
-      localStorage.removeItem('kuldeep_admin_session');
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   const unlockCourse = (courseId: string) => {
     if (!currentUser) return;
     const currentList = currentUser.enrolledCourseIds || [];
@@ -135,13 +93,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         currentUser,
         isAuthModalOpen,
         setIsAuthModalOpen,
-        isAdminAuthenticated,
-        isAdminModalOpen,
-        setIsAdminModalOpen,
         login,
         logout,
-        adminLogin,
-        adminLogout,
         quickDemoLogin,
         unlockCourse,
         isCourseUnlocked,

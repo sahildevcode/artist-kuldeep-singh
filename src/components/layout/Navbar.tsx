@@ -4,13 +4,13 @@ import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 
 interface NavbarProps {
-  activePage: 'home' | 'about' | 'courses' | 'store' | 'admin';
-  setActivePage: (page: 'home' | 'about' | 'courses' | 'store' | 'admin') => void;
+  activePage: 'home' | 'about' | 'courses' | 'store';
+  setActivePage: (page: 'home' | 'about' | 'courses' | 'store') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => {
   const { totalItems, setIsCartOpen, orders, setIsOrderHistoryOpen } = useCart();
-  const { currentUser, setIsAuthModalOpen, logout, isAdminAuthenticated, setIsAdminModalOpen } = useAuth();
+  const { currentUser, setIsAuthModalOpen, logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -106,20 +106,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                 )}
               </button>
 
-              {/* Admin Studio Portal Button if authenticated */}
-              {isAdminAuthenticated && (
-                <button
-                  onClick={() => {
-                    setActivePage('admin');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  className="px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-artisan-gold to-amber-500 hover:from-amber-400 hover:to-artisan-gold text-stone-950 shadow-sm flex items-center gap-1.5 transition-all animate-pulse"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Admin Studio</span>
-                </button>
-              )}
-
               {/* User Account / Login Button */}
               {currentUser ? (
                 <div className="relative">
@@ -184,30 +170,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                             {currentUser.enrolledCoursesCount || 0}
                           </span>
                         </button>
-                        
-                        <div className="pt-1 border-t border-stone-100">
-                          {isAdminAuthenticated ? (
-                            <button
-                              onClick={() => {
-                                setActivePage('admin');
-                                setIsUserMenuOpen(false);
-                              }}
-                              className="w-full text-left px-3 py-2 text-xs font-bold text-amber-700 hover:bg-amber-50 rounded-lg flex items-center gap-2"
-                            >
-                              👑 Studio Admin Panel
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => {
-                                setIsAdminModalOpen(true);
-                                setIsUserMenuOpen(false);
-                              }}
-                              className="w-full text-left px-3 py-2 text-xs font-semibold text-stone-600 hover:bg-stone-100 rounded-lg flex items-center gap-2"
-                            >
-                              🔒 Studio Owner Access
-                            </button>
-                          )}
-                        </div>
                       </div>
                       <div className="pt-1 border-t border-stone-100">
                         <button
