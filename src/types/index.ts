@@ -63,6 +63,8 @@ export interface Course {
   materialsNeeded: string[];
   modules: CourseModule[];
   featured?: boolean;
+  liveClassUrl?: string;
+  liveClassStatus?: 'offline' | 'live' | 'scheduled';
 }
 
 export interface AchievementTimelineItem {
@@ -152,5 +154,20 @@ export interface ArtistProfile {
   sanctuaryLocation: string;
   contactEmail: string;
   studioAddress: string;
+}
+
+export interface EnrolledStudent {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  courseId: string;
+  courseTitle: string;
+  batchSchedule: string;
+  enrolledDate: string;
+  feesPaid: number;
+  paymentStatus: 'Paid' | 'Processing';
+  progressPercent: number;
+  avatar?: string;
 }
 

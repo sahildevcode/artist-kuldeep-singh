@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { Artwork, Course, CourseLecture, ArtistProfile, AchievementTimelineItem, Award } from '../types';
+import type { Artwork, Course, CourseLecture, ArtistProfile, AchievementTimelineItem, Award, EnrolledStudent } from '../types';
 import { ARTWORKS } from '../data/artworks';
 import { COURSES } from '../data/courses';
 import { TIMELINE, AWARDS } from '../data/achievements';
@@ -27,9 +27,69 @@ const DEFAULT_PROFILE: ArtistProfile = {
   studioAddress: 'West 24th Street, Gallery District, Manhattan, NY 10011'
 };
 
+const INITIAL_STUDENTS: EnrolledStudent[] = [
+  {
+    id: 'stu-101',
+    name: 'Aarav Sharma',
+    email: 'aarav.sharma@gmail.com',
+    phone: '+91 98201 45892',
+    courseId: 'course-oil-mastery',
+    courseTitle: 'The Master Oil Painting Diploma',
+    batchSchedule: 'Saturday & Sunday • 6:00 PM – 8:00 PM IST',
+    enrolledDate: 'Sep 1, 2026',
+    feesPaid: 349,
+    paymentStatus: 'Paid',
+    progressPercent: 68,
+    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=150&auto=format&fit=crop'
+  },
+  {
+    id: 'stu-102',
+    name: 'Elena Rostova',
+    email: 'elena.rostova@artacademy.eu',
+    phone: '+44 7700 900077',
+    courseId: 'course-realistic-sketching',
+    courseTitle: 'Foundations of Realistic Sketching & Human Anatomy',
+    batchSchedule: 'Tuesday & Thursday • 7:00 PM – 9:00 PM IST',
+    enrolledDate: 'Sep 3, 2026',
+    feesPaid: 249,
+    paymentStatus: 'Paid',
+    progressPercent: 42,
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop'
+  },
+  {
+    id: 'stu-103',
+    name: 'Dev Patel',
+    email: 'dev.patel.design@outlook.com',
+    phone: '+91 98112 33455',
+    courseId: 'course-watercolor-alchemy',
+    courseTitle: 'Expressive Watercolor & Fluid Pigment Painting',
+    batchSchedule: 'Wednesday & Friday • 6:30 PM – 8:30 PM IST',
+    enrolledDate: 'Aug 28, 2026',
+    feesPaid: 219,
+    paymentStatus: 'Paid',
+    progressPercent: 85,
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop'
+  },
+  {
+    id: 'stu-104',
+    name: 'Sophia Laurent',
+    email: 'sophia.l@parisart.fr',
+    phone: '+33 6 12 34 56 78',
+    courseId: 'course-oil-mastery',
+    courseTitle: 'The Master Oil Painting Diploma',
+    batchSchedule: 'Saturday & Sunday • 6:00 PM – 8:00 PM IST',
+    enrolledDate: 'Sep 5, 2026',
+    feesPaid: 349,
+    paymentStatus: 'Paid',
+    progressPercent: 20,
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop'
+  }
+];
+
 interface StudioDataContextType {
   artworks: Artwork[];
   courses: Course[];
+  students: EnrolledStudent[];
   artistProfile: ArtistProfile;
   timeline: AchievementTimelineItem[];
   awards: Award[];
@@ -41,6 +101,9 @@ interface StudioDataContextType {
   addCourse: (course: Course) => void;
   updateCourse: (id: string, updates: Partial<Course>) => void;
   deleteCourse: (id: string) => void;
+  // Students CRUD
+  addStudent: (student: EnrolledStudent) => void;
+  deleteStudent: (id: string) => void;
   // Lecture Management
   addLectureToModule: (courseId: string, moduleIndex: number, lecture: CourseLecture) => void;
   updateLectureInModule: (courseId: string, moduleIndex: number, lectureIndex: number, updates: Partial<CourseLecture>) => void;
@@ -106,6 +169,24 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       return AWARDS;
     }
   });
+
+  // 6. Enrolled Students State
+  const [students, setStudents] = useState<EnrolledStudent[]>(() => {
+    try {
+      const saved = localStorage.getItem('kuldeep_studio_students');
+      return saved ? JSON.parse(saved) : INITIAL_STUDENTS;
+    } catch {
+      return INITIAL_STUDENTS;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('kuldeep_studio_students', JSON.stringify(students));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [students]);
 
   // Sync to LocalStorage
   useEffect(() => {
@@ -254,15 +335,26 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setTimeline((prev) => prev.filter((_, idx) => idx !== index));
   };
 
+  // Student Handlers
+  const addStudent = (student: EnrolledStudent) => {
+    setStudents((prev) => [student, ...prev]);
+  };
+
+  const deleteStudent = (id: string) => {
+    setStudents((prev) => prev.filter((s) => s.id !== id));
+  };
+
   // Factory Reset
   const resetToDefaults = () => {
     localStorage.removeItem('kuldeep_studio_artworks');
     localStorage.removeItem('kuldeep_studio_courses');
+    localStorage.removeItem('kuldeep_studio_students');
     localStorage.removeItem('kuldeep_studio_profile');
     localStorage.removeItem('kuldeep_studio_timeline');
     localStorage.removeItem('kuldeep_studio_awards');
     setArtworks(ARTWORKS);
     setCourses(COURSES);
+    setStudents(INITIAL_STUDENTS);
     setArtistProfile(DEFAULT_PROFILE);
     setTimeline(TIMELINE);
   };
@@ -272,6 +364,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       value={{
         artworks,
         courses,
+        students,
         artistProfile,
         timeline,
         awards,
@@ -281,6 +374,8 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         addCourse,
         updateCourse,
         deleteCourse,
+        addStudent,
+        deleteStudent,
         addLectureToModule,
         updateLectureInModule,
         deleteLectureFromModule,

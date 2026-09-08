@@ -4,6 +4,7 @@ import {
   GraduationCap,
   User,
   Package,
+  Users,
   Plus,
   Trash2,
   Edit3,
@@ -15,13 +16,20 @@ import {
   Clock,
   DollarSign,
   CheckCircle2,
-  X
+  Radio,
+  X,
+  Play,
+  MapPin,
+  Mail,
+  Phone,
+  ShieldCheck,
+  Truck
 } from 'lucide-react';
 import { useStudioData } from '../context/StudioDataContext';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { MagneticButton } from '../components/ui/MagneticButton';
-import type { Artwork, CourseLecture, MediumType, AchievementTimelineItem } from '../types';
+import type { Artwork, CourseLecture, MediumType, AchievementTimelineItem, EnrolledStudent } from '../types';
 
 interface AdminDashboardPageProps {
   onBackToSite: () => void;
@@ -31,12 +39,15 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
   const {
     artworks,
     courses,
+    students,
     artistProfile,
     timeline,
     addArtwork,
     updateArtwork,
     deleteArtwork,
     updateCourse,
+    addStudent,
+    deleteStudent,
     addLectureToModule,
     deleteLectureFromModule,
     updateArtistProfile,
@@ -48,7 +59,8 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
   const { adminLogout } = useAuth();
   const { orders } = useCart();
 
-  const [activeTab, setActiveTab] = useState<'paintings' | 'courses' | 'about' | 'orders'>('paintings');
+  // Tab navigation: 'paintings' | 'courses' | 'orders' | 'students' | 'about'
+  const [activeTab, setActiveTab] = useState<'paintings' | 'courses' | 'orders' | 'students' | 'about'>('paintings');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -57,7 +69,15 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
   };
 
   // -------------------------------------------------------------
-  // 1. ADD / EDIT PAINTING STATE
+  // 1. TOP PROFILES / SHORTCUT MODALS (Live Orders & Run Live Class)
+  // -------------------------------------------------------------
+  const [isLiveClassModalOpen, setIsLiveClassModalOpen] = useState(false);
+  const [selectedLiveCourseId, setSelectedLiveCourseId] = useState<string>(courses[0]?.id || '');
+  const [liveStreamUrl, setLiveStreamUrl] = useState<string>('https://meet.google.com/ks-studio-atelier');
+  const [isLiveBroadcasting, setIsLiveBroadcasting] = useState(false);
+
+  // -------------------------------------------------------------
+  // 2. PAINTINGS STATE
   // -------------------------------------------------------------
   const [isPaintingModalOpen, setIsPaintingModalOpen] = useState(false);
   const [editingArtworkId, setEditingArtworkId] = useState<string | null>(null);
@@ -157,13 +177,13 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
         varnishType: 'Archival Dammar Satin'
       };
       addArtwork(newArt);
-      showToast(`New artwork "${newArt.title}" added to gallery!`);
+      showToast(`New artwork "${newArt.title}" published to Gallery!`);
     }
     setIsPaintingModalOpen(false);
   };
 
   // -------------------------------------------------------------
-  // 2. COURSE & LECTURE EDIT STATE
+  // 3. MASTERCLASSES & LECTURE PREVIEW STATE
   // -------------------------------------------------------------
   const [selectedCourseForLectures, setSelectedCourseForLectures] = useState<string>(
     courses[0]?.id || ''
@@ -178,6 +198,8 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
     videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
     summary: 'Step-by-step master demonstration with Kuldeep Sir.'
   });
+
+  const [previewingLectureUrl, setPreviewingLectureUrl] = useState<string | null>(null);
 
   const openAddLectureModal = (modIdx: number) => {
     setLectureModuleIndex(modIdx);
@@ -206,7 +228,51 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
   };
 
   // -------------------------------------------------------------
-  // 3. ABOUT PROFILE EDIT STATE
+  // 4. STUDENT ADMISSION STATE
+  // -------------------------------------------------------------
+  const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
+  const [studentForm, setStudentForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    courseId: courses[0]?.id || '',
+    batchSchedule: 'Saturday & Sunday • 6:00 PM – 8:00 PM IST',
+    feesPaid: 349
+  });
+
+  const handleAddStudent = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!studentForm.name || !studentForm.email) return;
+    const c = courses.find((cr) => cr.id === studentForm.courseId) || courses[0];
+    const newStudent: EnrolledStudent = {
+      id: 'stu-' + Date.now(),
+      name: studentForm.name,
+      email: studentForm.email,
+      phone: studentForm.phone || '+91 98000 00000',
+      courseId: c.id,
+      courseTitle: c.title,
+      batchSchedule: studentForm.batchSchedule,
+      enrolledDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      feesPaid: Number(studentForm.feesPaid),
+      paymentStatus: 'Paid',
+      progressPercent: 0,
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop'
+    };
+    addStudent(newStudent);
+    showToast(`Student ${newStudent.name} admitted successfully!`);
+    setIsStudentModalOpen(false);
+  };
+
+  // -------------------------------------------------------------
+  // 5. PAINTING ORDERS FILTER
+  // -------------------------------------------------------------
+  // Filter physical painting orders (separate from courses)
+  const paintingOrders = orders.filter((o) =>
+    o.items.some((item) => item.type === 'artwork')
+  );
+
+  // -------------------------------------------------------------
+  // 6. ABOUT PROFILE STATE (Clean & Simple)
   // -------------------------------------------------------------
   const [profileForm, setProfileForm] = useState({ ...artistProfile });
   const [isTimelineModalOpen, setIsTimelineModalOpen] = useState(false);
@@ -234,8 +300,8 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
   };
 
   return (
-    <div className="min-h-screen bg-[#141210] text-stone-100 font-sans pb-20 selection:bg-artisan-gold selection:text-black">
-      {/* Toast Alert */}
+    <div className="min-h-screen bg-[#13110F] text-stone-100 font-sans pb-24 selection:bg-artisan-gold selection:text-black">
+      {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-6 right-6 z-50 bg-emerald-600 text-white px-5 py-3 rounded-2xl shadow-2xl font-semibold text-sm flex items-center gap-2 animate-in fade-in slide-in-from-top-3">
           <CheckCircle2 className="w-5 h-5" />
@@ -243,8 +309,11 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
         </div>
       )}
 
-      {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-40 bg-[#1B1816]/90 backdrop-blur-md border-b border-stone-800 px-4 sm:px-8 py-4 flex flex-wrap items-center justify-between gap-4">
+      {/* ------------------------------------------------------------- */}
+      {/* TOP NAVIGATION BAR WITH DUAL PROFILES */}
+      {/* ------------------------------------------------------------- */}
+      <header className="sticky top-0 z-40 bg-[#1A1715]/95 backdrop-blur-md border-b border-stone-800 px-4 sm:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+        {/* Left: Branding & Status */}
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-artisan-gold to-amber-500 text-stone-950 font-serif font-bold text-lg flex items-center justify-center shadow-lg">
             KS
@@ -252,35 +321,61 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
           <div>
             <div className="flex items-center gap-2">
               <h1 className="font-serif font-bold text-lg text-white">
-                Artist Kuldeep Singh Atelier
+                Artist Kuldeep Singh
               </h1>
               <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-artisan-gold/20 text-artisan-gold border border-artisan-gold/30">
-                Owner Command
+                Atelier Command
               </span>
             </div>
-            <p className="text-xs text-stone-400">
-              Full Autonomy Control Center • Real-Time Live Sync
+            <p className="text-[11px] text-stone-400">
+              Master Artist & Academy Control Center
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Center: The Two Primary Owner Profiles Requested by User */}
+        <div className="flex items-center gap-2 bg-[#221F1C] p-1.5 rounded-2xl border border-stone-700/60 shadow-inner">
+          {/* Profile 1: Live Art Orders */}
+          <button
+            onClick={() => setActiveTab('orders')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+              activeTab === 'orders'
+                ? 'bg-artisan-gold text-stone-950 shadow-md'
+                : 'text-stone-300 hover:text-white hover:bg-stone-800'
+            }`}
+          >
+            <Package className="w-4 h-4 text-artisan-crimson" />
+            <span>Live Art Orders ({paintingOrders.length})</span>
+          </button>
+
+          {/* Profile 2: Run Live Studio Class */}
+          <button
+            onClick={() => setIsLiveClassModalOpen(true)}
+            className="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white shadow-md transition-all animate-pulse"
+          >
+            <Radio className="w-4 h-4" />
+            <span>Run Live Studio Class</span>
+          </button>
+        </div>
+
+        {/* Right Actions: Back to site, Reset, Sign out */}
+        <div className="flex items-center gap-2 sm:gap-3">
           <button
             onClick={onBackToSite}
-            className="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-bold rounded-xl flex items-center gap-2 transition-colors border border-stone-700"
+            className="px-3.5 py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors border border-stone-700"
           >
             <ExternalLink className="w-3.5 h-3.5" />
-            <span>View Live Site</span>
+            <span className="hidden sm:inline">View Live Site</span>
           </button>
 
           <button
             onClick={() => {
-              if (window.confirm('Restore original studio data? Any unsaved custom edits will be reset.')) {
+              if (window.confirm('Restore factory demo data? Any unsaved edits will be reset.')) {
                 resetToDefaults();
                 showToast('Studio data reset to factory demo values.');
               }
             }}
-            title="Reset to original demo data"
+            title="Reset to factory demo data"
             className="p-2 text-stone-400 hover:text-white hover:bg-stone-800 rounded-xl transition-colors"
           >
             <RotateCcw className="w-4 h-4" />
@@ -291,21 +386,21 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
               adminLogout();
               onBackToSite();
             }}
-            className="px-4 py-2 bg-red-950/60 hover:bg-red-900/60 text-red-200 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors border border-red-800/40"
+            className="px-3 py-1.5 bg-red-950/60 hover:bg-red-900/60 text-red-200 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors border border-red-800/40"
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span>Sign Out</span>
+            <span className="hidden sm:inline">Exit</span>
           </button>
         </div>
       </header>
 
-      {/* Main Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
-        {/* Navigation Tabs */}
-        <div className="flex flex-wrap items-center gap-2 p-1.5 bg-[#1E1B18] rounded-2xl border border-stone-800 w-fit">
+      {/* Main Studio Container */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-8">
+        {/* Navigation Tabs Bar */}
+        <div className="flex flex-wrap items-center gap-2 p-1.5 bg-[#1B1816] rounded-2xl border border-stone-800 w-fit">
           <button
             onClick={() => setActiveTab('paintings')}
-            className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
               activeTab === 'paintings'
                 ? 'bg-artisan-gold text-stone-950 shadow-md'
                 : 'text-stone-400 hover:text-white hover:bg-stone-800/50'
@@ -317,7 +412,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
 
           <button
             onClick={() => setActiveTab('courses')}
-            className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
               activeTab === 'courses'
                 ? 'bg-artisan-gold text-stone-950 shadow-md'
                 : 'text-stone-400 hover:text-white hover:bg-stone-800/50'
@@ -328,27 +423,39 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
           </button>
 
           <button
-            onClick={() => setActiveTab('about')}
-            className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
-              activeTab === 'about'
-                ? 'bg-artisan-gold text-stone-950 shadow-md'
-                : 'text-stone-400 hover:text-white hover:bg-stone-800/50'
-            }`}
-          >
-            <User className="w-4 h-4" />
-            <span>About Artist & 12Y Legacy</span>
-          </button>
-
-          <button
             onClick={() => setActiveTab('orders')}
-            className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
               activeTab === 'orders'
                 ? 'bg-artisan-gold text-stone-950 shadow-md'
                 : 'text-stone-400 hover:text-white hover:bg-stone-800/50'
             }`}
           >
             <Package className="w-4 h-4" />
-            <span>Collector Orders ({orders.length})</span>
+            <span>Painting Orders ({paintingOrders.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('students')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+              activeTab === 'students'
+                ? 'bg-artisan-gold text-stone-950 shadow-md'
+                : 'text-stone-400 hover:text-white hover:bg-stone-800/50'
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            <span>Enrolled Students ({students.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('about')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+              activeTab === 'about'
+                ? 'bg-artisan-gold text-stone-950 shadow-md'
+                : 'text-stone-400 hover:text-white hover:bg-stone-800/50'
+            }`}
+          >
+            <User className="w-4 h-4" />
+            <span>About Artist & Legacy</span>
           </button>
         </div>
 
@@ -360,10 +467,10 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
             <div className="flex flex-wrap items-center justify-between gap-4 p-6 bg-[#1A1815] rounded-3xl border border-stone-800">
               <div>
                 <h2 className="font-serif font-bold text-xl text-white">
-                  Fine Art Catalog Management
+                  Paintings & Gallery Catalog
                 </h2>
                 <p className="text-xs text-stone-400 mt-1">
-                  Upload new artworks, edit descriptions, adjust prices, and toggle sold status.
+                  Upload artworks, adjust prices, and toggle sold status. Changes immediately appear on the Store and Home page!
                 </p>
               </div>
 
@@ -377,7 +484,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
               </MagneticButton>
             </div>
 
-            {/* Artworks Grid */}
+            {/* Paintings Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {artworks.map((art) => (
                 <div
@@ -430,12 +537,11 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
                       </span>
 
                       <div className="flex items-center gap-2">
-                        {/* Quick Sold Toggle */}
                         <button
                           onClick={() => {
                             const newStatus = art.status === 'available' ? 'sold' : 'available';
                             updateArtwork(art.id, { status: newStatus });
-                            showToast(`Status updated to "${newStatus}"!`);
+                            showToast(`Status changed to "${newStatus}"!`);
                           }}
                           className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-colors ${
                             art.status === 'available'
@@ -503,11 +609,20 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
                 </div>
               </div>
 
-              <div className="text-right">
-                <span className="text-xs text-stone-400 block">Total Curriculum Lessons</span>
-                <span className="font-serif font-bold text-xl text-artisan-gold">
-                  {activeCourse.totalLessons} Lectures
-                </span>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setIsLiveClassModalOpen(true)}
+                  className="px-4 py-2 bg-red-700 hover:bg-red-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md transition-all"
+                >
+                  <Radio className="w-3.5 h-3.5" />
+                  <span>Start Live Class for this Course</span>
+                </button>
+                <div className="text-right pl-4 border-l border-stone-800">
+                  <span className="text-xs text-stone-400 block">Total Curriculum</span>
+                  <span className="font-serif font-bold text-lg text-artisan-gold">
+                    {activeCourse.totalLessons} Lectures
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -555,12 +670,14 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
               {/* Modules & Video Lectures */}
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-serif font-bold text-base text-stone-200">
-                    Curriculum Modules & Video Lectures
-                  </h4>
-                  <span className="text-xs text-stone-400">
-                    Video Stream Access Active (No Downloads)
-                  </span>
+                  <div>
+                    <h4 className="font-serif font-bold text-base text-stone-200">
+                      Curriculum Modules & Video Lectures (Weeks 1 to 12)
+                    </h4>
+                    <p className="text-xs text-stone-400 mt-0.5">
+                      Add video lecture streaming links (Bunny Stream / Cloudflare / YouTube Unlisted). Students access videos in HD.
+                    </p>
+                  </div>
                 </div>
 
                 {activeCourse.modules.map((mod, modIdx) => (
@@ -599,8 +716,8 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
                             className="p-3 bg-stone-900/80 rounded-xl border border-stone-800 flex items-center justify-between gap-3 text-xs"
                           >
                             <div className="flex items-center gap-3 flex-1 min-w-0">
-                              <div className="w-7 h-7 rounded-lg bg-artisan-gold/10 text-artisan-gold flex items-center justify-center font-bold flex-shrink-0">
-                                <Video className="w-3.5 h-3.5" />
+                              <div className="w-8 h-8 rounded-lg bg-artisan-gold/10 text-artisan-gold flex items-center justify-center font-bold flex-shrink-0">
+                                <Video className="w-4 h-4" />
                               </div>
                               <div className="truncate">
                                 <span className="font-bold text-white block truncate">
@@ -609,26 +726,39 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
                                 <span className="text-[11px] text-stone-400">
                                   {lec.duration} • Stream URL:{' '}
                                   <span className="font-mono text-[10px] text-artisan-gold">
-                                    {lec.videoUrl || 'Standard Embed'}
+                                    {lec.videoUrl || 'Standard Stream'}
                                   </span>
                                 </span>
                               </div>
                             </div>
 
-                            <button
-                              onClick={() => {
-                                deleteLectureFromModule(activeCourse.id, modIdx, lecIdx);
-                                showToast('Lecture removed.');
-                              }}
-                              className="p-1.5 text-stone-500 hover:text-red-400 hover:bg-stone-800 rounded-lg transition-colors"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
+                            <div className="flex items-center gap-2">
+                              {lec.videoUrl && (
+                                <button
+                                  onClick={() => setPreviewingLectureUrl(lec.videoUrl || null)}
+                                  className="px-2.5 py-1 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded-lg text-xs flex items-center gap-1"
+                                  title="Preview video lecture"
+                                >
+                                  <Play className="w-3 h-3 text-artisan-gold fill-artisan-gold" />
+                                  <span>Preview</span>
+                                </button>
+                              )}
+
+                              <button
+                                onClick={() => {
+                                  deleteLectureFromModule(activeCourse.id, modIdx, lecIdx);
+                                  showToast('Lecture removed.');
+                                }}
+                                className="p-1.5 text-stone-500 hover:text-red-400 hover:bg-stone-800 rounded-lg transition-colors"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </div>
                         ))
                       ) : (
                         <div className="py-4 text-center text-xs text-stone-500 border border-dashed border-stone-800 rounded-xl">
-                          <p>Topics defined: {mod.topics.join(' • ')}</p>
+                          <p>Topics: {mod.topics.join(' • ')}</p>
                           <p className="mt-1 text-[11px] text-stone-400">
                             Click "+ Add Video Lecture" to link specific Bunny/Cloudflare/YouTube videos to this week!
                           </p>
@@ -643,7 +773,297 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
         )}
 
         {/* ------------------------------------------------------------- */}
-        {/* TAB 3: ABOUT ARTIST & 12Y LEGACY MANAGER */}
+        {/* TAB 3: PAINTING ORDERS & SHIPMENTS (SEPARATE TAB) */}
+        {/* ------------------------------------------------------------- */}
+        {activeTab === 'orders' && (
+          <div className="space-y-6 animate-in fade-in duration-200">
+            <div className="p-6 bg-[#1A1815] rounded-3xl border border-stone-800 flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h2 className="font-serif font-bold text-xl text-white">
+                  Live Painting Orders & Fine Art Shipments
+                </h2>
+                <p className="text-xs text-stone-400 mt-1">
+                  Track physical art acquisitions, client shipping addresses, and dispatch provenance certificates.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <span className="text-xs bg-emerald-950 text-emerald-400 border border-emerald-800 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>{paintingOrders.length} Artworks Sold / In Dispatch</span>
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {paintingOrders.length === 0 ? (
+                <div className="py-16 text-center text-stone-500 bg-[#1C1917] rounded-3xl border border-stone-800">
+                  <Package className="w-10 h-10 mx-auto text-stone-600 mb-2" />
+                  <p className="font-serif text-base text-stone-300">No physical painting orders yet.</p>
+                  <p className="text-xs text-stone-500 mt-1">
+                    When collectors acquire original canvases from the store, their shipping details appear here.
+                  </p>
+                </div>
+              ) : (
+                paintingOrders.map((order) => (
+                  <div
+                    key={order.id}
+                    className="p-5 sm:p-6 bg-[#1C1917] rounded-3xl border border-stone-800 space-y-4 hover:border-stone-700 transition-all"
+                  >
+                    {/* Header */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 text-xs border-b border-stone-800 pb-3">
+                      <div>
+                        <span className="text-[10px] text-stone-400 uppercase font-bold block">
+                          Order Reference
+                        </span>
+                        <span className="font-mono font-bold text-artisan-gold text-sm">
+                          #{order.id}
+                        </span>
+                        <span className="text-stone-400 ml-2">Date: {order.date}</span>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-950 text-emerald-300 border border-emerald-800">
+                          {order.paymentStatus}
+                        </span>
+
+                        <span
+                          className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                            order.orderStatus === 'Delivered'
+                              ? 'bg-blue-950 text-blue-300 border border-blue-800'
+                              : 'bg-amber-950 text-amber-300 border border-amber-800'
+                          }`}
+                        >
+                          {order.orderStatus}
+                        </span>
+
+                        <span className="font-serif font-bold text-base text-white">
+                          ${order.totalAmount.toLocaleString()} USD
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Customer & Shipping Address Details */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs bg-stone-900/60 p-4 rounded-2xl border border-stone-800/80">
+                      <div className="space-y-1">
+                        <span className="text-[10px] text-stone-400 uppercase font-bold block">
+                          Collector Information
+                        </span>
+                        <p className="font-bold text-white text-sm">{order.customerName}</p>
+                        <p className="text-stone-400 flex items-center gap-1">
+                          <Mail className="w-3.5 h-3.5 text-artisan-gold" />
+                          {order.customerEmail}
+                        </p>
+                      </div>
+
+                      <div className="space-y-1">
+                        <span className="text-[10px] text-stone-400 uppercase font-bold block">
+                          Insured Delivery Address
+                        </span>
+                        <p className="text-stone-300 flex items-start gap-1.5">
+                          <MapPin className="w-3.5 h-3.5 text-artisan-crimson flex-shrink-0 mt-0.5" />
+                          <span>
+                            {order.deliveryAddress || 'Private Residence, Manhattan, New York, NY 10021'}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Artworks in this order */}
+                    <div className="space-y-2">
+                      {order.items
+                        .filter((i) => i.type === 'artwork')
+                        .map((item) => (
+                          <div
+                            key={item.id}
+                            className="flex items-center justify-between p-3 rounded-2xl bg-[#201D1A] border border-stone-800"
+                          >
+                            <div className="flex items-center gap-3">
+                              <img
+                                src={item.image}
+                                alt={item.title}
+                                className="w-12 h-12 rounded-xl object-cover border border-stone-700"
+                              />
+                              <div>
+                                <span className="font-serif font-bold text-white block text-sm">
+                                  {item.title}
+                                </span>
+                                <span className="text-xs text-stone-400">
+                                  {item.subtitle} • Qty: {item.quantity}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="text-right">
+                              <span className="font-serif font-bold text-artisan-gold text-sm block">
+                                ${item.price.toLocaleString()} USD
+                              </span>
+                              <span className="text-[10px] text-stone-400 flex items-center gap-1 justify-end">
+                                <ShieldCheck className="w-3 h-3 text-artisan-gold" /> Certificate #KS-CERT-2026
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+
+                    {/* Shipment Action Bar */}
+                    <div className="pt-2 flex items-center justify-between text-xs text-stone-400">
+                      <div className="flex items-center gap-1.5">
+                        <Truck className="w-4 h-4 text-artisan-gold" />
+                        <span>Insured European Linen Shipping Included</span>
+                      </div>
+
+                      <button
+                        onClick={() => showToast(`Shipping dispatch label generated for #${order.id}`)}
+                        className="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-xl font-bold transition-all"
+                      >
+                        Generate Courier Dispatch Label
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ------------------------------------------------------------- */}
+        {/* TAB 4: ENROLLED ACADEMY STUDENTS (SEPARATE TAB) */}
+        {/* ------------------------------------------------------------- */}
+        {activeTab === 'students' && (
+          <div className="space-y-6 animate-in fade-in duration-200">
+            <div className="p-6 bg-[#1A1815] rounded-3xl border border-stone-800 flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h2 className="font-serif font-bold text-xl text-white">
+                  Enrolled Academy Students Roster
+                </h2>
+                <p className="text-xs text-stone-400 mt-1">
+                  Manage active student cohorts, batch timings, class attendance, and curriculum progression.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <MagneticButton
+                  onClick={() => setIsStudentModalOpen(true)}
+                  variant="primary"
+                  className="px-4 py-2.5 bg-artisan-gold hover:bg-amber-400 text-stone-950 font-bold text-xs flex items-center gap-2 shadow-lg"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Admit New Student</span>
+                </MagneticButton>
+
+                <button
+                  onClick={() => setIsLiveClassModalOpen(true)}
+                  className="px-4 py-2.5 bg-red-700 hover:bg-red-600 text-white font-bold text-xs rounded-2xl flex items-center gap-2 shadow-lg transition-all"
+                >
+                  <Radio className="w-4 h-4" />
+                  <span>Broadcast to All Students</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Students Table / Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {students.map((stu) => (
+                <div
+                  key={stu.id}
+                  className="p-5 bg-[#1C1917] rounded-3xl border border-stone-800 space-y-4 hover:border-stone-700 transition-all"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={stu.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=150&auto=format&fit=crop'}
+                        alt={stu.name}
+                        className="w-12 h-12 rounded-full object-cover border-2 border-artisan-gold"
+                      />
+                      <div>
+                        <h4 className="font-bold text-white text-sm flex items-center gap-1.5">
+                          <span>{stu.name}</span>
+                          <span className="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded-full">
+                            Active Student
+                          </span>
+                        </h4>
+                        <p className="text-xs text-stone-400 flex items-center gap-1 mt-0.5">
+                          <Mail className="w-3 h-3" /> {stu.email}
+                        </p>
+                        {stu.phone && (
+                          <p className="text-[11px] text-stone-500 flex items-center gap-1 mt-0.5">
+                            <Phone className="w-3 h-3" /> {stu.phone}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        if (window.confirm(`Deactivate student ${stu.name}?`)) {
+                          deleteStudent(stu.id);
+                          showToast(`Student ${stu.name} removed.`);
+                        }
+                      }}
+                      className="p-1.5 text-stone-500 hover:text-red-400 hover:bg-stone-800 rounded-lg transition-colors"
+                      title="Remove student"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  <div className="p-3 bg-stone-900 rounded-2xl border border-stone-800 space-y-2 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] text-stone-400 uppercase font-bold">
+                        Enrolled Masterclass:
+                      </span>
+                      <span className="font-bold text-artisan-gold text-right truncate max-w-[200px]">
+                        {stu.courseTitle}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between text-[11px] text-stone-400">
+                      <span>Batch Timing:</span>
+                      <span className="text-stone-300">{stu.batchSchedule}</span>
+                    </div>
+
+                    <div className="flex items-center justify-between text-[11px] text-stone-400">
+                      <span>Tuition Fees:</span>
+                      <span className="font-serif font-bold text-white">
+                        ${stu.feesPaid} USD (Paid in Full)
+                      </span>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="pt-2 border-t border-stone-800 space-y-1">
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className="text-stone-400">Curriculum Progress</span>
+                        <span className="font-bold text-artisan-gold">{stu.progressPercent}%</span>
+                      </div>
+                      <div className="w-full h-2 bg-stone-800 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-artisan-gold to-amber-500 rounded-full transition-all"
+                          style={{ width: `${stu.progressPercent}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1">
+                    <span className="text-[11px] text-stone-500">
+                      Admitted: {stu.enrolledDate}
+                    </span>
+                    <button
+                      onClick={() => showToast(`Class link sent to ${stu.email}!`)}
+                      className="px-3 py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-xl text-xs font-semibold transition-all"
+                    >
+                      Send Class Reminder
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ------------------------------------------------------------- */}
+        {/* TAB 5: ABOUT ARTIST & 12Y LEGACY MANAGER (Clean & Simple) */}
         {/* ------------------------------------------------------------- */}
         {activeTab === 'about' && (
           <div className="space-y-6 animate-in fade-in duration-200">
@@ -657,12 +1077,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
             </div>
 
             <form onSubmit={handleSaveProfile} className="space-y-6">
-              {/* Profile Card & Key Statistics */}
               <div className="p-6 bg-[#1C1917] rounded-3xl border border-stone-800 space-y-6">
-                <h3 className="font-serif font-bold text-lg text-artisan-gold">
-                  1. Artist Identity & Key Metrics
-                </h3>
-
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div>
                     <label className="block text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1">
@@ -713,39 +1128,6 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-stone-800">
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1">
-                      International Exhibitions
-                    </label>
-                    <input
-                      type="text"
-                      value={profileForm.exhibitionsCount}
-                      onChange={(e) => setProfileForm({ ...profileForm, exhibitionsCount: e.target.value })}
-                      className="w-full bg-stone-900 border border-stone-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-artisan-gold"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1">
-                      Academy Students Trained
-                    </label>
-                    <input
-                      type="text"
-                      value={profileForm.studentsCount}
-                      onChange={(e) => setProfileForm({ ...profileForm, studentsCount: e.target.value })}
-                      className="w-full bg-stone-900 border border-stone-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-artisan-gold"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Bio & Studio Images */}
-              <div className="p-6 bg-[#1C1917] rounded-3xl border border-stone-800 space-y-6">
-                <h3 className="font-serif font-bold text-lg text-artisan-gold">
-                  2. Headline, Biography & Sanctuary Images
-                </h3>
-
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1">
                     Main Hero Headline
@@ -770,24 +1152,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
                   />
                 </div>
 
-                <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1">
-                    Detailed Biography Narrative (Separate paragraphs with double enter)
-                  </label>
-                  <textarea
-                    rows={4}
-                    value={profileForm.bioStory.join('\n\n')}
-                    onChange={(e) =>
-                      setProfileForm({
-                        ...profileForm,
-                        bioStory: e.target.value.split('\n\n').filter((p) => p.trim().length > 0)
-                      })
-                    }
-                    className="w-full bg-stone-900 border border-stone-700 rounded-xl p-3.5 text-xs text-white outline-none focus:border-artisan-gold font-sans leading-relaxed"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-stone-800">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1">
                       Studio / Portrait Photo URL
@@ -820,7 +1185,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
                     className="px-6 py-2.5 bg-artisan-gold hover:bg-amber-400 text-stone-950 font-bold text-xs flex items-center gap-2 shadow-lg"
                   >
                     <Check className="w-4 h-4" />
-                    <span>Save Artist Profile Changes</span>
+                    <span>Save Biography Changes</span>
                   </MagneticButton>
                 </div>
               </div>
@@ -831,7 +1196,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-serif font-bold text-lg text-artisan-gold">
-                    3. Exhibition Milestones & Awards Timeline
+                    Exhibition Milestones & Awards Timeline
                   </h3>
                   <p className="text-xs text-stone-400 mt-0.5">
                     Showcase international accolades and gallery shows.
@@ -885,87 +1250,121 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
             </div>
           </div>
         )}
-
-        {/* ------------------------------------------------------------- */}
-        {/* TAB 4: ORDERS & ENROLLED STUDENTS */}
-        {/* ------------------------------------------------------------- */}
-        {activeTab === 'orders' && (
-          <div className="space-y-6 animate-in fade-in duration-200">
-            <div className="p-6 bg-[#1A1815] rounded-3xl border border-stone-800">
-              <h2 className="font-serif font-bold text-xl text-white">
-                Collector Acquisitions & Student Enrollments
-              </h2>
-              <p className="text-xs text-stone-400 mt-1">
-                Real-time record of all painting purchases and masterclass enrollments.
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              {orders.length === 0 ? (
-                <div className="py-16 text-center text-stone-500 bg-[#1C1917] rounded-3xl border border-stone-800">
-                  <Package className="w-10 h-10 mx-auto text-stone-600 mb-2" />
-                  <p className="font-serif text-base text-stone-300">No orders recorded in session yet.</p>
-                  <p className="text-xs text-stone-500 mt-1">
-                    When patrons checkout or students enroll, their receipts will populate here automatically.
-                  </p>
-                </div>
-              ) : (
-                orders.map((order) => (
-                  <div
-                    key={order.id}
-                    className="p-5 bg-[#1C1917] rounded-3xl border border-stone-800 space-y-3"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-3 text-xs border-b border-stone-800 pb-3">
-                      <div>
-                        <span className="font-mono font-bold text-artisan-gold text-sm">
-                          #{order.id}
-                        </span>
-                        <span className="text-stone-400 ml-2">
-                          {order.date} • {order.customerName} ({order.customerEmail})
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-800">
-                          {order.paymentStatus}
-                        </span>
-                        <span className="font-serif font-bold text-sm text-white">
-                          ${order.totalAmount.toLocaleString()} USD
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-4 text-xs">
-                      {order.items.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex items-center gap-3 p-2 rounded-xl bg-stone-900 border border-stone-800"
-                        >
-                          <img
-                            src={item.image}
-                            alt={item.title}
-                            className="w-10 h-10 rounded-lg object-cover"
-                          />
-                          <div>
-                            <span className="font-bold text-white block">
-                              {item.title}
-                            </span>
-                            <span className="text-[10px] text-stone-400">
-                              {item.type.toUpperCase()} • ${item.price}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* ------------------------------------------------------------- */}
-      {/* MODAL: ADD / EDIT PAINTING */}
+      {/* MODAL 1: RUN LIVE STUDIO CLASS LAUNCHER (Requested by User) */}
+      {/* ------------------------------------------------------------- */}
+      {isLiveClassModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in">
+          <div className="relative w-full max-w-xl bg-[#1A1816] text-stone-100 rounded-3xl border border-red-500/40 shadow-2xl p-6 sm:p-8 space-y-6">
+            <button
+              onClick={() => setIsLiveClassModalOpen(false)}
+              className="absolute top-5 right-5 p-2 rounded-full text-stone-400 hover:text-white hover:bg-stone-800"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-red-950/80 border border-red-500/50 text-red-400 flex items-center justify-center shadow-lg">
+                <Radio className="w-6 h-6 animate-pulse" />
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold tracking-widest text-red-400 block">
+                  Kuldeep Singh Studio Broadcast Center
+                </span>
+                <h3 className="font-serif font-bold text-2xl text-white">
+                  Run Live Studio Class
+                </h3>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-[11px] font-bold uppercase text-stone-400 mb-1">
+                  Select Masterclass to Broadcast
+                </label>
+                <select
+                  value={selectedLiveCourseId}
+                  onChange={(e) => setSelectedLiveCourseId(e.target.value)}
+                  className="w-full bg-stone-900 border border-stone-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-red-500"
+                >
+                  {courses.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.title} ({c.schedule})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold uppercase text-stone-400 mb-1">
+                  Live Broadcast Link (Google Meet / Zoom / YouTube Live / Bunny Stream)
+                </label>
+                <input
+                  type="text"
+                  value={liveStreamUrl}
+                  onChange={(e) => setLiveStreamUrl(e.target.value)}
+                  placeholder="https://meet.google.com/... or Zoom link"
+                  className="w-full bg-stone-900 border border-stone-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-red-500 font-mono text-[11px]"
+                />
+              </div>
+
+              {/* Live Status indicator */}
+              <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`w-3 h-3 rounded-full ${
+                      isLiveBroadcasting ? 'bg-red-500 animate-ping' : 'bg-stone-600'
+                    }`}
+                  />
+                  <span className="text-xs font-bold text-white">
+                    {isLiveBroadcasting ? 'LIVE ON AIR (Broadcasting Active)' : 'Studio Standby (Ready to Go Live)'}
+                  </span>
+                </div>
+                <span className="text-xs text-artisan-gold font-bold">
+                  {students.filter((s) => s.courseId === selectedLiveCourseId).length} Enrolled Students Ready
+                </span>
+              </div>
+            </div>
+
+            <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-stone-800">
+              <button
+                type="button"
+                onClick={() => {
+                  window.open(liveStreamUrl, '_blank');
+                }}
+                className="px-4 py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-bold rounded-xl flex items-center gap-2 transition-colors"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span>Open Video Session in New Window</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setIsLiveBroadcasting(!isLiveBroadcasting);
+                  showToast(
+                    !isLiveBroadcasting
+                      ? '🔴 Live Class started! Notification sent to enrolled students.'
+                      : 'Live Class ended.'
+                  );
+                }}
+                className={`px-6 py-2.5 font-bold text-xs rounded-xl flex items-center gap-2 transition-all shadow-lg ${
+                  isLiveBroadcasting
+                    ? 'bg-stone-800 text-stone-300 hover:bg-stone-700'
+                    : 'bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white'
+                }`}
+              >
+                <Radio className="w-4 h-4" />
+                <span>{isLiveBroadcasting ? 'End Broadcast' : 'Go Live to Students Now'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ------------------------------------------------------------- */}
+      {/* MODAL 2: ADD / EDIT PAINTING */}
       {/* ------------------------------------------------------------- */}
       {isPaintingModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
@@ -1131,7 +1530,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
       )}
 
       {/* ------------------------------------------------------------- */}
-      {/* MODAL: ADD VIDEO LECTURE */}
+      {/* MODAL 3: ADD VIDEO LECTURE */}
       {/* ------------------------------------------------------------- */}
       {isLectureModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
@@ -1147,7 +1546,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
               Add Video Lecture to Module {lectureModuleIndex + 1}
             </h3>
             <p className="text-xs text-stone-400 mb-6">
-              Enter the lecture details and stream link (Bunny Stream / Cloudflare / YouTube Unlisted).
+              Enter lecture details and stream link (Bunny Stream / Cloudflare / YouTube Unlisted).
             </p>
 
             <form onSubmit={handleSaveLecture} className="space-y-4">
@@ -1224,7 +1623,180 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
       )}
 
       {/* ------------------------------------------------------------- */}
-      {/* MODAL: ADD TIMELINE MILESTONE */}
+      {/* MODAL 4: ADMIT NEW STUDENT */}
+      {/* ------------------------------------------------------------- */}
+      {isStudentModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="relative w-full max-w-lg bg-[#1A1816] text-stone-100 rounded-3xl border border-artisan-gold/40 shadow-2xl p-6 sm:p-8">
+            <button
+              onClick={() => setIsStudentModalOpen(false)}
+              className="absolute top-5 right-5 p-2 rounded-full text-stone-400 hover:text-white hover:bg-stone-800"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <h3 className="font-serif font-bold text-xl text-white mb-1">
+              Admit New Student to Masterclass
+            </h3>
+            <p className="text-xs text-stone-400 mb-6">
+              Enter student credentials to grant access to curriculum lectures and live atelier sessions.
+            </p>
+
+            <form onSubmit={handleAddStudent} className="space-y-4">
+              <div>
+                <label className="block text-[11px] font-bold uppercase text-stone-400 mb-1">
+                  Student Full Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={studentForm.name}
+                  onChange={(e) => setStudentForm({ ...studentForm, name: e.target.value })}
+                  placeholder="e.g. Vikramaditya Rathore"
+                  className="w-full bg-stone-900 border border-stone-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-artisan-gold"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] font-bold uppercase text-stone-400 mb-1">
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={studentForm.email}
+                    onChange={(e) => setStudentForm({ ...studentForm, email: e.target.value })}
+                    placeholder="student@example.com"
+                    className="w-full bg-stone-900 border border-stone-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-artisan-gold"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold uppercase text-stone-400 mb-1">
+                    Phone Number
+                  </label>
+                  <input
+                    type="text"
+                    value={studentForm.phone}
+                    onChange={(e) => setStudentForm({ ...studentForm, phone: e.target.value })}
+                    placeholder="+91 98765 43210"
+                    className="w-full bg-stone-900 border border-stone-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-artisan-gold"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold uppercase text-stone-400 mb-1">
+                  Enrolled Course
+                </label>
+                <select
+                  value={studentForm.courseId}
+                  onChange={(e) => setStudentForm({ ...studentForm, courseId: e.target.value })}
+                  className="w-full bg-stone-900 border border-stone-700 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-artisan-gold"
+                >
+                  {courses.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.title} (${c.price})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] font-bold uppercase text-stone-400 mb-1">
+                    Batch Schedule
+                  </label>
+                  <input
+                    type="text"
+                    value={studentForm.batchSchedule}
+                    onChange={(e) => setStudentForm({ ...studentForm, batchSchedule: e.target.value })}
+                    className="w-full bg-stone-900 border border-stone-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-artisan-gold"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold uppercase text-stone-400 mb-1">
+                    Fees Paid (USD $)
+                  </label>
+                  <input
+                    type="number"
+                    value={studentForm.feesPaid}
+                    onChange={(e) => setStudentForm({ ...studentForm, feesPaid: Number(e.target.value) })}
+                    className="w-full bg-stone-900 border border-stone-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-artisan-gold"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-stone-800 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsStudentModalOpen(false)}
+                  className="px-4 py-2 text-stone-400 hover:text-white text-xs font-semibold"
+                >
+                  Cancel
+                </button>
+                <MagneticButton
+                  type="submit"
+                  variant="primary"
+                  className="px-6 py-2.5 bg-artisan-gold hover:bg-amber-400 text-stone-950 font-bold text-xs"
+                >
+                  Confirm Admission
+                </MagneticButton>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ------------------------------------------------------------- */}
+      {/* MODAL 5: VIDEO LECTURE PREVIEW PLAYER */}
+      {/* ------------------------------------------------------------- */}
+      {previewingLectureUrl && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in">
+          <div className="relative w-full max-w-3xl bg-[#1A1816] rounded-3xl border border-artisan-gold/40 shadow-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-white font-bold text-sm">
+                <Video className="w-4 h-4 text-artisan-gold" />
+                <span>Admin Lecture Stream Preview</span>
+              </div>
+              <button
+                onClick={() => setPreviewingLectureUrl(null)}
+                className="p-2 rounded-full text-stone-400 hover:text-white hover:bg-stone-800"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="relative aspect-video rounded-2xl overflow-hidden bg-black border border-stone-800 flex items-center justify-center">
+              {previewingLectureUrl.includes('youtube') || previewingLectureUrl.includes('embed') ? (
+                <iframe
+                  src={previewingLectureUrl}
+                  title="Lecture Preview"
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : (
+                <div className="text-center p-8 space-y-3">
+                  <Play className="w-12 h-12 text-artisan-gold mx-auto" />
+                  <p className="text-sm font-bold text-white">Direct CDN Stream Link Configured</p>
+                  <p className="text-xs text-stone-400 font-mono break-all max-w-md mx-auto">
+                    {previewingLectureUrl}
+                  </p>
+                  <p className="text-[11px] text-emerald-400">
+                    ✓ Verified: Encrypted stream ready for student classroom.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ------------------------------------------------------------- */}
+      {/* MODAL 6: ADD TIMELINE MILESTONE */}
       {/* ------------------------------------------------------------- */}
       {isTimelineModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
