@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { Artwork, Course, CourseLecture, ArtistProfile, AchievementTimelineItem, Award, EnrolledStudent } from '../types';
+import type { Artwork, Course, CourseModule, CourseLecture, ArtistProfile, AchievementTimelineItem, Award, EnrolledStudent } from '../types';
 import { ARTWORKS } from '../data/artworks';
 import { COURSES } from '../data/courses';
 import { TIMELINE, AWARDS } from '../data/achievements';
@@ -104,10 +104,12 @@ interface StudioDataContextType {
   // Students CRUD
   addStudent: (student: EnrolledStudent) => void;
   deleteStudent: (id: string) => void;
-  // Lecture Management
+  // Lecture & Module Management
   addLectureToModule: (courseId: string, moduleIndex: number, lecture: CourseLecture) => void;
   updateLectureInModule: (courseId: string, moduleIndex: number, lectureIndex: number, updates: Partial<CourseLecture>) => void;
   deleteLectureFromModule: (courseId: string, moduleIndex: number, lectureIndex: number) => void;
+  addModuleToCourse: (courseId: string, title?: string, duration?: string) => void;
+  deleteModuleFromCourse: (courseId: string, moduleIndex: number) => void;
   // Profile & Legacy CRUD
   updateArtistProfile: (updates: Partial<ArtistProfile>) => void;
   addTimelineItem: (item: AchievementTimelineItem) => void;
@@ -120,6 +122,28 @@ interface StudioDataContextType {
 const StudioDataContext = createContext<StudioDataContextType | undefined>(undefined);
 
 export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Helper to ensure all course modules have lecture objects
+  const normalizeCourses = (courseList: Course[]): Course[] => {
+    return courseList.map((c) => ({
+      ...c,
+      modules: c.modules.map((m, mIdx) => {
+        if (m.lectures && m.lectures.length > 0) return m;
+        const initialLecs: CourseLecture[] = (m.topics || []).map((top, tIdx) => ({
+          id: `lec-${c.id}-${m.id || mIdx}-${tIdx + 1}`,
+          title: top,
+          duration: '45 Mins',
+          videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+          summary: `Master practical demonstration by Artist Kuldeep Singh covering ${top}.`
+        }));
+        return {
+          ...m,
+          lectures: initialLecs,
+          lessonsCount: initialLecs.length
+        };
+      })
+    }));
+  };
+
   // 1. Artworks State
   const [artworks, setArtworks] = useState<Artwork[]>(() => {
     try {
@@ -134,9 +158,10 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [courses, setCourses] = useState<Course[]>(() => {
     try {
       const saved = localStorage.getItem('kuldeep_studio_courses');
-      return saved ? JSON.parse(saved) : COURSES;
+      const loaded: Course[] = saved ? JSON.parse(saved) : COURSES;
+      return normalizeCourses(loaded);
     } catch {
-      return COURSES;
+      return normalizeCourses(COURSES);
     }
   });
 
@@ -316,6 +341,41 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     );
   };
 
+  const addModuleToCourse = (courseId: string, title?: string, duration?: string) => {
+    setCourses((prev) =>
+      prev.map((course) => {
+        if (course.id !== courseId) return course;
+        const newMod: CourseModule = {
+          id: 'mod-' + Date.now(),
+          title: title || `Module ${course.modules.length + 1}: Masterclass Continuation`,
+          duration: duration || '3 Weeks',
+          lessonsCount: 0,
+          topics: ['Live Studio Demo', 'Technique Practice'],
+          lectures: []
+        };
+        return {
+          ...course,
+          modules: [...course.modules, newMod]
+        };
+      })
+    );
+  };
+
+  const deleteModuleFromCourse = (courseId: string, moduleIndex: number) => {
+    setCourses((prev) =>
+      prev.map((course) => {
+        if (course.id !== courseId) return course;
+        const newModules = course.modules.filter((_, idx) => idx !== moduleIndex);
+        const total = newModules.reduce((acc, m) => acc + (m.lectures ? m.lectures.length : m.lessonsCount), 0);
+        return {
+          ...course,
+          modules: newModules,
+          totalLessons: total
+        };
+      })
+    );
+  };
+
   // Profile Handlers
   const updateArtistProfile = (updates: Partial<ArtistProfile>) => {
     setArtistProfile((prev) => ({ ...prev, ...updates }));
@@ -379,6 +439,8 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         addLectureToModule,
         updateLectureInModule,
         deleteLectureFromModule,
+        addModuleToCourse,
+        deleteModuleFromCourse,
         updateArtistProfile,
         addTimelineItem,
         updateTimelineItem,

@@ -121,6 +121,12 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse }) => {
 
                   {/* Top Badges */}
                   <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2">
+                    {course.liveClassStatus === 'live' && (
+                      <span className="bg-red-600 text-white animate-pulse px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-lg border border-red-400">
+                        <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+                        🔴 Live Studio Class Active
+                      </span>
+                    )}
                     <span className="bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-wider">
                       {course.category}
                     </span>

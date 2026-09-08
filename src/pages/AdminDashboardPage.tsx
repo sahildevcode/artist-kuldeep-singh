@@ -49,7 +49,10 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
     addStudent,
     deleteStudent,
     addLectureToModule,
+    updateLectureInModule,
     deleteLectureFromModule,
+    addModuleToCourse,
+    deleteModuleFromCourse,
     updateArtistProfile,
     addTimelineItem,
     deleteTimelineItem,
@@ -75,6 +78,40 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
   const [selectedLiveCourseId, setSelectedLiveCourseId] = useState<string>(courses[0]?.id || '');
   const [liveStreamUrl, setLiveStreamUrl] = useState<string>('https://meet.google.com/ks-studio-atelier');
   const [isLiveBroadcasting, setIsLiveBroadcasting] = useState(false);
+
+  const openLiveClassModal = () => {
+    const target = courses.find((c) => c.id === selectedLiveCourseId) || courses[0];
+    if (target) {
+      setSelectedLiveCourseId(target.id);
+      if (target.liveClassUrl) setLiveStreamUrl(target.liveClassUrl);
+      setIsLiveBroadcasting(target.liveClassStatus === 'live');
+    }
+    setIsLiveClassModalOpen(true);
+  };
+
+  const handleLiveCourseChange = (cId: string) => {
+    setSelectedLiveCourseId(cId);
+    const target = courses.find((c) => c.id === cId);
+    if (target) {
+      if (target.liveClassUrl) setLiveStreamUrl(target.liveClassUrl);
+      setIsLiveBroadcasting(target.liveClassStatus === 'live');
+    }
+  };
+
+  const handleToggleBroadcast = () => {
+    if (!selectedLiveCourseId) return;
+    const willBeLive = !isLiveBroadcasting;
+    setIsLiveBroadcasting(willBeLive);
+    updateCourse(selectedLiveCourseId, {
+      liveClassStatus: willBeLive ? 'live' : 'offline',
+      liveClassUrl: liveStreamUrl
+    });
+    showToast(
+      willBeLive
+        ? '🔴 Live Studio Broadcast is ON AIR! Students can now join via Google Meet.'
+        : 'Live Studio broadcast ended.'
+    );
+  };
 
   // -------------------------------------------------------------
   // 2. PAINTINGS STATE
@@ -192,6 +229,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
 
   const [isLectureModalOpen, setIsLectureModalOpen] = useState(false);
   const [lectureModuleIndex, setLectureModuleIndex] = useState(0);
+  const [editingLectureIndex, setEditingLectureIndex] = useState<number | null>(null);
   const [lectureForm, setLectureForm] = useState({
     title: '',
     duration: '45 Mins',
@@ -203,6 +241,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
 
   const openAddLectureModal = (modIdx: number) => {
     setLectureModuleIndex(modIdx);
+    setEditingLectureIndex(null);
     setLectureForm({
       title: `Lesson: Masterstroke Technique`,
       duration: '45 Mins',
@@ -212,18 +251,40 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
     setIsLectureModalOpen(true);
   };
 
+  const openEditLectureModal = (modIdx: number, lecIdx: number, lec: CourseLecture) => {
+    setLectureModuleIndex(modIdx);
+    setEditingLectureIndex(lecIdx);
+    setLectureForm({
+      title: lec.title,
+      duration: lec.duration,
+      videoUrl: lec.videoUrl || '',
+      summary: lec.summary || ''
+    });
+    setIsLectureModalOpen(true);
+  };
+
   const handleSaveLecture = (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeCourse) return;
-    const newLecture: CourseLecture = {
-      id: 'lec-' + Date.now(),
-      title: lectureForm.title,
-      duration: lectureForm.duration,
-      videoUrl: lectureForm.videoUrl || 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-      summary: lectureForm.summary
-    };
-    addLectureToModule(activeCourse.id, lectureModuleIndex, newLecture);
-    showToast(`Lecture added to ${activeCourse.title}!`);
+    if (editingLectureIndex !== null) {
+      updateLectureInModule(activeCourse.id, lectureModuleIndex, editingLectureIndex, {
+        title: lectureForm.title,
+        duration: lectureForm.duration,
+        videoUrl: lectureForm.videoUrl || 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        summary: lectureForm.summary
+      });
+      showToast(`Lecture updated successfully!`);
+    } else {
+      const newLecture: CourseLecture = {
+        id: 'lec-' + Date.now(),
+        title: lectureForm.title,
+        duration: lectureForm.duration,
+        videoUrl: lectureForm.videoUrl || 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        summary: lectureForm.summary
+      };
+      addLectureToModule(activeCourse.id, lectureModuleIndex, newLecture);
+      showToast(`New lecture added to ${activeCourse.title}!`);
+    }
     setIsLectureModalOpen(false);
   };
 
@@ -350,7 +411,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
 
           {/* Profile 2: Run Live Studio Class */}
           <button
-            onClick={() => setIsLiveClassModalOpen(true)}
+            onClick={() => openLiveClassModal()}
             className="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white shadow-md transition-all animate-pulse"
           >
             <Radio className="w-4 h-4" />
@@ -611,7 +672,10 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
 
               <div className="flex items-center gap-3">
                 <button
-                  onClick={() => setIsLiveClassModalOpen(true)}
+                  onClick={() => {
+                    setSelectedLiveCourseId(activeCourse.id);
+                    openLiveClassModal();
+                  }}
                   className="px-4 py-2 bg-red-700 hover:bg-red-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md transition-all"
                 >
                   <Radio className="w-3.5 h-3.5" />
@@ -698,13 +762,29 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
                         </p>
                       </div>
 
-                      <button
-                        onClick={() => openAddLectureModal(modIdx)}
-                        className="px-3.5 py-1.5 bg-artisan-gold/20 hover:bg-artisan-gold text-artisan-gold hover:text-stone-950 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border border-artisan-gold/30"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                        <span>Add Video Lecture</span>
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => openAddLectureModal(modIdx)}
+                          className="px-3.5 py-1.5 bg-artisan-gold/20 hover:bg-artisan-gold text-artisan-gold hover:text-stone-950 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all border border-artisan-gold/30"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>Add Video Lecture</span>
+                        </button>
+                        {activeCourse.modules.length > 1 && (
+                          <button
+                            onClick={() => {
+                              if (window.confirm(`Delete Module ${modIdx + 1}: "${mod.title}" and its lectures?`)) {
+                                deleteModuleFromCourse(activeCourse.id, modIdx);
+                                showToast('Module removed.');
+                              }
+                            }}
+                            className="p-1.5 text-stone-500 hover:text-red-400 hover:bg-stone-800 rounded-xl transition-colors border border-stone-800"
+                            title="Delete this entire module"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
                     </div>
 
                     {/* Lecture List in this Module */}
@@ -713,7 +793,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
                         mod.lectures.map((lec, lecIdx) => (
                           <div
                             key={lec.id}
-                            className="p-3 bg-stone-900/80 rounded-xl border border-stone-800 flex items-center justify-between gap-3 text-xs"
+                            className="p-3 bg-stone-900/80 rounded-xl border border-stone-800 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 text-xs"
                           >
                             <div className="flex items-center gap-3 flex-1 min-w-0">
                               <div className="w-8 h-8 rounded-lg bg-artisan-gold/10 text-artisan-gold flex items-center justify-center font-bold flex-shrink-0">
@@ -732,11 +812,11 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
                               </div>
                             </div>
 
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1.5 flex-shrink-0">
                               {lec.videoUrl && (
                                 <button
                                   onClick={() => setPreviewingLectureUrl(lec.videoUrl || null)}
-                                  className="px-2.5 py-1 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded-lg text-xs flex items-center gap-1"
+                                  className="px-2.5 py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded-lg text-xs flex items-center gap-1 transition-colors"
                                   title="Preview video lecture"
                                 >
                                   <Play className="w-3 h-3 text-artisan-gold fill-artisan-gold" />
@@ -744,14 +824,29 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
                                 </button>
                               )}
 
+                              {/* Edit Lecture Button */}
+                              <button
+                                onClick={() => openEditLectureModal(modIdx, lecIdx, lec)}
+                                className="px-2.5 py-1.5 bg-stone-800 hover:bg-artisan-gold/20 text-stone-200 hover:text-artisan-gold rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors border border-stone-700"
+                                title="Edit lecture details or stream URL"
+                              >
+                                <Edit3 className="w-3 h-3 text-artisan-gold" />
+                                <span>Edit</span>
+                              </button>
+
+                              {/* Remove Lecture Button */}
                               <button
                                 onClick={() => {
-                                  deleteLectureFromModule(activeCourse.id, modIdx, lecIdx);
-                                  showToast('Lecture removed.');
+                                  if (window.confirm(`Are you sure you want to remove lecture "${lec.title}"?`)) {
+                                    deleteLectureFromModule(activeCourse.id, modIdx, lecIdx);
+                                    showToast('Lecture removed successfully.');
+                                  }
                                 }}
-                                className="p-1.5 text-stone-500 hover:text-red-400 hover:bg-stone-800 rounded-lg transition-colors"
+                                className="px-2.5 py-1.5 bg-stone-800 hover:bg-red-950/40 text-stone-400 hover:text-red-400 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors border border-stone-700"
+                                title="Remove this lecture"
                               >
-                                <Trash2 className="w-3.5 h-3.5" />
+                                <Trash2 className="w-3 h-3" />
+                                <span>Remove</span>
                               </button>
                             </div>
                           </div>
@@ -767,6 +862,28 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
                     </div>
                   </div>
                 ))}
+
+                {/* Add New Module Block */}
+                <div className="p-5 bg-[#201D1A]/60 rounded-2xl border border-dashed border-stone-800 flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <h5 className="font-serif font-bold text-sm text-white">
+                      Add Additional Curriculum Module / Week
+                    </h5>
+                    <p className="text-xs text-stone-400 mt-0.5">
+                      Expand {activeCourse.title} with additional masterclass weeks or bonus modules.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      addModuleToCourse(activeCourse.id);
+                      showToast('New curriculum module added!');
+                    }}
+                    className="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-stone-200 hover:text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-all border border-stone-700"
+                  >
+                    <Plus className="w-4 h-4 text-artisan-gold" />
+                    <span>+ Add New Module Block</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -953,7 +1070,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
                 </MagneticButton>
 
                 <button
-                  onClick={() => setIsLiveClassModalOpen(true)}
+                  onClick={() => openLiveClassModal()}
                   className="px-4 py-2.5 bg-red-700 hover:bg-red-600 text-white font-bold text-xs rounded-2xl flex items-center gap-2 shadow-lg transition-all"
                 >
                   <Radio className="w-4 h-4" />
@@ -1286,7 +1403,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
                 </label>
                 <select
                   value={selectedLiveCourseId}
-                  onChange={(e) => setSelectedLiveCourseId(e.target.value)}
+                  onChange={(e) => handleLiveCourseChange(e.target.value)}
                   className="w-full bg-stone-900 border border-stone-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-red-500"
                 >
                   {courses.map((c) => (
@@ -1305,21 +1422,39 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
                   type="text"
                   value={liveStreamUrl}
                   onChange={(e) => setLiveStreamUrl(e.target.value)}
-                  placeholder="https://meet.google.com/... or Zoom link"
+                  placeholder="https://meet.google.com/ks-studio-atelier or Zoom link"
                   className="w-full bg-stone-900 border border-stone-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-red-500 font-mono text-[11px]"
                 />
               </div>
 
+              {/* Step-by-Step Instructor Guide */}
+              <div className="p-4 rounded-2xl bg-stone-900/90 border border-stone-800 space-y-2.5 text-xs">
+                <div className="flex items-center gap-2 text-stone-300 font-bold">
+                  <Clock className="w-4 h-4 text-artisan-gold" />
+                  <span>How Live Studio Broadcasting Works:</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-stone-400">
+                  <div className="p-2.5 rounded-xl bg-stone-950/60 border border-stone-800/80">
+                    <span className="font-bold text-white block mb-0.5">Step 1: Launch Meeting</span>
+                    Click "1. Open Google Meet" to start your camera and mic in a separate tab.
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-stone-950/60 border border-stone-800/80">
+                    <span className="font-bold text-white block mb-0.5">Step 2: Go Live</span>
+                    Click "2. Go Live to Students" to publish the red banner & join button on student screens.
+                  </div>
+                </div>
+              </div>
+
               {/* Live Status indicator */}
               <div className="p-4 rounded-2xl bg-stone-900 border border-stone-800 flex items-center justify-between">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
                   <span
-                    className={`w-3 h-3 rounded-full ${
+                    className={`w-3.5 h-3.5 rounded-full ${
                       isLiveBroadcasting ? 'bg-red-500 animate-ping' : 'bg-stone-600'
                     }`}
                   />
                   <span className="text-xs font-bold text-white">
-                    {isLiveBroadcasting ? 'LIVE ON AIR (Broadcasting Active)' : 'Studio Standby (Ready to Go Live)'}
+                    {isLiveBroadcasting ? '🔴 LIVE ON AIR (Students Can Join)' : '⚪ Studio Standby (Ready to Go Live)'}
                   </span>
                 </div>
                 <span className="text-xs text-artisan-gold font-bold">
@@ -1328,35 +1463,28 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
               </div>
             </div>
 
-            <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-stone-800">
+            <div className="pt-3 flex flex-wrap items-center justify-between gap-3 border-t border-stone-800">
               <button
                 type="button"
                 onClick={() => {
                   window.open(liveStreamUrl, '_blank');
                 }}
-                className="px-4 py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-bold rounded-xl flex items-center gap-2 transition-colors"
+                className="px-4 py-2.5 bg-stone-800 hover:bg-stone-700 text-stone-200 hover:text-white text-xs font-bold rounded-xl flex items-center gap-2 transition-colors border border-stone-700"
               >
-                <ExternalLink className="w-3.5 h-3.5" />
-                <span>Open Video Session in New Window</span>
+                <ExternalLink className="w-3.5 h-3.5 text-artisan-gold" />
+                <span>1. Open Google Meet in New Window</span>
               </button>
 
               <button
-                onClick={() => {
-                  setIsLiveBroadcasting(!isLiveBroadcasting);
-                  showToast(
-                    !isLiveBroadcasting
-                      ? '🔴 Live Class started! Notification sent to enrolled students.'
-                      : 'Live Class ended.'
-                  );
-                }}
+                onClick={handleToggleBroadcast}
                 className={`px-6 py-2.5 font-bold text-xs rounded-xl flex items-center gap-2 transition-all shadow-lg ${
                   isLiveBroadcasting
-                    ? 'bg-stone-800 text-stone-300 hover:bg-stone-700'
-                    : 'bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white'
+                    ? 'bg-stone-800 text-stone-300 hover:bg-stone-700 border border-stone-700'
+                    : 'bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white animate-pulse'
                 }`}
               >
                 <Radio className="w-4 h-4" />
-                <span>{isLiveBroadcasting ? 'End Broadcast' : 'Go Live to Students Now'}</span>
+                <span>{isLiveBroadcasting ? 'End Live Broadcast' : '2. Go Live to Students Now'}</span>
               </button>
             </div>
           </div>
@@ -1543,10 +1671,14 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
             </button>
 
             <h3 className="font-serif font-bold text-xl text-white mb-1">
-              Add Video Lecture to Module {lectureModuleIndex + 1}
+              {editingLectureIndex !== null
+                ? `Edit Video Lecture (Module ${lectureModuleIndex + 1})`
+                : `Add Video Lecture to Module ${lectureModuleIndex + 1}`}
             </h3>
             <p className="text-xs text-stone-400 mb-6">
-              Enter lecture details and stream link (Bunny Stream / Cloudflare / YouTube Unlisted).
+              {editingLectureIndex !== null
+                ? 'Modify lecture title, duration, video streaming link or lesson summary.'
+                : 'Enter lecture details and stream link (Bunny Stream / Cloudflare / YouTube Unlisted).'}
             </p>
 
             <form onSubmit={handleSaveLecture} className="space-y-4">
@@ -1566,12 +1698,13 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
 
               <div>
                 <label className="block text-[11px] font-bold uppercase text-stone-400 mb-1">
-                  Duration (e.g. 45 Mins, 1 Hour)
+                  Duration (e.g. 45 Mins, 1.5 Hours)
                 </label>
                 <input
                   type="text"
                   value={lectureForm.duration}
                   onChange={(e) => setLectureForm({ ...lectureForm, duration: e.target.value })}
+                  placeholder="45 Mins"
                   className="w-full bg-stone-900 border border-stone-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-artisan-gold"
                 />
               </div>
@@ -1587,6 +1720,9 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
                   placeholder="https://video.bunnycdn.com/embed/... or YouTube link"
                   className="w-full bg-stone-900 border border-stone-700 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none focus:border-artisan-gold font-mono text-[11px]"
                 />
+                <span className="text-[10px] text-stone-500 mt-1 block">
+                  * Secure video streaming only. Downloads and offline PDF distribution are disabled.
+                </span>
               </div>
 
               <div>
@@ -1614,7 +1750,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({ onBackTo
                   variant="primary"
                   className="px-6 py-2.5 bg-artisan-gold hover:bg-amber-400 text-stone-950 font-bold text-xs"
                 >
-                  Save Lecture
+                  {editingLectureIndex !== null ? 'Update Lecture' : 'Save New Lecture'}
                 </MagneticButton>
               </div>
             </form>

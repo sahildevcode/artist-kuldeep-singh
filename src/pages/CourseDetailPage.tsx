@@ -13,9 +13,12 @@ import {
   Unlock,
   ShieldCheck,
   Check,
-  MessageSquare
+  MessageSquare,
+  Radio,
+  ExternalLink,
+  X
 } from 'lucide-react';
-import type { Course } from '../types';
+import type { Course, CourseLecture } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { MagneticButton } from '../components/ui/MagneticButton';
@@ -33,6 +36,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
   const [isPlayingTeaser, setIsPlayingTeaser] = useState<boolean>(false);
   const [isProcessingEnroll, setIsProcessingEnroll] = useState<boolean>(false);
   const [showSuccessBanner, setShowSuccessBanner] = useState<boolean>(false);
+  const [selectedLectureForStream, setSelectedLectureForStream] = useState<CourseLecture | null>(null);
 
   const isUnlocked = isCourseUnlocked(course.id);
 
@@ -157,6 +161,41 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
               </div>
             </div>
 
+            {/* Live Studio Broadcaster Alert Banner */}
+            {course.liveClassStatus === 'live' && (
+              <div className="p-5 rounded-3xl bg-gradient-to-r from-red-600 via-rose-700 to-amber-700 text-white shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4 border border-red-400/40 animate-in fade-in">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center flex-shrink-0">
+                    <Radio className="w-6 h-6 text-white animate-pulse" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-white animate-ping" />
+                      <span className="text-[10px] uppercase font-bold tracking-widest bg-black/40 px-2.5 py-0.5 rounded-full">
+                        Live Studio Class Broadcast Active Now
+                      </span>
+                    </div>
+                    <h4 className="font-serif font-bold text-lg text-white mt-1">
+                      Artist Kuldeep Singh is LIVE!
+                    </h4>
+                    <p className="text-xs text-rose-100">
+                      Live interactive atelier demonstration & real-time critique session is underway.
+                    </p>
+                  </div>
+                </div>
+
+                <a
+                  href={course.liveClassUrl || 'https://meet.google.com'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-3 bg-white text-red-700 hover:bg-stone-100 font-bold text-xs rounded-xl shadow-xl flex items-center gap-2 transition-transform hover:scale-105 flex-shrink-0"
+                >
+                  <ExternalLink className="w-4 h-4 text-red-600" />
+                  <span>Join Google Meet Broadcast</span>
+                </a>
+              </div>
+            )}
+
             {/* Video Teaser Player or Thumbnail Showcase */}
             <div className="relative rounded-3xl overflow-hidden shadow-2xl aspect-video bg-stone-900 border border-stone-800 group">
               {isPlayingTeaser ? (
@@ -269,14 +308,28 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
                       <div className="px-5 pb-5 pt-2 border-t border-stone-100 bg-stone-50/50 space-y-2.5">
                         {mod.lectures && mod.lectures.length > 0 ? (
                           mod.lectures.map((lec) => (
-                            <div key={lec.id} className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-stone-200/80 text-xs">
-                              <div className="flex items-center gap-2 text-stone-800 font-medium">
+                            <div
+                              key={lec.id}
+                              className="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200/80 text-xs hover:border-artisan-gold transition-colors"
+                            >
+                              <div className="flex items-center gap-2.5 text-stone-800 font-medium truncate flex-1 min-w-0 pr-2">
                                 <Play className="w-3.5 h-3.5 text-artisan-gold fill-artisan-gold flex-shrink-0" />
-                                <span>{lec.title}</span>
+                                <span className="truncate font-medium">{lec.title}</span>
                               </div>
-                              <span className="text-[11px] text-stone-500 font-mono bg-stone-100 px-2 py-0.5 rounded-md">
-                                {lec.duration}
-                              </span>
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                <span className="text-[11px] text-stone-500 font-mono bg-stone-100 px-2 py-0.5 rounded-md">
+                                  {lec.duration}
+                                </span>
+                                {isUnlocked && (
+                                  <button
+                                    onClick={() => setSelectedLectureForStream(lec)}
+                                    className="px-3 py-1 bg-artisan-gold/15 hover:bg-artisan-gold text-stone-900 rounded-lg text-xs font-bold transition-all flex items-center gap-1 border border-artisan-gold/30"
+                                  >
+                                    <Play className="w-3 h-3 text-artisan-crimson fill-artisan-crimson" />
+                                    <span>Stream</span>
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           ))
                         ) : (
@@ -450,6 +503,77 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
           </div>
         </div>
       </div>
+
+      {/* Student Video Lecture Streaming Player Modal */}
+      {selectedLectureForStream && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in">
+          <div className="relative w-full max-w-3xl bg-[#1A1816] text-stone-100 rounded-3xl border border-artisan-gold/40 shadow-2xl p-6 sm:p-8 space-y-4">
+            <div className="flex items-center justify-between border-b border-stone-800 pb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-artisan-gold/10 text-artisan-gold flex items-center justify-center font-bold">
+                  <Video className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-artisan-gold tracking-widest block">
+                    Kuldeep Singh Fine Art Académie • HD Stream
+                  </span>
+                  <h4 className="font-serif font-bold text-lg text-white">
+                    {selectedLectureForStream.title}
+                  </h4>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedLectureForStream(null)}
+                className="p-2 rounded-full text-stone-400 hover:text-white hover:bg-stone-800 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="relative aspect-video rounded-2xl overflow-hidden bg-stone-950 border border-stone-800 shadow-inner">
+              {selectedLectureForStream.videoUrl?.includes('youtube') || selectedLectureForStream.videoUrl?.includes('youtu.be') ? (
+                <iframe
+                  src={selectedLectureForStream.videoUrl.replace('watch?v=', 'embed/')}
+                  title={selectedLectureForStream.title}
+                  className="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-center p-6 space-y-3">
+                  <div className="w-16 h-16 rounded-full bg-artisan-gold/10 border border-artisan-gold/30 flex items-center justify-center">
+                    <Play className="w-8 h-8 text-artisan-gold fill-artisan-gold ml-1" />
+                  </div>
+                  <p className="font-serif text-white text-lg">
+                    Streaming Secure Video: {selectedLectureForStream.title}
+                  </p>
+                  <p className="text-xs text-stone-400 font-mono">
+                    Stream URL: {selectedLectureForStream.videoUrl}
+                  </p>
+                  <p className="text-[11px] text-stone-500 max-w-md">
+                    * Ultra-secure player. Screen recording, unauthorized sharing, and video downloads are strictly disabled.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-stone-300 pt-2 border-t border-stone-800">
+              <span className="text-stone-400">
+                Duration: <strong className="text-white">{selectedLectureForStream.duration}</strong>
+              </span>
+              <p className="text-xs text-stone-400 flex-1 min-w-0 px-2 truncate">
+                {selectedLectureForStream.summary || 'Step-by-step master demonstration by Artist Kuldeep Singh.'}
+              </p>
+              <button
+                onClick={() => setSelectedLectureForStream(null)}
+                className="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-white rounded-xl text-xs font-bold"
+              >
+                Close Video
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
