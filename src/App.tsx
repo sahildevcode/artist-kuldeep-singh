@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { StudioDataProvider, useStudioData } from './context/StudioDataContext';
@@ -24,17 +24,51 @@ import type { Artwork, Course } from './types';
 import { Sparkles } from 'lucide-react';
 
 const AppInner: React.FC = () => {
-  const [showSplash, setShowSplash] = useState(true);
-  const [activePage, setActivePage] = useState<'home' | 'about' | 'courses' | 'store' | 'course-detail' | 'admin'>('home');
+  const getInitialPage = (): 'home' | 'about' | 'courses' | 'store' | 'course-detail' | 'admin' => {
+    const hash = window.location.hash.replace('#', '').toLowerCase();
+    if (hash === 'admin') return 'admin';
+    if (hash === 'about') return 'about';
+    if (hash === 'courses') return 'courses';
+    if (hash === 'store') return 'store';
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('page') === 'admin') return 'admin';
+    return 'home';
+  };
+
+  const [activePage, setActivePage] = useState<'home' | 'about' | 'courses' | 'store' | 'course-detail' | 'admin'>(getInitialPage);
+  const [showSplash, setShowSplash] = useState(() => getInitialPage() !== 'admin');
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
   const { courses } = useStudioData();
-  const { isAdminAuthenticated } = useAuth();
+  const { isAdminAuthenticated, setIsAdminModalOpen } = useAuth();
 
-  // Scroll to top on page switch
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+      if (hash === 'admin') {
+        setActivePage('admin');
+        setShowSplash(false);
+      } else if (['about', 'courses', 'store', 'home'].includes(hash)) {
+        setActivePage(hash as any);
+      } else if (!hash) {
+        setActivePage('home');
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  useEffect(() => {
+    if (activePage === 'admin' && !isAdminAuthenticated) {
+      setIsAdminModalOpen(true);
+    }
+  }, [activePage, isAdminAuthenticated, setIsAdminModalOpen]);
+
+  // Scroll to top on page switch and sync URL hash
   const handlePageChange = (page: 'home' | 'about' | 'courses' | 'store' | 'course-detail' | 'admin') => {
     setActivePage(page);
+    window.location.hash = page === 'home' ? '' : page;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -111,9 +145,44 @@ const AppInner: React.FC = () => {
           />
         )}
         {activePage === 'admin' && (
-          <AdminDashboardPage
-            onBackToSite={() => handlePageChange('home')}
-          />
+          isAdminAuthenticated ? (
+            <AdminDashboardPage
+              onBackToSite={() => handlePageChange('home')}
+            />
+          ) : (
+            <div className="min-h-screen flex items-center justify-center p-6 bg-[#161412] text-stone-100">
+              <div className="max-w-md w-full p-8 rounded-3xl bg-[#1F1C19] border border-artisan-gold/40 shadow-2xl text-center space-y-5 animate-in fade-in">
+                <div className="w-16 h-16 rounded-2xl bg-artisan-gold/10 text-artisan-gold mx-auto flex items-center justify-center font-serif font-bold text-2xl border border-artisan-gold/30 shadow-lg">
+                  KS
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-artisan-gold block">
+                    Artist Kuldeep Singh Atelier Command
+                  </span>
+                  <h2 className="font-serif font-bold text-2xl text-white mt-1">
+                    Studio Owner Portal
+                  </h2>
+                  <p className="text-xs text-stone-400 mt-1.5 leading-relaxed">
+                    Direct access to original paintings inventory, video lecture streaming management, and live class broadcasting.
+                  </p>
+                </div>
+                <div className="pt-2 space-y-3">
+                  <button
+                    onClick={() => setIsAdminModalOpen(true)}
+                    className="w-full py-3.5 bg-artisan-gold hover:bg-amber-400 text-stone-950 font-bold rounded-xl text-xs shadow-xl transition-all hover:scale-[1.02]"
+                  >
+                    Enter Master Studio Login
+                  </button>
+                  <button
+                    onClick={() => handlePageChange('home')}
+                    className="text-xs text-stone-500 hover:text-stone-300 underline block mx-auto transition-colors"
+                  >
+                    Return to Public Fine Art Gallery
+                  </button>
+                </div>
+              </div>
+            </div>
+          )
         )}
       </main>
 
