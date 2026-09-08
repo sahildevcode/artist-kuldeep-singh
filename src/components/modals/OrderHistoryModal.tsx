@@ -5,7 +5,11 @@ import {
   ShieldCheck,
   Calendar,
   Play,
-  Package
+  Package,
+  MapPin,
+  Phone,
+  CreditCard,
+  Sparkles
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
@@ -221,14 +225,128 @@ export const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ onNavigate
                   ))}
                 </div>
 
+                {/* Live 4-Step Pipeline Tracker */}
+                {(() => {
+                  const getStepNumber = (): number => {
+                    if (order.currentStep) return order.currentStep;
+                    const s = (order.orderStatus || '').toLowerCase();
+                    if (s.includes('deliver')) return 4;
+                    if (s.includes('transit') || s.includes('dispatch')) return 3;
+                    if (s.includes('accept') || s.includes('proceed') || s.includes('process')) return 2;
+                    return 1;
+                  };
+                  const currentStep = getStepNumber();
+                  const pipelineSteps = [
+                    { step: 1, title: 'Order Placed', desc: 'Received & Logged' },
+                    { step: 2, title: 'Accepted by Studio', desc: 'Your order has been proceed' },
+                    { step: 3, title: 'Out for Delivery', desc: order.carrierName ? `${order.carrierName}` : 'In Transit' },
+                    { step: 4, title: 'Delivered', desc: 'Handed Over' }
+                  ];
+
+                  return (
+                    <div className="mx-4 sm:mx-5 p-4 rounded-2xl bg-[#FAF7F2] border border-stone-200/80 space-y-3.5">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="relative flex h-2.5 w-2.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                          </span>
+                          <span className="text-xs font-bold uppercase tracking-wider text-stone-800">
+                            Live Studio Pipeline
+                          </span>
+                        </div>
+                        <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-stone-900 text-white">
+                          Step {currentStep} of 4: {pipelineSteps[currentStep - 1]?.title}
+                        </span>
+                      </div>
+
+                      {/* Step Progress Bar */}
+                      <div className="relative pt-1 pb-1">
+                        <div className="absolute top-1/2 left-0 right-0 h-1 -translate-y-1/2 bg-stone-200 z-0"></div>
+                        <div
+                          className="absolute top-1/2 left-0 h-1 -translate-y-1/2 bg-emerald-500 transition-all duration-500 z-0"
+                          style={{
+                            width: `${((currentStep - 1) / 3) * 100}%`
+                          }}
+                        ></div>
+
+                        <div className="relative z-10 grid grid-cols-4 gap-1">
+                          {pipelineSteps.map((s) => {
+                            const isPassed = s.step < currentStep;
+                            const isCurrent = s.step === currentStep;
+                            return (
+                              <div key={s.step} className="flex flex-col items-center text-center">
+                                <div
+                                  className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                                    isPassed
+                                      ? 'bg-emerald-500 text-white shadow-xs'
+                                      : isCurrent
+                                      ? 'bg-[#1A1816] text-white ring-4 ring-emerald-200 scale-110 shadow-md'
+                                      : 'bg-white border-2 border-stone-300 text-stone-400'
+                                  }`}
+                                >
+                                  {isPassed ? <CheckCircle2 className="w-4 h-4" /> : s.step}
+                                </div>
+                                <span className={`mt-1.5 text-[10px] font-bold leading-tight ${isCurrent ? 'text-stone-900 font-extrabold' : isPassed ? 'text-emerald-700' : 'text-stone-400'}`}>
+                                  {s.title}
+                                </span>
+                                <span className="hidden sm:block text-[9px] text-stone-500 leading-tight">
+                                  {s.desc}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Live notification message */}
+                      {currentStep >= 2 && (
+                        <div className="p-2.5 rounded-xl bg-white border border-stone-200/80 text-xs flex items-center gap-2 text-stone-800">
+                          <Sparkles className="w-4 h-4 text-artisan-gold flex-shrink-0" />
+                          <span>
+                            {currentStep === 2 && "Kuldeep Singh's studio has accepted this order. The artwork is being inspected, framed, and placed in an archival crate."}
+                            {currentStep === 3 && `The artwork has been dispatched with ${order.carrierName || 'Secure Fine Art Logistics'}. Tracking: ${order.trackingNumber || 'Active'}`}
+                            {currentStep === 4 && "This piece has been successfully delivered and signed by the patron. Provenance is sealed."}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Delivery & Contact Details */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-[11px] text-stone-600 border-t border-stone-200/60">
+                        {order.deliveryAddress && (
+                          <div className="flex items-start gap-1.5">
+                            <MapPin className="w-3.5 h-3.5 text-stone-400 flex-shrink-0 mt-0.5" />
+                            <span className="line-clamp-2">
+                              <strong className="text-stone-800">Ship to: </strong>
+                              {order.deliveryAddress}
+                            </span>
+                          </div>
+                        )}
+                        {order.customerPhone && (
+                          <div className="flex items-center gap-1.5">
+                            <Phone className="w-3.5 h-3.5 text-stone-400 flex-shrink-0" />
+                            <span>
+                              <strong className="text-stone-800">Contact: </strong>
+                              {order.customerPhone}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {/* Order Footer Details */}
                 <div className="px-5 pb-4 pt-1 flex flex-wrap items-center justify-between gap-3 text-xs text-stone-500 border-t border-stone-100">
                   <div className="flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4 text-artisan-gold" />
                     <span>Official Provenance by Artist Kuldeep Singh</span>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <span>Payment: {order.paymentMethod}</span>
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="w-3.5 h-3.5 text-stone-400" />
+                    <span className="font-semibold px-2 py-0.5 rounded-full bg-stone-100 text-stone-800 border border-stone-200">
+                      Payment Mode: {order.paymentMethod}
+                    </span>
                   </div>
                 </div>
               </div>

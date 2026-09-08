@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CartProvider } from './context/CartContext';
+import { CartProvider, useCart } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { StudioDataProvider, useStudioData } from './context/StudioDataContext';
 import { ThreeBackground } from './components/3d/ThreeBackground';
@@ -13,6 +13,7 @@ import { CartDrawer } from './components/modals/CartDrawer';
 import { AuthModal } from './components/modals/AuthModal';
 import { ArtworkModal } from './components/modals/ArtworkModal';
 import { OrderHistoryModal } from './components/modals/OrderHistoryModal';
+import { CheckoutModal } from './components/modals/CheckoutModal';
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
 import { CoursesPage } from './pages/CoursesPage';
@@ -35,6 +36,7 @@ const AppInner: React.FC = () => {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
   const { courses } = useStudioData();
+  const { isCheckoutModalOpen, setIsCheckoutModalOpen } = useCart();
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -117,6 +119,10 @@ const AppInner: React.FC = () => {
       {/* Global Modals & Drawers */}
       <CartDrawer />
       <AuthModal />
+      <CheckoutModal
+        isOpen={isCheckoutModalOpen}
+        onClose={() => setIsCheckoutModalOpen(false)}
+      />
       <OrderHistoryModal
         onNavigateToCourse={(courseId) => {
           const found = courses.find((c) => c.id === courseId);

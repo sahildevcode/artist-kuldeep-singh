@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { CartItem, OrderRecord } from '../types';
 import confetti from 'canvas-confetti';
 
@@ -25,7 +25,19 @@ interface CartContextType {
   isCheckingOut: boolean;
   checkoutSuccess: boolean;
   lastOrderId: string | null;
-  performCheckout: (customerInfo?: { name: string; email: string }) => Promise<void>;
+  isCheckoutModalOpen: boolean;
+  setIsCheckoutModalOpen: (open: boolean) => void;
+  performCheckout: (customerInfo?: {
+    name?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    paymentMethod?: string;
+    paymentStatus?: 'Paid' | 'Pending Payment';
+    notes?: string;
+  }) => Promise<void>;
   resetCheckout: () => void;
   addOrder: (order: OrderRecord) => void;
 }
@@ -189,6 +201,33 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setDiscountError(null);
   };
 
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
+
+  // Sync orders with backend database every 2.5s
+  useEffect(() => {
+    let isMounted = true;
+    const fetchBackendOrders = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/orders');
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && isMounted) {
+            setOrders(data);
+          }
+        }
+      } catch {
+        // backend might be offline or starting
+      }
+    };
+
+    fetchBackendOrders();
+    const interval = setInterval(fetchBackendOrders, 2500);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
+
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const discount = Math.round(subtotal * discountPercent);
@@ -198,36 +237,82 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const finalTotal = Math.max(0, subtotal - discount + shipping);
 
   const addOrder = (order: OrderRecord) => {
-    setOrders((prev) => [order, ...prev]);
+    setOrders((prev) => [order, ...prev.filter((o) => o.id !== order.id)]);
   };
 
-  const performCheckout = async (customerInfo?: { name: string; email: string }) => {
+  const performCheckout = async (customerInfo?: {
+    name?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    paymentMethod?: string;
+    paymentStatus?: 'Paid' | 'Pending Payment';
+    notes?: string;
+  }) => {
     setIsCheckingOut(true);
-    await new Promise((res) => setTimeout(res, 1200));
-    setIsCheckingOut(false);
-    setCheckoutSuccess(true);
 
-    const orderNum = 'KS-2026-' + Math.floor(10000 + Math.random() * 90000);
+    const orderNum = 'ORD_' + Math.floor(10000 + Math.random() * 90000);
     setLastOrderId(orderNum);
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const monthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
     // Create persistent OrderRecord
     const newOrder: OrderRecord = {
       id: orderNum,
       customerName: customerInfo?.name || 'Verified Art Patron',
       customerEmail: customerInfo?.email || 'collector@kuldeepsingh.art',
-      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      customerPhone: customerInfo?.phone || '+91 98000 00000',
+      customerCity: customerInfo?.city || 'India',
+      customerState: customerInfo?.state || '',
+      date: dateStr,
+      orderTime: timeStr,
+      orderMonth: monthStr,
       items: [...cart],
       subtotal,
       discount,
       shipping,
       totalAmount: finalTotal,
-      paymentMethod: 'Demo Razorpay / UPI Express',
-      paymentStatus: 'Paid',
-      orderStatus: hasPhysicalArt ? 'In Transit' : 'Course Active & Unlocked',
-      deliveryAddress: hasPhysicalArt ? 'Standard Fine Art Insured Crating' : undefined,
+      paymentMethod: customerInfo?.paymentMethod || 'Online Payment (Demo Gateway)',
+      paymentStatus: customerInfo?.paymentStatus || 'Paid',
+      orderStatus: hasPhysicalArt ? 'Fine Art Packing' : 'Course Active & Unlocked',
+      deliveryAddress: customerInfo?.address || (hasPhysicalArt ? 'Standard Fine Art Insured Crating' : undefined),
+      currentStep: 1,
+      stepStatus: 'placed',
+      notes: customerInfo?.notes || '',
+      stepTimestamps: {
+        placed: `${timeStr}, ${dateStr}`
+      }
     };
 
-    addOrder(newOrder);
+    // Save to 24/7 backend database
+    try {
+      const res = await fetch('http://localhost:5000/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newOrder)
+      });
+      if (res.ok) {
+        const savedData = await res.json();
+        if (savedData.order) {
+          addOrder(savedData.order);
+        } else {
+          addOrder(newOrder);
+        }
+      } else {
+        addOrder(newOrder);
+      }
+    } catch (e) {
+      console.warn('Backend offline, saved locally:', e);
+      addOrder(newOrder);
+    }
+
+    setIsCheckingOut(false);
+    setCheckoutSuccess(true);
     clearCart();
 
     // Trigger celebration confetti
@@ -246,6 +331,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const resetCheckout = () => {
     setCheckoutSuccess(false);
     setIsCartOpen(false);
+    setIsCheckoutModalOpen(false);
   };
 
   return (
@@ -273,6 +359,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isCheckingOut,
         checkoutSuccess,
         lastOrderId,
+        isCheckoutModalOpen,
+        setIsCheckoutModalOpen,
         performCheckout,
         resetCheckout,
         addOrder,

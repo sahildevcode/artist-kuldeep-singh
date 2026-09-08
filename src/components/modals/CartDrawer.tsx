@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight, CheckCircle2, ShieldCheck, Truck } from 'lucide-react';
+import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight, CheckCircle2, ShieldCheck, Truck, Lock } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import { MagneticButton } from '../ui/MagneticButton';
 
 export const CartDrawer: React.FC = () => {
@@ -22,11 +23,20 @@ export const CartDrawer: React.FC = () => {
     checkoutSuccess,
     lastOrderId,
     setIsOrderHistoryOpen,
-    performCheckout,
     resetCheckout,
+    setIsCheckoutModalOpen,
   } = useCart();
 
+  const { currentUser, setIsAuthModalOpen } = useAuth();
   const [inputCode, setInputCode] = useState('');
+
+  const handleProceedToCheckout = () => {
+    if (!currentUser) {
+      setIsAuthModalOpen(true);
+    } else {
+      setIsCheckoutModalOpen(true);
+    }
+  };
 
   if (!isCartOpen) return null;
 
@@ -261,19 +271,20 @@ export const CartDrawer: React.FC = () => {
               </div>
 
               <MagneticButton
-                onClick={() => performCheckout()}
+                onClick={handleProceedToCheckout}
                 disabled={isCheckingOut}
                 variant="primary"
-                className="w-full py-3.5 flex items-center justify-center gap-2"
+                className="w-full py-3.5 flex items-center justify-center gap-2 cursor-pointer"
               >
-                {isCheckingOut ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                    <span>Securing Collector Record...</span>
-                  </div>
+                {!currentUser ? (
+                  <>
+                    <Lock className="w-4 h-4 text-white/80" />
+                    <span>Login & Proceed to Checkout</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
                 ) : (
                   <>
-                    <span>Proceed to Secure Checkout</span>
+                    <span>Proceed to Delivery & Payment</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}

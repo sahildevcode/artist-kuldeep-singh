@@ -120,21 +120,40 @@ export interface UserProfile {
   enrolledCourseIds?: string[];
 }
 
+export type OrderPipelineStep = 1 | 2 | 3 | 4;
+export type OrderPipelineStatus = 'placed' | 'accepted' | 'dispatched' | 'delivered';
+
 export interface OrderRecord {
   id: string;
   userId?: string;
   customerName: string;
   customerEmail: string;
+  customerPhone?: string;
+  customerCity?: string;
+  customerState?: string;
   date: string;
+  orderTime?: string;
+  orderMonth?: string;
   items: CartItem[];
   subtotal: number;
   discount: number;
   shipping: number;
   totalAmount: number;
   paymentMethod: string;
-  paymentStatus: 'Paid' | 'Processing';
-  orderStatus: 'Delivered' | 'In Transit' | 'Course Active & Unlocked';
+  paymentStatus: 'Paid' | 'Processing' | 'Pending Payment' | 'Failed' | 'Refunded';
+  orderStatus: string;
   deliveryAddress?: string;
+  trackingNumber?: string;
+  carrierName?: string;
+  notes?: string;
+  currentStep?: OrderPipelineStep;
+  stepStatus?: OrderPipelineStatus;
+  stepTimestamps?: {
+    placed?: string;
+    accepted?: string;
+    dispatched?: string;
+    delivered?: string;
+  };
 }
 
 export interface ArtistProfile {
