@@ -203,12 +203,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
 
+const BACKEND_API_BASE = 'https://kuldeep-singh-backend.onrender.com/api/orders';
+
   // Sync orders with backend database every 2.5s
   useEffect(() => {
     let isMounted = true;
     const fetchBackendOrders = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/orders');
+        const res = await fetch(BACKEND_API_BASE);
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data) && isMounted) {
@@ -291,7 +293,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Save to 24/7 backend database
     try {
-      const res = await fetch('http://localhost:5000/api/orders', {
+      const res = await fetch(BACKEND_API_BASE, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newOrder)
