@@ -213,6 +213,41 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   }, [students]);
 
+  // Real-Time 24/7 Cloud Backend Synchronization for Artworks
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchCloudArtworks = async () => {
+      try {
+        const res = await fetch('https://kuldeep-singh-backend.onrender.com/api/artworks');
+        if (res.ok) {
+          const cloudArtworks: Artwork[] = await res.json();
+          if (Array.isArray(cloudArtworks) && cloudArtworks.length > 0 && isMounted) {
+            setArtworks(cloudArtworks);
+          }
+        }
+      } catch (err) {
+        console.warn('Could not fetch artworks from cloud backend, using cached artworks:', err);
+      }
+    };
+
+    fetchCloudArtworks();
+
+    // Poll every 4 seconds so newly added paintings appear dynamically
+    const interval = setInterval(fetchCloudArtworks, 4000);
+
+    const onFocus = () => {
+      fetchCloudArtworks();
+    };
+    window.addEventListener('focus', onFocus);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+      window.removeEventListener('focus', onFocus);
+    };
+  }, []);
+
   // Sync to LocalStorage
   useEffect(() => {
     try {
@@ -246,19 +281,44 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   }, [timeline]);
 
-  // Painting Handlers
-  const addArtwork = (artwork: Artwork) => {
+  // Painting Handlers (Local Optimistic + Instant 24/7 Cloud Sync)
+  const addArtwork = async (artwork: Artwork) => {
     setArtworks((prev) => [artwork, ...prev]);
+    try {
+      await fetch('https://kuldeep-singh-backend.onrender.com/api/artworks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(artwork)
+      });
+    } catch (err) {
+      console.error('Error syncing new artwork to cloud database:', err);
+    }
   };
 
-  const updateArtwork = (id: string, updates: Partial<Artwork>) => {
+  const updateArtwork = async (id: string, updates: Partial<Artwork>) => {
     setArtworks((prev) =>
       prev.map((item) => (item.id === id ? { ...item, ...updates } : item))
     );
+    try {
+      await fetch(`https://kuldeep-singh-backend.onrender.com/api/artworks/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates)
+      });
+    } catch (err) {
+      console.error('Error updating artwork in cloud database:', err);
+    }
   };
 
-  const deleteArtwork = (id: string) => {
+  const deleteArtwork = async (id: string) => {
     setArtworks((prev) => prev.filter((item) => item.id !== id));
+    try {
+      await fetch(`https://kuldeep-singh-backend.onrender.com/api/artworks/${id}`, {
+        method: 'DELETE'
+      });
+    } catch (err) {
+      console.error('Error deleting artwork from cloud database:', err);
+    }
   };
 
   // Course Handlers
