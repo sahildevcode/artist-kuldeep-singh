@@ -19,18 +19,22 @@ import { AboutPage } from './pages/AboutPage';
 import { CoursesPage } from './pages/CoursesPage';
 import { CourseDetailPage } from './pages/CourseDetailPage';
 import { StorePage } from './pages/StorePage';
+import { StudentPortalPage } from './pages/StudentPortalPage';
 import type { Artwork, Course } from './types';
 
 const AppInner: React.FC = () => {
-  const getInitialPage = (): 'home' | 'about' | 'courses' | 'store' | 'course-detail' => {
+  const getInitialPage = (): 'home' | 'about' | 'courses' | 'store' | 'course-detail' | 'student-portal' => {
+    const path = window.location.pathname.toLowerCase();
     const hash = window.location.hash.replace('#', '').toLowerCase();
-    if (hash === 'about') return 'about';
-    if (hash === 'courses') return 'courses';
-    if (hash === 'store') return 'store';
+
+    if (path.includes('student-portal') || hash.includes('student-portal')) return 'student-portal';
+    if (path.includes('about') || hash === 'about') return 'about';
+    if (path.includes('courses') || hash === 'courses') return 'courses';
+    if (path.includes('store') || hash === 'store') return 'store';
     return 'home';
   };
 
-  const [activePage, setActivePage] = useState<'home' | 'about' | 'courses' | 'store' | 'course-detail'>(getInitialPage);
+  const [activePage, setActivePage] = useState<'home' | 'about' | 'courses' | 'store' | 'course-detail' | 'student-portal'>(getInitialPage);
   const [showSplash, setShowSplash] = useState(true);
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
@@ -39,20 +43,33 @@ const AppInner: React.FC = () => {
   const { isCheckoutModalOpen, setIsCheckoutModalOpen } = useCart();
 
   useEffect(() => {
-    const handleHashChange = () => {
+    const handleNavigation = () => {
+      const path = window.location.pathname.toLowerCase();
       const hash = window.location.hash.replace('#', '').toLowerCase();
-      if (['about', 'courses', 'store', 'home'].includes(hash)) {
-        setActivePage(hash as any);
-      } else if (!hash) {
+
+      if (path.includes('student-portal') || hash.includes('student-portal')) {
+        setActivePage('student-portal');
+      } else if (path.includes('about') || hash === 'about') {
+        setActivePage('about');
+      } else if (path.includes('courses') || hash === 'courses') {
+        setActivePage('courses');
+      } else if (path.includes('store') || hash === 'store') {
+        setActivePage('store');
+      } else if (!hash || hash === 'home') {
         setActivePage('home');
       }
     };
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+
+    window.addEventListener('hashchange', handleNavigation);
+    window.addEventListener('popstate', handleNavigation);
+    return () => {
+      window.removeEventListener('hashchange', handleNavigation);
+      window.removeEventListener('popstate', handleNavigation);
+    };
   }, []);
 
   // Scroll to top on page switch and sync URL hash
-  const handlePageChange = (page: 'home' | 'about' | 'courses' | 'store' | 'course-detail') => {
+  const handlePageChange = (page: 'home' | 'about' | 'courses' | 'store' | 'course-detail' | 'student-portal') => {
     setActivePage(page);
     window.location.hash = page === 'home' ? '' : page;
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -110,6 +127,9 @@ const AppInner: React.FC = () => {
           <StorePage
             onSelectArtwork={(art) => setSelectedArtwork(art)}
           />
+        )}
+        {activePage === 'student-portal' && (
+          <StudentPortalPage setActivePage={handlePageChange} />
         )}
       </main>
 

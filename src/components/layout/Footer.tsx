@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ArrowUpRight, Check, MapPin, Sparkles } from 'lucide-react';
 
 interface FooterProps {
-  setActivePage: (page: 'home' | 'about' | 'courses' | 'store') => void;
+  setActivePage: (page: 'home' | 'about' | 'courses' | 'store' | 'student-portal') => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
@@ -98,6 +98,18 @@ export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
                   className="hover:text-white transition-colors flex items-center gap-1 group"
                 >
                   Original Artworks Store
+                  <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => {
+                    setActivePage('student-portal');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="hover:text-white text-artisan-gold font-semibold transition-colors flex items-center gap-1 group"
+                >
+                  🎓 Student Learning Portal (LMS)
                   <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </button>
               </li>

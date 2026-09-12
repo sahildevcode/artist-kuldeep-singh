@@ -4,8 +4,8 @@ import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 
 interface NavbarProps {
-  activePage: 'home' | 'about' | 'courses' | 'store';
-  setActivePage: (page: 'home' | 'about' | 'courses' | 'store') => void;
+  activePage: 'home' | 'about' | 'courses' | 'store' | 'student-portal';
+  setActivePage: (page: 'home' | 'about' | 'courses' | 'store' | 'student-portal') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => {
@@ -23,11 +23,12 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks: { id: 'home' | 'about' | 'courses' | 'store'; label: string; icon: React.ReactNode }[] = [
+  const navLinks: { id: 'home' | 'about' | 'courses' | 'store' | 'student-portal'; label: string; icon: React.ReactNode }[] = [
     { id: 'home', label: 'Home', icon: <Compass className="w-3.5 h-3.5" /> },
     { id: 'about', label: 'About & 12Y Legacy', icon: <Award className="w-3.5 h-3.5" /> },
     { id: 'courses', label: 'Masterclasses', icon: <BookOpen className="w-3.5 h-3.5" /> },
     { id: 'store', label: 'Gallery Store', icon: <ImageIcon className="w-3.5 h-3.5" /> },
+    { id: 'student-portal', label: 'Student Portal', icon: <Sparkles className="w-3.5 h-3.5 text-artisan-gold" /> }
   ];
 
   return (
@@ -168,6 +169,18 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                           Enrolled Courses
                           <span className="text-[10px] bg-stone-200 px-1.5 py-0.5 rounded-full">
                             {currentUser.enrolledCoursesCount || 0}
+                          </span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setActivePage('student-portal');
+                            setIsUserMenuOpen(false);
+                          }}
+                          className="w-full text-left px-3 py-2 text-xs font-semibold text-artisan-gold hover:bg-stone-100 rounded-lg flex items-center justify-between"
+                        >
+                          <span>🎓 Student Portal (LMS)</span>
+                          <span className="text-[10px] bg-artisan-gold/20 text-stone-800 font-bold px-1.5 py-0.5 rounded-full">
+                            Active
                           </span>
                         </button>
                       </div>
