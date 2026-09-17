@@ -213,31 +213,50 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   }, [students]);
 
-  // Real-Time 24/7 Cloud Backend Synchronization for Artworks
+  // Real-Time 24/7 Cloud Backend Synchronization (Artworks, Courses, Lectures & Live Broadcast)
   useEffect(() => {
     let isMounted = true;
 
-    const fetchCloudArtworks = async () => {
+    const fetchAllCloudData = async () => {
       try {
-        const res = await fetch('https://kuldeep-singh-backend.onrender.com/api/artworks');
-        if (res.ok) {
-          const cloudArtworks: Artwork[] = await res.json();
+        // 1. Artworks
+        const artRes = await fetch('https://kuldeep-singh-backend.onrender.com/api/artworks');
+        if (artRes.ok) {
+          const cloudArtworks: Artwork[] = await artRes.json();
           if (Array.isArray(cloudArtworks) && cloudArtworks.length > 0 && isMounted) {
             setArtworks(cloudArtworks);
           }
         }
+
+        // 2. Courses, Lectures & Live Status
+        const courseRes = await fetch('https://kuldeep-singh-backend.onrender.com/api/courses');
+        if (courseRes.ok) {
+          const cloudCourses: Course[] = await courseRes.json();
+          if (Array.isArray(cloudCourses) && cloudCourses.length > 0 && isMounted) {
+            setCourses(normalizeCourses(cloudCourses));
+          }
+        }
+
+        // 3. Students
+        const stuRes = await fetch('https://kuldeep-singh-backend.onrender.com/api/students');
+        if (stuRes.ok) {
+          const cloudStudents: EnrolledStudent[] = await stuRes.json();
+          if (Array.isArray(cloudStudents) && cloudStudents.length > 0 && isMounted) {
+            setStudents(cloudStudents);
+          }
+        }
       } catch (err) {
-        console.warn('Could not fetch artworks from cloud backend, using cached artworks:', err);
+        console.warn('Could not fetch data from cloud backend, using cached data:', err);
       }
     };
 
-    fetchCloudArtworks();
+    fetchAllCloudData();
 
-    // Poll every 4 seconds so newly added paintings appear dynamically
-    const interval = setInterval(fetchCloudArtworks, 4000);
+    // Poll every 3 seconds so Live class alerts and new lectures appear in real-time
+    const interval = setInterval(fetchAllCloudData, 3000);
 
     const onFocus = () => {
-      fetchCloudArtworks();
+      fetchAllCloudData();
     };
     window.addEventListener('focus', onFocus);
 
