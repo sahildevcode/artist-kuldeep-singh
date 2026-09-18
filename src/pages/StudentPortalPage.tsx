@@ -26,7 +26,7 @@ interface StudentPortalPageProps {
 }
 
 export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActivePage }) => {
-  const { courses } = useStudioData();
+  const { courses, liveStatus } = useStudioData();
   const { currentUser, login } = useAuth();
 
   // Selected Enrolled Course (default to first course)
@@ -104,8 +104,8 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
   };
 
   // Google Meet link for live studio
-  const liveMeetUrl = activeCourse?.liveClassUrl || 'https://meet.google.com/ks-studio-atelier';
-  const isClassLive = activeCourse?.liveClassStatus === 'live';
+  const isClassLive = Boolean(liveStatus?.isLive || activeCourse?.liveClassStatus === 'live');
+  const liveMeetUrl = (liveStatus?.isLive ? liveStatus.liveStreamUrl : '') || activeCourse?.liveClassUrl || 'https://meet.google.com/ks-studio-atelier';
 
   return (
     <div className="pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-10">

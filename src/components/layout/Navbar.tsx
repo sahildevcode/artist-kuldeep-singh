@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ShoppingBag, User, Menu, X, Sparkles, LogOut, BookOpen, Image as ImageIcon, Award, Compass } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { useStudioData } from '../../context/StudioDataContext';
 
 interface NavbarProps {
   activePage: 'home' | 'about' | 'courses' | 'store' | 'student-portal';
@@ -11,6 +12,7 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => {
   const { totalItems, setIsCartOpen, orders, setIsOrderHistoryOpen } = useCart();
   const { currentUser, setIsAuthModalOpen, logout } = useAuth();
+  const { liveStatus } = useStudioData();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -36,11 +38,52 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
       <header
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
           isScrolled
-            ? 'py-3.5 bg-white/85 backdrop-blur-xl border-b border-black/[0.06] shadow-sm'
-            : 'py-6 bg-transparent'
+            ? 'bg-white/90 backdrop-blur-xl border-b border-black/[0.06] shadow-sm'
+            : 'bg-white/60 backdrop-blur-md border-b border-black/[0.03]'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Real-Time Global Broadcast Alert Banner */}
+        {liveStatus?.isLive && (
+          <div className="bg-gradient-to-r from-red-600 via-rose-700 to-amber-600 text-white px-3 sm:px-6 py-2 shadow-lg border-b border-red-400/40 flex items-center justify-between gap-3 text-xs sm:text-sm font-medium">
+            <div className="flex items-center gap-2.5 truncate">
+              <span className="flex h-3 w-3 relative shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-80"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+              </span>
+              <div className="truncate flex items-center gap-1.5">
+                <span className="bg-white/20 text-white font-extrabold text-[10px] sm:text-xs px-2 py-0.5 rounded-full uppercase tracking-wider border border-white/30 shrink-0">
+                  🔴 ON AIR
+                </span>
+                <span className="font-semibold text-white truncate text-[11px] sm:text-xs">
+                  <span className="hidden sm:inline">Artist Kuldeep Singh is currently streaming live from the Atelier Studio!</span>
+                  <span className="sm:hidden">Kuldeep Singh Live Atelier Class</span>
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <a
+                href={liveStatus.liveStreamUrl || 'https://meet.google.com/ks-studio-atelier'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-white text-red-700 hover:bg-amber-50 font-bold px-3 py-1 rounded-full text-[11px] sm:text-xs transition-transform shadow-md flex items-center gap-1 active:scale-95 cursor-pointer"
+              >
+                <span>Join Google Meet</span>
+                <span className="text-[10px]">↗</span>
+              </a>
+              <button
+                onClick={() => {
+                  setActivePage('student-portal');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="bg-black/35 hover:bg-black/55 text-white px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold border border-white/20 transition hidden md:inline"
+              >
+                Student Portal
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-300 ${isScrolled ? 'py-3' : 'py-3.5 sm:py-4'}`}>
           <div className="flex items-center justify-between">
             {/* Logo */}
             <button
@@ -83,6 +126,12 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                   >
                     {link.icon}
                     {link.label}
+                    {link.id === 'student-portal' && liveStatus?.isLive && (
+                      <span className="flex items-center gap-1 bg-red-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse shadow-sm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
+                        LIVE
+                      </span>
+                    )}
                     {isActive && (
                       <span className="w-1.5 h-1.5 rounded-full bg-artisan-crimson animate-pulse" />
                     )}
@@ -239,7 +288,13 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                   }`}
                 >
                   {link.icon}
-                  {link.label}
+                  <span>{link.label}</span>
+                  {link.id === 'student-portal' && liveStatus?.isLive && (
+                    <span className="ml-auto flex items-center gap-1 bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full uppercase animate-pulse">
+                      <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
+                      LIVE NOW
+                    </span>
+                  )}
                 </button>
               ))}
             </div>

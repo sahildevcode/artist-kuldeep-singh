@@ -67,6 +67,13 @@ export interface Course {
   liveClassStatus?: 'offline' | 'live' | 'scheduled';
 }
 
+export interface LiveBroadcastStatus {
+  isLive: boolean;
+  liveStreamUrl: string;
+  topic?: string;
+  updatedAt?: string;
+}
+
 export interface AchievementTimelineItem {
   year: string;
   title: string;

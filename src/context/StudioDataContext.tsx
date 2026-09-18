@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { Artwork, Course, CourseModule, CourseLecture, ArtistProfile, AchievementTimelineItem, Award, EnrolledStudent } from '../types';
+import type { Artwork, Course, CourseModule, CourseLecture, ArtistProfile, AchievementTimelineItem, Award, EnrolledStudent, LiveBroadcastStatus } from '../types';
 import { ARTWORKS } from '../data/artworks';
 import { COURSES } from '../data/courses';
 import { TIMELINE, AWARDS } from '../data/achievements';
@@ -93,6 +93,7 @@ interface StudioDataContextType {
   artistProfile: ArtistProfile;
   timeline: AchievementTimelineItem[];
   awards: Award[];
+  liveStatus: LiveBroadcastStatus;
   // Paintings CRUD
   addArtwork: (artwork: Artwork) => void;
   updateArtwork: (id: string, updates: Partial<Artwork>) => void;
@@ -213,6 +214,34 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   }, [students]);
 
+  // 7. Live Studio Broadcast State
+  const [liveStatus, setLiveStatus] = useState<LiveBroadcastStatus>(() => {
+    try {
+      const saved = localStorage.getItem('kuldeep_studio_live_status');
+      return saved
+        ? JSON.parse(saved)
+        : {
+            isLive: false,
+            liveStreamUrl: 'https://meet.google.com/ks-studio-atelier',
+            topic: 'Masterclass Live Studio Broadcast • Atelier Demonstration'
+          };
+    } catch {
+      return {
+        isLive: false,
+        liveStreamUrl: 'https://meet.google.com/ks-studio-atelier',
+        topic: 'Masterclass Live Studio Broadcast • Atelier Demonstration'
+      };
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('kuldeep_studio_live_status', JSON.stringify(liveStatus));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [liveStatus]);
+
   // Real-Time 24/7 Cloud Backend Synchronization (Artworks, Courses, Lectures & Live Broadcast)
   useEffect(() => {
     let isMounted = true;
@@ -243,6 +272,20 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           const cloudStudents: EnrolledStudent[] = await stuRes.json();
           if (Array.isArray(cloudStudents) && cloudStudents.length > 0 && isMounted) {
             setStudents(cloudStudents);
+          }
+        }
+
+        // 4. Live Broadcast Status
+        const liveRes = await fetch('https://kuldeep-singh-backend.onrender.com/api/live');
+        if (liveRes.ok) {
+          const cloudLive = await liveRes.json();
+          if (cloudLive && isMounted) {
+            setLiveStatus({
+              isLive: Boolean(cloudLive.isLive),
+              liveStreamUrl: cloudLive.liveStreamUrl || 'https://meet.google.com/ks-studio-atelier',
+              topic: cloudLive.topic || 'Masterclass Live Studio Broadcast • Atelier Demonstration',
+              updatedAt: cloudLive.updatedAt
+            });
           }
         }
       } catch (err) {
@@ -507,6 +550,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         artistProfile,
         timeline,
         awards,
+        liveStatus,
         addArtwork,
         updateArtwork,
         deleteArtwork,
