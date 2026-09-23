@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   BookOpen,
   Video,
@@ -14,11 +14,14 @@ import {
   X,
   FileText,
   Volume2,
-  Tv
+  Tv,
+  Lock,
+  ShieldCheck,
+  Sparkles
 } from 'lucide-react';
 import { useStudioData } from '../context/StudioDataContext';
 import { useAuth } from '../context/AuthContext';
-import type { CourseLecture } from '../types';
+import type { CourseLecture, EnrolledStudent } from '../types';
 import confetti from 'canvas-confetti';
 
 interface StudentPortalPageProps {
@@ -26,12 +29,60 @@ interface StudentPortalPageProps {
 }
 
 export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActivePage }) => {
-  const { courses, liveStatus } = useStudioData();
-  const { currentUser, login } = useAuth();
+  const { courses, liveStatus, students, addStudent } = useStudioData();
+  const { currentUser, login, isCourseUnlocked, unlockCourse } = useAuth();
 
   // Selected Enrolled Course (default to first course)
   const [selectedCourseId, setSelectedCourseId] = useState<string>(courses[0]?.id || 'course-oil-mastery');
   const activeCourse = courses.find((c) => c.id === selectedCourseId) || courses[0];
+
+  // Enrollment Verification
+  const isEnrolled = useMemo(() => {
+    if (!activeCourse) return false;
+    if (isCourseUnlocked(activeCourse.id)) return true;
+    if (currentUser?.email === 'student@kuldeepsingh.art' && activeCourse.id === 'course-oil-mastery') return true;
+    if (currentUser?.email === 'aarav.sharma@gmail.com') return true;
+    if (currentUser?.email) {
+      return students.some(
+        (s) => s.courseId === activeCourse.id && s.email.toLowerCase() === currentUser.email.toLowerCase()
+      );
+    }
+    return false;
+  }, [activeCourse, currentUser, students, isCourseUnlocked]);
+
+  const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
+  const [enrollName, setEnrollName] = useState(currentUser?.name || '');
+  const [enrollEmail, setEnrollEmail] = useState(currentUser?.email || '');
+
+  const handleDemoEnroll = (customEmail?: string, customName?: string) => {
+    if (!activeCourse) return;
+    const targetEmail = customEmail?.trim() || currentUser?.email || 'demo.student@kuldeepsingh.art';
+    const targetName = customName?.trim() || currentUser?.name || 'Enrolled Scholar';
+
+    if (!currentUser) {
+      login(targetEmail, targetName, 'student');
+    }
+    unlockCourse(activeCourse.id);
+    const newEnrolledStudent: EnrolledStudent = {
+      id: 'stu-' + Date.now(),
+      name: targetName,
+      email: targetEmail,
+      courseId: activeCourse.id,
+      courseTitle: activeCourse.title,
+      batchSchedule: activeCourse.schedule || 'Weekend Intensive Batch',
+      enrolledDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+      feesPaid: activeCourse.price,
+      paymentStatus: 'Paid',
+      progressPercent: 0
+    };
+    addStudent(newEnrolledStudent);
+    setIsEnrollModalOpen(false);
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  };
 
   // Active Lecture Streaming Modal
   const [streamingLecture, setStreamingLecture] = useState<CourseLecture | null>(null);
@@ -291,17 +342,41 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
               <div className="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-100">
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-artisan-crimson tracking-wider">
-                      {activeCourse.category} • {activeCourse.durationMonths}
-                    </span>
+                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                      <span className="text-[10px] uppercase font-bold text-artisan-crimson tracking-wider">
+                        {activeCourse.category} • {activeCourse.durationMonths}
+                      </span>
+                      {isEnrolled ? (
+                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold flex items-center gap-1">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                          <span>Enrolled & Unlocked</span>
+                        </span>
+                      ) : (
+                        <span className="px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-bold flex items-center gap-1">
+                          <Lock className="w-3 h-3 text-amber-600" />
+                          <span>Locked • Not Enrolled</span>
+                        </span>
+                      )}
+                    </div>
                     <h3 className="font-serif text-xl font-bold text-stone-900 mt-0.5">
                       {activeCourse.title}
                     </h3>
                   </div>
 
-                  <div className="text-right">
-                    <span className="text-xs font-bold text-stone-800">Batch Schedule</span>
-                    <p className="text-xs text-stone-500">{activeCourse.schedule}</p>
+                  <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2">
+                    <div className="text-left sm:text-right">
+                      <span className="text-xs font-bold text-stone-800">Batch Schedule</span>
+                      <p className="text-xs text-stone-500">{activeCourse.schedule}</p>
+                    </div>
+                    {!isEnrolled && (
+                      <button
+                        onClick={() => setIsEnrollModalOpen(true)}
+                        className="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-artisan-crimson to-artisan-ochre text-white text-xs font-bold shadow-md hover:brightness-105 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>Enroll to Unlock (${activeCourse.price})</span>
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -377,13 +452,23 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
                               </div>
 
                               <div className="flex items-center gap-2 self-end sm:self-auto">
-                                <button
-                                  onClick={() => setStreamingLecture(lec)}
-                                  className="px-4 py-2 rounded-xl text-xs font-bold bg-[#1A1816] text-white hover:bg-black transition-transform active:scale-95 shadow-sm flex items-center gap-1.5"
-                                >
-                                  <Play className="w-3.5 h-3.5 fill-white" />
-                                  <span>Watch Video</span>
-                                </button>
+                                {isEnrolled ? (
+                                  <button
+                                    onClick={() => setStreamingLecture(lec)}
+                                    className="px-4 py-2 rounded-xl text-xs font-bold bg-[#1A1816] text-white hover:bg-black transition-transform active:scale-95 shadow-sm flex items-center gap-1.5 cursor-pointer"
+                                  >
+                                    <Play className="w-3.5 h-3.5 fill-white" />
+                                    <span>Watch Video</span>
+                                  </button>
+                                ) : (
+                                  <button
+                                    onClick={() => setIsEnrollModalOpen(true)}
+                                    className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-500/10 text-amber-800 hover:bg-amber-500 hover:text-white border border-amber-500/30 transition-all flex items-center gap-1.5 cursor-pointer"
+                                  >
+                                    <Lock className="w-3.5 h-3.5" />
+                                    <span>Locked (Enroll)</span>
+                                  </button>
+                                )}
                               </div>
                             </div>
                           );
@@ -408,20 +493,29 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
                                   {topic}
                                 </span>
                               </div>
-                              <button
-                                onClick={() =>
-                                  setStreamingLecture({
-                                    id: fakeId,
-                                    title: topic,
-                                    duration: '50 Mins',
-                                    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-                                    summary: `Comprehensive masterclass demonstration covering ${topic} by Artist Kuldeep Singh.`
-                                  })
-                                }
-                                className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-stone-900 text-white flex items-center gap-1"
-                              >
-                                <Play className="w-3 h-3 fill-white" /> Watch
-                              </button>
+                              {isEnrolled ? (
+                                <button
+                                  onClick={() =>
+                                    setStreamingLecture({
+                                      id: fakeId,
+                                      title: topic,
+                                      duration: '50 Mins',
+                                      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+                                      summary: `Comprehensive masterclass demonstration covering ${topic} by Artist Kuldeep Singh.`
+                                    })
+                                  }
+                                  className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-stone-900 text-white flex items-center gap-1 cursor-pointer"
+                                >
+                                  <Play className="w-3 h-3 fill-white" /> Watch
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => setIsEnrollModalOpen(true)}
+                                  className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1 cursor-pointer"
+                                >
+                                  <Lock className="w-3 h-3" /> Locked
+                                </button>
+                              )}
                             </div>
                           );
                         })
@@ -615,10 +709,37 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
             </div>
 
             {/* Video Player */}
-            <div className="relative aspect-video rounded-2xl overflow-hidden bg-stone-950 border border-stone-800 shadow-inner">
+            <div className="relative aspect-video rounded-2xl overflow-hidden bg-stone-950 border border-stone-800 shadow-inner flex items-center justify-center">
               {streamingLecture.videoUrl?.includes('youtube') || streamingLecture.videoUrl?.includes('youtu.be') ? (
                 <iframe
-                  src={streamingLecture.videoUrl.replace('watch?v=', 'embed/')}
+                  src={
+                    streamingLecture.videoUrl.includes('watch?v=')
+                      ? streamingLecture.videoUrl.replace('watch?v=', 'embed/')
+                      : streamingLecture.videoUrl.includes('youtu.be/')
+                      ? streamingLecture.videoUrl.replace('youtu.be/', 'www.youtube.com/embed/')
+                      : streamingLecture.videoUrl
+                  }
+                  title={streamingLecture.title}
+                  className="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : streamingLecture.videoUrl?.match(/\.(mp4|webm|ogg)($|\?)/i) ||
+                streamingLecture.videoUrl?.includes('r2.dev') ||
+                streamingLecture.videoUrl?.includes('cloudflare') ||
+                streamingLecture.videoUrl?.includes('s3') ? (
+                <video
+                  src={streamingLecture.videoUrl}
+                  controls
+                  controlsList="nodownload"
+                  className="w-full h-full object-contain bg-black"
+                  autoPlay
+                >
+                  Your browser does not support HTML5 video streaming.
+                </video>
+              ) : streamingLecture.videoUrl?.startsWith('http') ? (
+                <iframe
+                  src={streamingLecture.videoUrl}
                   title={streamingLecture.title}
                   className="w-full h-full border-0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -633,7 +754,7 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
                     Streaming Master Demonstration: {streamingLecture.title}
                   </p>
                   <p className="text-xs text-stone-400 font-mono">
-                    Stream URL: {streamingLecture.videoUrl}
+                    Stream URL: {streamingLecture.videoUrl || 'No URL specified'}
                   </p>
                   <p className="text-[11px] text-stone-500 max-w-md">
                     * Ultra-secure player. Screen recording, unauthorized sharing, and video downloads are strictly disabled.
@@ -722,6 +843,107 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
               >
                 <Download className="w-4 h-4" /> Print / Save Diploma PDF
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 6. DEMO ENROLLMENT & ACCESS MODAL */}
+      {isEnrollModalOpen && activeCourse && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
+          <div className="relative w-full max-w-lg bg-stone-900 text-stone-100 rounded-3xl border border-artisan-gold/40 shadow-2xl p-6 sm:p-8 space-y-6">
+            <button
+              onClick={() => setIsEnrollModalOpen(false)}
+              className="absolute top-4 right-4 p-2 rounded-full text-stone-400 hover:text-white hover:bg-stone-800 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 border-b border-stone-800 pb-4">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center">
+                <Lock className="w-6 h-6" />
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-amber-400 tracking-wider block">
+                  Course Access Control
+                </span>
+                <h3 className="font-serif text-xl font-bold text-white">
+                  Unlock Full Masterclass
+                </h3>
+              </div>
+            </div>
+
+            {/* Course Summary Card */}
+            <div className="p-4 rounded-2xl bg-stone-950 border border-stone-800 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-stone-400 uppercase tracking-wider font-semibold">Selected Curriculum</span>
+                <span className="px-2.5 py-0.5 rounded-full bg-artisan-crimson/20 text-artisan-crimson text-xs font-bold">
+                  ₹{activeCourse.price.toLocaleString()} / ${(activeCourse.price / 83).toFixed(0)}
+                </span>
+              </div>
+              <h4 className="font-serif font-bold text-stone-100 text-base">
+                {activeCourse.title}
+              </h4>
+              <p className="text-xs text-stone-400">
+                Includes all video lectures, downloadable guides, live Q&A rooms, and Master Diploma.
+              </p>
+            </div>
+
+            {/* Test Simulation Notice */}
+            <div className="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-200 text-xs space-y-1">
+              <div className="flex items-center gap-1.5 font-bold text-emerald-400">
+                <ShieldCheck className="w-4 h-4" />
+                <span>Simulated / Test Gateway Active</span>
+              </div>
+              <p className="text-[11px] text-emerald-300/80 leading-relaxed">
+                Testing ke liye real Razorpay bank account ki zaroorat nahi hai. Neeche diye button par click karke aap instantly course unlock aur video playback test kar sakte hain.
+              </p>
+            </div>
+
+            {/* Form & Actions */}
+            <div className="space-y-4">
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs font-semibold text-stone-300 block mb-1">
+                    Student Full Name
+                  </label>
+                  <input
+                    type="text"
+                    value={enrollName}
+                    onChange={(e) => setEnrollName(e.target.value)}
+                    placeholder="e.g. Aarav Sharma"
+                    className="w-full px-4 py-2.5 rounded-xl bg-stone-950 border border-stone-700 text-white text-xs focus:outline-none focus:border-amber-400"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-stone-300 block mb-1">
+                    Student Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={enrollEmail}
+                    onChange={(e) => setEnrollEmail(e.target.value)}
+                    placeholder="e.g. student@kuldeepsingh.art"
+                    className="w-full px-4 py-2.5 rounded-xl bg-stone-950 border border-stone-700 text-white text-xs focus:outline-none focus:border-amber-400"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2 pt-2">
+                <button
+                  onClick={() => handleDemoEnroll(enrollEmail, enrollName)}
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-bold text-xs tracking-wide shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Sparkles className="w-4 h-4 text-stone-950" />
+                  <span>Simulate Instant Payment & Unlock (₹0 Test)</span>
+                </button>
+                <button
+                  onClick={() => setIsEnrollModalOpen(false)}
+                  className="w-full py-2.5 rounded-xl text-stone-400 hover:text-white text-xs transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>
