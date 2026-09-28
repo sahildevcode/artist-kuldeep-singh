@@ -1,14 +1,10 @@
-﻿@tailwind base;
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   * {
     border-color: rgba(26, 24, 22, 0.08);
-  }
-  
-  html {
-    scroll-behavior: smooth;
   }
   
   body {
@@ -34,6 +30,10 @@
 }
 
 /* Glassmorphic utilities */
+.font-signature {
+  font-family: 'Great Vibes', 'Alex Brush', 'Pinyon Script', cursive;
+}
+
 .glass-panel {
   background: rgba(255, 255, 255, 0.78);
   backdrop-filter: blur(16px);
@@ -77,6 +77,8 @@
   width: 100vw;
   height: 100vh;
   z-index: 1;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 #paint-trail-container {

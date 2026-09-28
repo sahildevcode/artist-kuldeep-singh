@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { audioEngine } from '../../utils/audioEngine';
 
 interface Particle {
   x: number;
@@ -82,6 +83,7 @@ export const PaintTrailCanvas: React.FC = () => {
       }
     };
 
+    let lastBrushSoundTime = 0;
     const handlePointerMove = (e: PointerEvent) => {
       const x = e.clientX;
       const y = e.clientY;
@@ -92,6 +94,11 @@ export const PaintTrailCanvas: React.FC = () => {
 
       lastX = x;
       lastY = y;
+
+      if (speed > 24 && Date.now() - lastBrushSoundTime > 350) {
+        lastBrushSoundTime = Date.now();
+        audioEngine.playBrushStroke();
+      }
 
       spawnParticles(x, y, speed);
     };
@@ -122,19 +129,15 @@ export const PaintTrailCanvas: React.FC = () => {
           continue;
         }
 
-        ctx.save();
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fillStyle = `${p.color}${Math.max(0, p.alpha)})`;
-        ctx.shadowColor = `${p.color}0.4)`;
-        ctx.shadowBlur = 8;
         ctx.fill();
-        ctx.restore();
       }
 
-      // Limit particle array size for rock-solid 60 FPS
-      if (particles.length > 180) {
-        particles.splice(0, particles.length - 180);
+      // Limit particle array size for rock-solid 120 FPS
+      if (particles.length > 60) {
+        particles.splice(0, particles.length - 60);
       }
     };
 

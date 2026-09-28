@@ -313,6 +313,32 @@ const BACKEND_API_BASE = 'https://kuldeep-singh-backend.onrender.com/api/orders'
       addOrder(newOrder);
     }
 
+    // If order contains courses, register student enrollments to backend
+    const courseItems = cart.filter((i) => i.type === 'course');
+    for (const cItem of courseItems) {
+      try {
+        await fetch('https://kuldeep-singh-backend.onrender.com/api/students', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: 'stu-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+            name: customerInfo?.name || 'Verified Art Patron',
+            email: customerInfo?.email || 'collector@kuldeepsingh.art',
+            phone: customerInfo?.phone || '',
+            courseId: cItem.id,
+            courseTitle: cItem.title,
+            batchSchedule: 'Live Scheduled Batch',
+            enrolledDate: dateStr,
+            feesPaid: cItem.price,
+            paymentStatus: 'Paid',
+            progressPercent: 0
+          })
+        });
+      } catch (stuErr) {
+        console.error('Failed to register student on checkout:', stuErr);
+      }
+    }
+
     setIsCheckingOut(false);
     setCheckoutSuccess(true);
     clearCart();

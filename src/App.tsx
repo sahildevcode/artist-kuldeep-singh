@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { CartProvider, useCart } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { StudioDataProvider, useStudioData } from './context/StudioDataContext';
+import { AudioProvider } from './context/AudioContext';
 import { ThreeBackground } from './components/3d/ThreeBackground';
+import { ScrollSignatureBackground } from './components/3d/ScrollSignatureBackground';
 import { PaintTrailCanvas } from './components/3d/PaintTrailCanvas';
 import { ClickBubbleBurst } from './components/3d/ClickBubbleBurst';
 import { CustomCursor } from './components/layout/CustomCursor';
 import { IntroSplash } from './components/layout/IntroSplash';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
+import { AtelierAudioPlayer } from './components/layout/AtelierAudioPlayer';
 import { CartDrawer } from './components/modals/CartDrawer';
 import { AuthModal } from './components/modals/AuthModal';
 import { ArtworkModal } from './components/modals/ArtworkModal';
@@ -90,6 +93,9 @@ const AppInner: React.FC = () => {
       {/* 3D WebGL Layer (Interactive Paintbrush & Palette in Background) */}
       <ThreeBackground />
 
+      {/* Dynamic Calligraphy Handwriting Signature Background with Luminous Halo */}
+      <ScrollSignatureBackground />
+
       {/* Real-time Mouse Paint Droplet Trail */}
       <PaintTrailCanvas />
 
@@ -149,10 +155,14 @@ const AppInner: React.FC = () => {
           if (found) handleSelectCourse(found);
         }}
       />
+      {/* Artwork Modal */}
       <ArtworkModal
         artwork={selectedArtwork}
         onClose={() => setSelectedArtwork(null)}
       />
+
+      {/* Floating Atelier Audio & 3D Control Center */}
+      <AtelierAudioPlayer />
     </div>
   );
 };
@@ -162,7 +172,9 @@ export const App: React.FC = () => {
     <StudioDataProvider>
       <AuthProvider>
         <CartProvider>
-          <AppInner />
+          <AudioProvider>
+            <AppInner />
+          </AudioProvider>
         </CartProvider>
       </AuthProvider>
     </StudioDataProvider>

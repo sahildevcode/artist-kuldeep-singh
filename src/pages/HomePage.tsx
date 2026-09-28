@@ -1,10 +1,10 @@
-import React from 'react';
-import { ArrowRight, Sparkles, Star, ShieldCheck, ArrowUpRight, Palette, Eye } from 'lucide-react';
+import { ArrowRight, Sparkles, Star, ShieldCheck, ArrowUpRight, Eye, Volume2, VolumeX } from 'lucide-react';
 import { PRESS_LOGOS, REVIEWS } from '../data/reviews';
 import type { Artwork, Course } from '../types';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { useCart } from '../context/CartContext';
 import { useStudioData } from '../context/StudioDataContext';
+import { useAudio } from '../context/AudioContext';
 
 interface HomePageProps {
   setActivePage: (page: 'home' | 'about' | 'courses' | 'store') => void;
@@ -19,6 +19,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 }) => {
   const { addToCart } = useCart();
   const { artworks, courses, artistProfile } = useStudioData();
+  const { activeTheme3D, isPlaying, isMuted, playClick, setIsSettingsModalOpen } = useAudio();
   const featuredArtworks = artworks.filter((a) => a.featured).slice(0, 4);
   const featuredCourses = courses.slice(0, 3);
 
@@ -34,8 +35,8 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* ------------------------------------------------------------- */}
       {/* 1. HERO SECTION WITH 3D BRUSH SPOTLIGHT */}
       {/* ------------------------------------------------------------- */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 sm:pb-32">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 sm:pb-32 overflow-visible min-h-[580px]">
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-8 space-y-8">
             {/* Top Pill */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-stone-100/90 border border-stone-200/80 backdrop-blur-md text-xs font-semibold text-stone-800 shadow-sm">
@@ -80,14 +81,32 @@ export const HomePage: React.FC<HomePageProps> = ({
               </MagneticButton>
             </div>
 
-            {/* Interactive hint badge */}
-            <div className="pt-4 flex items-center gap-3 text-xs text-stone-500">
-              <div className="p-2 rounded-full bg-white border border-stone-200 shadow-sm flex items-center justify-center">
-                <Palette className="w-4 h-4 text-artisan-crimson animate-spin-slow" />
-              </div>
-              <p>
-                <b>Interactive 3D Canvas:</b> Move your cursor to release pigment streaks • Scroll to rotate the 3D brush • Click anywhere to burst watercolor bubbles.
-              </p>
+            {/* Small Compact Button for 3D Theme & Song Selection (Requested by user) */}
+            <div className="pt-4 flex flex-wrap items-center gap-3">
+              <button
+                onClick={() => {
+                  playClick();
+                  setIsSettingsModalOpen(true);
+                }}
+                className="group inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/90 hover:bg-white text-stone-800 border border-stone-200/90 shadow-xs hover:shadow-md transition-all duration-200 text-xs font-serif cursor-pointer hover:border-artisan-ochre/60"
+              >
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="font-bold text-stone-900">
+                  {activeTheme3D === 'brush' ? '🎨 3D Brush' : activeTheme3D === 'kuldeep' ? '🏛️ Artist Kuldeep Singh 3D' : '🌌 Celestial 3D'}
+                </span>
+                <span className="text-stone-300">|</span>
+                <span className="flex items-center gap-1.5 text-[11px] text-stone-600 font-sans font-medium">
+                  {isPlaying && !isMuted ? <Volume2 className="w-3.5 h-3.5 text-artisan-crimson animate-pulse" /> : <VolumeX className="w-3.5 h-3.5 text-stone-400" />}
+                  <span>{isPlaying && !isMuted ? 'Song Playing' : 'Song Paused'}</span>
+                </span>
+                <span className="ml-1 px-2.5 py-0.5 rounded-full bg-stone-100 group-hover:bg-artisan-ochre group-hover:text-white transition text-[10px] font-sans font-semibold text-stone-600">
+                  Theme & Song ⚙️
+                </span>
+              </button>
+
+              <span className="text-[11px] text-stone-400 italic hidden sm:inline">
+                Scroll to react with sound & 3D motion
+              </span>
             </div>
           </div>
 

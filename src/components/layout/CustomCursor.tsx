@@ -1,90 +1,119 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 export const CustomCursor: React.FC = () => {
-  const [pos, setPos] = useState({ x: -100, y: -100 });
-  const [trailingPos, setTrailingPos] = useState({ x: -100, y: -100 });
-  const [isHovered, setIsHovered] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  const dotRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let currentX = -100;
     let currentY = -100;
     let targetX = -100;
     let targetY = -100;
+    let isHovered = false;
+    let isVisible = false;
+    let isMoving = false;
+    let animId: number;
 
     const onMouseMove = (e: MouseEvent) => {
       targetX = e.clientX;
       targetY = e.clientY;
-      setPos({ x: targetX, y: targetY });
-      if (!isVisible) setIsVisible(true);
+
+      if (!isVisible) {
+        isVisible = true;
+        if (dotRef.current) dotRef.current.style.opacity = '1';
+        if (ringRef.current) ringRef.current.style.opacity = '1';
+      }
+
+      // Move the precision dot directly on GPU with zero latency
+      if (dotRef.current) {
+        dotRef.current.style.transform = `translate3d(${targetX - 4}px, ${targetY - 4}px, 0) scale(${isHovered ? 0 : 1})`;
+      }
 
       // Check if hovering interactive elements
       const target = e.target as HTMLElement | null;
-      if (
+      const hoverState = Boolean(
         target?.closest('button') ||
         target?.closest('a') ||
         target?.closest('.clickable') ||
         target?.tagName === 'BUTTON' ||
         target?.tagName === 'A'
-      ) {
-        setIsHovered(true);
-      } else {
-        setIsHovered(false);
+      );
+
+      if (hoverState !== isHovered) {
+        isHovered = hoverState;
+        if (ringRef.current) {
+          ringRef.current.style.width = isHovered ? '52px' : '30px';
+          ringRef.current.style.height = isHovered ? '52px' : '30px';
+          ringRef.current.style.borderColor = isHovered ? 'rgba(230, 57, 70, 0.7)' : 'rgba(26, 24, 22, 0.25)';
+          ringRef.current.style.backgroundColor = isHovered ? 'rgba(230, 57, 70, 0.08)' : 'transparent';
+        }
+      }
+
+      if (!isMoving) {
+        isMoving = true;
+        animId = requestAnimationFrame(loop);
       }
     };
 
     const onMouseLeave = () => {
-      setIsVisible(false);
+      isVisible = false;
+      if (dotRef.current) dotRef.current.style.opacity = '0';
+      if (ringRef.current) ringRef.current.style.opacity = '0';
     };
 
-    window.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseleave', onMouseLeave);
-
-    let animId: number;
     const loop = () => {
-      currentX += (targetX - currentX) * 0.18;
-      currentY += (targetY - currentY) * 0.18;
-      setTrailingPos({ x: currentX, y: currentY });
-      animId = requestAnimationFrame(loop);
+      const dx = targetX - currentX;
+      const dy = targetY - currentY;
+
+      currentX += dx * 0.22;
+      currentY += dy * 0.22;
+
+      if (ringRef.current) {
+        const offset = isHovered ? 26 : 15;
+        ringRef.current.style.transform = `translate3d(${currentX - offset}px, ${currentY - offset}px, 0)`;
+      }
+
+      // Stop loop when close to target to save 100% CPU
+      if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+        animId = requestAnimationFrame(loop);
+      } else {
+        isMoving = false;
+      }
     };
-    animId = requestAnimationFrame(loop);
+
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
+    document.addEventListener('mouseleave', onMouseLeave);
 
     return () => {
       window.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseleave', onMouseLeave);
       cancelAnimationFrame(animId);
     };
-  }, [isVisible]);
-
-  if (!isVisible) return null;
+  }, []);
 
   return (
     <>
-      {/* Precision cursor dot */}
+      {/* Precision cursor dot (Zero React re-render, 100% GPU translate3d) */}
       <div
-        className="fixed pointer-events-none z-[9999] rounded-full transition-transform duration-75 ease-out"
+        ref={dotRef}
+        className="fixed top-0 left-0 pointer-events-none z-[9999] rounded-full opacity-0 transition-opacity duration-150"
         style={{
-          left: pos.x,
-          top: pos.y,
           width: 8,
           height: 8,
           backgroundColor: '#1A1816',
-          transform: `translate(-50%, -50%) scale(${isHovered ? 0 : 1})`,
+          willChange: 'transform',
         }}
       />
 
-      {/* Trailing fluid ring */}
+      {/* Trailing fluid ring (Zero React re-render, 100% GPU translate3d) */}
       <div
-        className="fixed pointer-events-none z-[9998] rounded-full transition-all duration-300 ease-out border"
+        ref={ringRef}
+        className="fixed top-0 left-0 pointer-events-none z-[9998] rounded-full border opacity-0 transition-[opacity,width,height,border-color,background-color] duration-200"
         style={{
-          left: trailingPos.x,
-          top: trailingPos.y,
-          width: isHovered ? 56 : 32,
-          height: isHovered ? 56 : 32,
-          transform: 'translate(-50%, -50%)',
-          borderColor: isHovered ? 'rgba(230, 57, 70, 0.6)' : 'rgba(26, 24, 22, 0.25)',
-          backgroundColor: isHovered ? 'rgba(230, 57, 70, 0.08)' : 'transparent',
-          backdropFilter: isHovered ? 'blur(2px)' : 'none',
+          width: 30,
+          height: 30,
+          borderColor: 'rgba(26, 24, 22, 0.25)',
+          willChange: 'transform',
         }}
       />
     </>

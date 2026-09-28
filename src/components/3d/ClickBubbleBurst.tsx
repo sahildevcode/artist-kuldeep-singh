@@ -1,4 +1,5 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { audioEngine } from '../../utils/audioEngine';
 
 interface Bubble {
   id: number;
@@ -37,6 +38,7 @@ export const ClickBubbleBurst: React.FC = () => {
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
 
       const burstId = Date.now() + Math.random();
+      audioEngine.playBubbleBurst();
       const bubbleCount = Math.floor(Math.random() * 6) + 12; // 12-18 bubbles
       const newBubbles: Bubble[] = [];
 

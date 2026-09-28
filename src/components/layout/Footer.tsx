@@ -39,13 +39,13 @@ export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
               Dedicated to the resurgence of classical figurative discipline infused with raw contemporary expression. 
               Over 12 years of painting, educating artists globally, and creating timeless heirlooms for discerning collectors worldwide.
             </p>
-            <div className="flex items-center gap-2 text-xs text-stone-400">
-              <MapPin className="w-4 h-4 text-artisan-gold" />
-              <span>Manhattan Studio: 524 W 26th St, Chelsea, New York</span>
+            <div className="flex items-center gap-2 text-xs text-stone-300">
+              <MapPin className="w-4 h-4 text-artisan-gold shrink-0" />
+              <span>Principal Atelier & Fine Art Gallery: South Extension & Connaught Place, New Delhi, India</span>
             </div>
             <div className="flex items-center gap-2 text-xs text-stone-400">
-              <Sparkles className="w-4 h-4 text-artisan-crimson" />
-              <span>Florence Atelier: Via Maggio 18, Santo Spirito, Italy</span>
+              <Sparkles className="w-4 h-4 text-artisan-crimson shrink-0" />
+              <span>Global Affiliates: Chelsea, Manhattan, New York • Florence Atelier, Italy</span>
             </div>
           </div>
 
@@ -159,6 +159,12 @@ export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
             <span>•</span>
             <span>Insured International Fine Art Crating</span>
           </div>
+        </div>
+
+        {/* Local SEO & Keywords Indexing Bar for Google */}
+        <div className="pt-6 mt-6 border-t border-stone-800/50 text-[11px] text-stone-500 flex flex-wrap items-center justify-between gap-2">
+          <span>Artes Kuldeep Singh • Fine Art Artist in Delhi • Contemporary Indian Painting Gallery</span>
+          <span className="text-stone-600">Original Paintings • Oil Painting Masterclasses • New Delhi, India</span>
         </div>
       </div>
     </footer>

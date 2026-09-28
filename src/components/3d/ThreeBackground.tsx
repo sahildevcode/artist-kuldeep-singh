@@ -1,17 +1,25 @@
-﻿import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { useAudio } from '../../context/AudioContext';
 
 export const ThreeBackground: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { activeTheme3D } = useAudio();
+  const themeRef = useRef(activeTheme3D);
+
+  useEffect(() => {
+    themeRef.current = activeTheme3D;
+  }, [activeTheme3D]);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Scene setup
+    // -------------------------------------------------------------
+    // Scene & Camera Setup
+    // -------------------------------------------------------------
     const scene = new THREE.Scene();
     
-    // Camera
     const camera = new THREE.PerspectiveCamera(
       45,
       window.innerWidth / window.innerHeight,
@@ -20,80 +28,75 @@ export const ThreeBackground: React.FC = () => {
     );
     camera.position.set(0, 0, 8);
 
-    // Renderer
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
       antialias: true,
       powerPreference: 'high-performance',
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.shadowMap.enabled = false;
     container.appendChild(renderer.domElement);
 
+    // -------------------------------------------------------------
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0xfff7ed, 1.2);
+    // -------------------------------------------------------------
+    const ambientLight = new THREE.AmbientLight(0xfff7ed, 1.4);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.0);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
     keyLight.position.set(5, 8, 6);
     scene.add(keyLight);
 
-    const rimLight = new THREE.PointLight(0xc5a059, 3.5, 12);
-    rimLight.position.set(-4, -2, 3);
-    scene.add(rimLight);
+    const goldRimLight = new THREE.PointLight(0xd4af37, 3.8, 14);
+    goldRimLight.position.set(-4, -2, 3);
+    scene.add(goldRimLight);
 
-    const fillLight = new THREE.PointLight(0xe63946, 2.0, 15);
-    fillLight.position.set(4, -4, 2);
-    scene.add(fillLight);
+    const crimsonFillLight = new THREE.PointLight(0xe63946, 2.2, 16);
+    crimsonFillLight.position.set(4, -4, 2);
+    scene.add(crimsonFillLight);
 
-    // Master Group for 3D Art Studio Elements
-    const masterGroup = new THREE.Group();
-    scene.add(masterGroup);
+    // =============================================================
+    // THEME 1: Master Paintbrush & Palette (Classical Atelier)
+    // =============================================================
+    const theme1Group = new THREE.Group();
+    scene.add(theme1Group);
 
-    // -------------------------------------------------------------
-    // 1. Realistic 3D Artist Paintbrush
-    // -------------------------------------------------------------
+    // 1.1 Realistic Paintbrush
     const brushGroup = new THREE.Group();
-
-    // Wooden Handle
-    const handleGeometry = new THREE.CylinderGeometry(0.09, 0.16, 4.2, 32);
-    const handleMaterial = new THREE.MeshStandardMaterial({
-      color: 0x241e1b, // Dark mahogany wood
+    const handleGeo = new THREE.CylinderGeometry(0.09, 0.16, 4.2, 32);
+    const handleMat = new THREE.MeshStandardMaterial({
+      color: 0x241e1b,
       roughness: 0.35,
       metalness: 0.1,
     });
-    const handle = new THREE.Mesh(handleGeometry, handleMaterial);
+    const handle = new THREE.Mesh(handleGeo, handleMat);
     handle.position.y = -1.2;
     brushGroup.add(handle);
 
-    // Brass/Silver Ferrule (Metallic Collar)
-    const ferruleGeometry = new THREE.CylinderGeometry(0.18, 0.16, 0.9, 32);
-    const ferruleMaterial = new THREE.MeshStandardMaterial({
-      color: 0xd4af37, // Gilded brass / Gold
+    const ferruleGeo = new THREE.CylinderGeometry(0.18, 0.16, 0.9, 32);
+    const ferruleMat = new THREE.MeshStandardMaterial({
+      color: 0xd4af37,
       roughness: 0.2,
       metalness: 0.85,
     });
-    const ferrule = new THREE.Mesh(ferruleGeometry, ferruleMaterial);
+    const ferrule = new THREE.Mesh(ferruleGeo, ferruleMat);
     ferrule.position.y = 1.15;
     brushGroup.add(ferrule);
 
-    // Brush Bristles
-    const bristleGeometry = new THREE.ConeGeometry(0.22, 1.1, 32);
-    const bristleMaterial = new THREE.MeshStandardMaterial({
-      color: 0x1a1512, // Dark sable hair
+    const bristleGeo = new THREE.ConeGeometry(0.22, 1.1, 32);
+    const bristleMat = new THREE.MeshStandardMaterial({
+      color: 0x1a1512,
       roughness: 0.8,
       metalness: 0.05,
     });
-    const bristles = new THREE.Mesh(bristleGeometry, bristleMaterial);
+    const bristles = new THREE.Mesh(bristleGeo, bristleMat);
     bristles.position.y = 2.0;
     brushGroup.add(bristles);
 
-    // Glowing Wet Paint Tip on the Brush
     const paintTipGeo = new THREE.SphereGeometry(0.12, 24, 24);
     const paintTipMat = new THREE.MeshStandardMaterial({
-      color: 0xe63946, // Vibrant Cadmium Crimson
+      color: 0xe63946,
       roughness: 0.1,
       metalness: 0.2,
       emissive: 0xe63946,
@@ -104,23 +107,18 @@ export const ThreeBackground: React.FC = () => {
     paintTip.scale.set(0.9, 1.4, 0.9);
     brushGroup.add(paintTip);
 
-    // Initial brush pose
     brushGroup.rotation.z = Math.PI / 4.5;
     brushGroup.rotation.x = 0.25;
     brushGroup.position.set(2.4, 0.4, 0);
-    masterGroup.add(brushGroup);
+    theme1Group.add(brushGroup);
 
-    // -------------------------------------------------------------
-    // 2. Floating 3D Artist Palette with Pigment Dabs
-    // -------------------------------------------------------------
+    // 1.2 Floating Wooden Palette
     const paletteGroup = new THREE.Group();
-    
-    // Wooden Palette board (Oval disc)
     const paletteShape = new THREE.Shape();
     paletteShape.absellipse(0, 0, 1.4, 1.0, 0, Math.PI * 2, false, 0);
     const paletteGeo = new THREE.ShapeGeometry(paletteShape);
     const paletteMat = new THREE.MeshStandardMaterial({
-      color: 0xdfcfb7, // Birch wood
+      color: 0xdfcfb7,
       roughness: 0.6,
       metalness: 0.05,
       side: THREE.DoubleSide,
@@ -128,7 +126,6 @@ export const ThreeBackground: React.FC = () => {
     const paletteBoard = new THREE.Mesh(paletteGeo, paletteMat);
     paletteGroup.add(paletteBoard);
 
-    // Thumb hole
     const holeGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.05, 32);
     const holeMat = new THREE.MeshBasicMaterial({ color: 0xfdfbf7 });
     const thumbHole = new THREE.Mesh(holeGeo, holeMat);
@@ -136,7 +133,6 @@ export const ThreeBackground: React.FC = () => {
     thumbHole.rotation.x = Math.PI / 2;
     paletteGroup.add(thumbHole);
 
-    // 5 Vibrant Pigment Dabs on the Palette
     const dabColors = [0xe63946, 0x2563eb, 0xd97706, 0x059669, 0xc5a059];
     const dabPositions = [
       [-0.8, 0.5, 0.04],
@@ -145,17 +141,16 @@ export const ThreeBackground: React.FC = () => {
       [0.6, 0.5, 0.04],
       [-0.9, 0.0, 0.04],
     ];
-
     dabPositions.forEach((pos, idx) => {
       const dabGeo = new THREE.SphereGeometry(0.12, 16, 16);
-      const dabMat = new THREE.MeshStandardMaterial({
+      const dabM = new THREE.MeshStandardMaterial({
         color: dabColors[idx],
         roughness: 0.2,
         metalness: 0.1,
         emissive: dabColors[idx],
-        emissiveIntensity: 0.2,
+        emissiveIntensity: 0.25,
       });
-      const dabMesh = new THREE.Mesh(dabGeo, dabMat);
+      const dabMesh = new THREE.Mesh(dabGeo, dabM);
       dabMesh.position.set(pos[0], pos[1], pos[2]);
       dabMesh.scale.set(1.2, 0.9, 0.5);
       paletteGroup.add(dabMesh);
@@ -165,49 +160,173 @@ export const ThreeBackground: React.FC = () => {
     paletteGroup.rotation.x = 0.5;
     paletteGroup.rotation.y = -0.3;
     paletteGroup.rotation.z = -0.2;
-    masterGroup.add(paletteGroup);
+    theme1Group.add(paletteGroup);
 
-    // Floating pigment dust particles in 3D space
-    const particleCount = 45;
-    const particleGeo = new THREE.BufferGeometry();
-    const particlePositions = new Float32Array(particleCount * 3);
-    const particleColors = new Float32Array(particleCount * 3);
+    // =============================================================
+    // THEME 2: Artist Kuldeep Singh Signature Atelier
+    // Clean & atmospheric: Floating 24K gold leaf embers (Calligraphy scroll in ScrollSignatureBackground)
+    // =============================================================
+    const theme2Group = new THREE.Group();
+    scene.add(theme2Group);
 
-    const paletteColorObjects = [
-      new THREE.Color(0xe63946),
-      new THREE.Color(0x2563eb),
-      new THREE.Color(0xd97706),
-      new THREE.Color(0x059669),
-      new THREE.Color(0xc5a059),
-    ];
-
-    for (let i = 0; i < particleCount; i++) {
-      particlePositions[i * 3] = (Math.random() - 0.5) * 12;
-      particlePositions[i * 3 + 1] = (Math.random() - 0.5) * 10;
-      particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 6;
-
-      const col = paletteColorObjects[Math.floor(Math.random() * paletteColorObjects.length)];
-      particleColors[i * 3] = col.r;
-      particleColors[i * 3 + 1] = col.g;
-      particleColors[i * 3 + 2] = col.b;
+    // Floating 24K Gold Leaf Embers
+    const goldFlakeCount = 65;
+    const goldFlakeGeo = new THREE.BufferGeometry();
+    const goldFlakePositions = new Float32Array(goldFlakeCount * 3);
+    for (let i = 0; i < goldFlakeCount; i++) {
+      goldFlakePositions[i * 3] = (Math.random() - 0.5) * 14;
+      goldFlakePositions[i * 3 + 1] = (Math.random() - 0.5) * 10;
+      goldFlakePositions[i * 3 + 2] = (Math.random() - 0.5) * 6;
     }
-
-    particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
-    particleGeo.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
-
-    const particleMat = new THREE.PointsMaterial({
-      size: 0.12,
-      vertexColors: true,
+    goldFlakeGeo.setAttribute('position', new THREE.BufferAttribute(goldFlakePositions, 3));
+    const goldFlakeMat = new THREE.PointsMaterial({
+      color: 0xffd700,
+      size: 0.16,
       transparent: true,
-      opacity: 0.5,
-      blending: THREE.NormalBlending,
+      opacity: 0.75,
+      blending: THREE.AdditiveBlending,
+    });
+    const goldFlakes = new THREE.Points(goldFlakeGeo, goldFlakeMat);
+    theme2Group.add(goldFlakes);
+
+    // =============================================================
+    // THEME 3: Celestial Studio Easel & Cosmic Pigment Nebula
+    // =============================================================
+    const theme3Group = new THREE.Group();
+    scene.add(theme3Group);
+
+    // 3.1 3D Studio Studio Wooden Easel
+    const easelGroup = new THREE.Group();
+    const walnutMat = new THREE.MeshStandardMaterial({
+      color: 0x3d2817,
+      roughness: 0.45,
+      metalness: 0.1,
     });
 
-    const particles = new THREE.Points(particleGeo, particleMat);
-    scene.add(particles);
+    // Left & Right A-frame legs
+    const legGeo = new THREE.CylinderGeometry(0.06, 0.08, 4.4, 16);
+    const leftLeg = new THREE.Mesh(legGeo, walnutMat);
+    leftLeg.position.set(-0.7, 0, 0);
+    leftLeg.rotation.z = -0.18;
+    const rightLeg = new THREE.Mesh(legGeo, walnutMat);
+    rightLeg.position.set(0.7, 0, 0);
+    rightLeg.rotation.z = 0.18;
+
+    // Center vertical mast
+    const mastGeo = new THREE.CylinderGeometry(0.07, 0.07, 4.6, 16);
+    const mast = new THREE.Mesh(mastGeo, walnutMat);
+    mast.position.set(0, 0.2, -0.05);
+
+    // Cross brace tray (where canvas rests)
+    const shelfGeo = new THREE.BoxGeometry(2.4, 0.12, 0.35);
+    const shelf = new THREE.Mesh(shelfGeo, walnutMat);
+    shelf.position.set(0, -0.4, 0.12);
+
+    // Blank Belgian Linen Canvas mounted on easel
+    const canvasBoardGeo = new THREE.BoxGeometry(1.9, 2.5, 0.08);
+    const linenMat = new THREE.MeshStandardMaterial({
+      color: 0xfbf8f1,
+      roughness: 0.85,
+      metalness: 0.02,
+    });
+    const canvasBoard = new THREE.Mesh(canvasBoardGeo, linenMat);
+    canvasBoard.position.set(0, 0.8, 0.15);
+
+    // Top Clamp
+    const clampGeo = new THREE.BoxGeometry(0.6, 0.1, 0.2);
+    const topClamp = new THREE.Mesh(clampGeo, walnutMat);
+    topClamp.position.set(0, 2.08, 0.16);
+
+    easelGroup.add(leftLeg, rightLeg, mast, shelf, canvasBoard, topClamp);
+    easelGroup.position.set(2.4, -0.2, -0.5);
+    easelGroup.rotation.y = -0.3;
+    easelGroup.rotation.x = 0.1;
+    theme3Group.add(easelGroup);
+
+    // 3.2 Swirling Pigment Galaxy Nebula (Lightweight, elegant orbiting spheres)
+    const nebulaGroup = new THREE.Group();
+    const nebulaColors = [0xe63946, 0x2563eb, 0xf59e0b, 0x10b981, 0x8b5cf6, 0xffd700];
+    const sphereCount = 22;
+    const nebulaSpheres: { mesh: THREE.Mesh; radius: number; angle: number; speed: number; yOffset: number }[] = [];
+
+    // Shared geometries and materials for instant WebGL batching & zero overhead
+    const sphereGeos = [
+      new THREE.SphereGeometry(0.09, 12, 12),
+      new THREE.SphereGeometry(0.13, 12, 12),
+      new THREE.SphereGeometry(0.17, 12, 12),
+    ];
+    const sharedNebulaMaterials = nebulaColors.map((col) =>
+      new THREE.MeshStandardMaterial({
+        color: col,
+        emissive: col,
+        emissiveIntensity: 0.35,
+        roughness: 0.25,
+        metalness: 0.3,
+      })
+    );
+
+    for (let i = 0; i < sphereCount; i++) {
+      const radius = 1.8 + (i % 7) * 0.42;
+      const angle = (Math.PI * 2 * i) / sphereCount;
+      const speed = (0.22 + (i % 5) * 0.08) * (i % 2 === 0 ? 1 : -0.85);
+      const yOffset = ((i % 6) - 2.5) * 0.55;
+
+      const sphGeo = sphereGeos[i % sphereGeos.length];
+      const sphMat = sharedNebulaMaterials[i % sharedNebulaMaterials.length];
+      const sphMesh = new THREE.Mesh(sphGeo, sphMat);
+      nebulaGroup.add(sphMesh);
+
+      nebulaSpheres.push({
+        mesh: sphMesh,
+        radius,
+        angle,
+        speed,
+        yOffset,
+      });
+    }
+
+    nebulaGroup.position.set(-1.2, 0.2, -0.5);
+    theme3Group.add(nebulaGroup);
+
+    // 3.3 Light Refracting Crystal Prisms
+    const crystalGeo = new THREE.OctahedronGeometry(0.45, 0);
+    const crystalMat = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      roughness: 0.05,
+      metalness: 0.9,
+      emissive: 0x4a90e2,
+      emissiveIntensity: 0.2,
+    });
+    const crystal1 = new THREE.Mesh(crystalGeo, crystalMat);
+    crystal1.position.set(-3.2, 1.4, -1.0);
+    const crystal2 = new THREE.Mesh(crystalGeo, crystalMat);
+    crystal2.position.set(-2.2, -1.8, 0.5);
+    crystal2.scale.set(0.7, 0.7, 0.7);
+    theme3Group.add(crystal1, crystal2);
+
+    // =============================================================
+    // Ambient Background Stardust (Shared across themes)
+    // =============================================================
+    const dustCount = 50;
+    const dustGeo = new THREE.BufferGeometry();
+    const dustPositions = new Float32Array(dustCount * 3);
+    for (let i = 0; i < dustCount; i++) {
+      dustPositions[i * 3] = (Math.random() - 0.5) * 14;
+      dustPositions[i * 3 + 1] = (Math.random() - 0.5) * 10;
+      dustPositions[i * 3 + 2] = (Math.random() - 0.5) * 6;
+    }
+    dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
+    const dustMat = new THREE.PointsMaterial({
+      color: 0xc5a059,
+      size: 0.08,
+      transparent: true,
+      opacity: 0.45,
+    });
+    const ambientDust = new THREE.Points(dustGeo, dustMat);
+    scene.add(ambientDust);
 
     // -------------------------------------------------------------
-    // Scroll & Mouse Interaction Listeners
+    // Mouse & Scroll Interaction Listeners
     // -------------------------------------------------------------
     let targetScrollY = 0;
     let currentScrollY = 0;
@@ -228,61 +347,119 @@ export const ThreeBackground: React.FC = () => {
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('mousemove', onMouseMove, { passive: true });
 
-    // Color cycle list for wet paint tip
-    const cycleColors = [0xe63946, 0x2563eb, 0xd97706, 0x059669, 0xc5a059];
+    // Initial scale values for theme transitions
+    let theme1Scale = activeTheme3D === 'brush' ? 1 : 0.001;
+    let theme2Scale = activeTheme3D === 'kuldeep' ? 1 : 0.001;
+    let theme3Scale = activeTheme3D === 'celestial' ? 1 : 0.001;
 
     // Animation Loop
     let animationFrameId: number;
-    let clock = new THREE.Clock();
+    const clock = new THREE.Clock();
+    const cycleColors = [0xe63946, 0x2563eb, 0xd97706, 0x059669, 0xc5a059];
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
 
-      // Smooth lerp scroll and mouse
-      currentScrollY += (targetScrollY - currentScrollY) * 0.05;
-      currentMouseX += (targetMouseX - currentMouseX) * 0.05;
-      currentMouseY += (targetMouseY - currentMouseY) * 0.05;
+      // Snappy, instant response to user scroll & mouse motion (zero lag)
+      currentScrollY += (targetScrollY - currentScrollY) * 0.28;
+      currentMouseX += (targetMouseX - currentMouseX) * 0.22;
+      currentMouseY += (targetMouseY - currentMouseY) * 0.22;
 
       const scrollFactor = currentScrollY * 0.0015;
 
-      // Rotate brush based on scroll progression & time
-      brushGroup.rotation.z = Math.PI / 4.5 + Math.sin(elapsedTime * 0.8) * 0.08 + scrollFactor * 0.8;
-      brushGroup.rotation.y = Math.cos(elapsedTime * 0.6) * 0.15 + scrollFactor * 1.2;
-      brushGroup.rotation.x = 0.25 + currentMouseY * 0.2;
+      // Smooth Theme Cross-Fade / Scale Transitions
+      const active = themeRef.current;
+      const targetT1 = active === 'brush' ? 1 : 0.001;
+      const targetT2 = active === 'kuldeep' ? 1 : 0.001;
+      const targetT3 = active === 'celestial' ? 1 : 0.001;
 
-      // Position brush dynamically
-      brushGroup.position.x = 2.4 + currentMouseX * 0.4 + Math.sin(scrollFactor) * 0.3;
-      brushGroup.position.y = 0.4 - Math.sin(scrollFactor * 1.5) * 0.8 + Math.cos(elapsedTime) * 0.1;
-      brushGroup.position.z = Math.cos(scrollFactor) * 0.5;
+      theme1Scale += (targetT1 - theme1Scale) * 0.08;
+      theme2Scale += (targetT2 - theme2Scale) * 0.08;
+      theme3Scale += (targetT3 - theme3Scale) * 0.08;
 
-      // Slowly pulse and shift paint tip color over time
-      const colorIndex = Math.floor((elapsedTime * 0.2) % cycleColors.length);
-      const nextColorIndex = (colorIndex + 1) % cycleColors.length;
-      const blend = (elapsedTime * 0.2) % 1;
-      
-      const c1 = new THREE.Color(cycleColors[colorIndex]);
-      const c2 = new THREE.Color(cycleColors[nextColorIndex]);
-      c1.lerp(c2, blend);
-      paintTipMat.color.copy(c1);
-      paintTipMat.emissive.copy(c1);
+      theme1Group.scale.set(theme1Scale, theme1Scale, theme1Scale);
+      theme1Group.visible = theme1Scale > 0.01;
 
-      // Rotate palette board smoothly
-      paletteGroup.rotation.z = -0.2 + scrollFactor * 0.5 + Math.sin(elapsedTime * 0.4) * 0.05;
-      paletteGroup.rotation.x = 0.5 + currentMouseY * 0.15;
-      paletteGroup.rotation.y = -0.3 + currentMouseX * 0.2;
-      paletteGroup.position.y = -1.2 + Math.sin(scrollFactor * 0.9) * 0.6;
+      theme2Group.scale.set(theme2Scale, theme2Scale, theme2Scale);
+      theme2Group.visible = theme2Scale > 0.01;
 
-      // Rotate ambient particles
-      particles.rotation.y = elapsedTime * 0.03 + scrollFactor * 0.2;
-      particles.rotation.x = Math.sin(elapsedTime * 0.02) * 0.1;
+      theme3Group.scale.set(theme3Scale, theme3Scale, theme3Scale);
+      theme3Group.visible = theme3Scale > 0.01;
+
+      // -----------------------------------------------------------
+      // Animate Theme 1 (Brush & Palette)
+      // -----------------------------------------------------------
+      if (theme1Group.visible) {
+        brushGroup.rotation.z = Math.PI / 4.5 + Math.sin(elapsedTime * 0.8) * 0.08 + scrollFactor * 0.8;
+        brushGroup.rotation.y = Math.cos(elapsedTime * 0.6) * 0.15 + scrollFactor * 1.2;
+        brushGroup.rotation.x = 0.25 + currentMouseY * 0.2;
+        brushGroup.position.x = 2.4 + currentMouseX * 0.4 + Math.sin(scrollFactor) * 0.3;
+        brushGroup.position.y = 0.4 - Math.sin(scrollFactor * 1.5) * 0.8 + Math.cos(elapsedTime) * 0.1;
+
+        // Paint tip color shift
+        const colorIndex = Math.floor((elapsedTime * 0.2) % cycleColors.length);
+        const nextColorIndex = (colorIndex + 1) % cycleColors.length;
+        const blend = (elapsedTime * 0.2) % 1;
+        const c1 = new THREE.Color(cycleColors[colorIndex]);
+        const c2 = new THREE.Color(cycleColors[nextColorIndex]);
+        c1.lerp(c2, blend);
+        paintTipMat.color.copy(c1);
+        paintTipMat.emissive.copy(c1);
+
+        paletteGroup.rotation.z = -0.2 + scrollFactor * 0.5 + Math.sin(elapsedTime * 0.4) * 0.05;
+        paletteGroup.rotation.x = 0.5 + currentMouseY * 0.15;
+        paletteGroup.rotation.y = -0.3 + currentMouseX * 0.2;
+        paletteGroup.position.y = -1.2 + Math.sin(scrollFactor * 0.9) * 0.6;
+      }
+
+      // -----------------------------------------------------------
+      // Animate Theme 2 (Kuldeep Singh Seal & Gilded Frames)
+      // -----------------------------------------------------------
+      if (theme2Group.visible) {
+        goldFlakes.rotation.y = elapsedTime * 0.08 + scrollFactor * 0.4;
+        goldFlakes.rotation.x = Math.sin(elapsedTime * 0.04) * 0.1;
+      }
+
+      // -----------------------------------------------------------
+      // Animate Theme 3 (Celestial Easel & Pigment Nebula)
+      // -----------------------------------------------------------
+      if (theme3Group.visible) {
+        easelGroup.rotation.y = -0.3 + Math.sin(elapsedTime * 0.5) * 0.15 + currentMouseX * 0.3 + scrollFactor * 0.35;
+        easelGroup.rotation.x = 0.1 + Math.cos(elapsedTime * 0.4) * 0.08 - currentMouseY * 0.2;
+        easelGroup.position.y = -0.2 + Math.sin(elapsedTime * 0.7) * 0.15 - scrollFactor * 0.2;
+
+        // Continuous fluid orbital motion: completely unbroken and continuous (never freezes or stops on scroll)
+        const sLen = nebulaSpheres.length;
+        for (let i = 0; i < sLen; i++) {
+          const item = nebulaSpheres[i];
+          const currentAngle = item.angle + elapsedTime * item.speed * 0.85;
+          item.mesh.position.set(
+            Math.cos(currentAngle) * item.radius,
+            item.yOffset + Math.sin(elapsedTime * 1.2 + item.angle) * 0.3,
+            Math.sin(currentAngle) * item.radius
+          );
+        }
+
+        // Gentle smooth 3D depth parallax for the entire nebula cluster
+        nebulaGroup.position.y = 0.2 - scrollFactor * 0.3;
+        nebulaGroup.rotation.x = currentMouseY * 0.2;
+        nebulaGroup.rotation.y = currentMouseX * 0.2;
+
+        crystal1.rotation.x = elapsedTime * 0.5;
+        crystal1.rotation.y = elapsedTime * 0.7;
+        crystal2.rotation.x = -elapsedTime * 0.4;
+        crystal2.rotation.z = elapsedTime * 0.6;
+      }
+
+      // Ambient dust rotation
+      ambientDust.rotation.y = elapsedTime * 0.02 + scrollFactor * 0.15;
 
       renderer.render(scene, camera);
     };
 
     animate();
 
-    // Resize handler
     const handleResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();

@@ -1,0 +1,6 @@
+# Robots.txt for Artist Kuldeep Singh Fine Art Portal
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://kuldeepsingh.art/sitemap.xml

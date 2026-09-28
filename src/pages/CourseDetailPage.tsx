@@ -21,6 +21,7 @@ import {
 import type { Course, CourseLecture } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useStudioData } from '../context/StudioDataContext';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import confetti from 'canvas-confetti';
 
@@ -32,6 +33,7 @@ interface CourseDetailPageProps {
 export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBack }) => {
   const { currentUser, setIsAuthModalOpen, unlockCourse, isCourseUnlocked } = useAuth();
   const { addOrder } = useCart();
+  const { addStudent } = useStudioData();
   const [activeModuleIndex, setActiveModuleIndex] = useState<number>(0);
   const [isPlayingTeaser, setIsPlayingTeaser] = useState<boolean>(false);
   const [isProcessingEnroll, setIsProcessingEnroll] = useState<boolean>(false);
@@ -51,6 +53,20 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
     setIsProcessingEnroll(true);
     setTimeout(() => {
       unlockCourse(course.id);
+
+      // Register student in academy database
+      addStudent({
+        id: 'stu-' + Date.now(),
+        name: currentUser.name || 'Scholar Student',
+        email: currentUser.email || 'student@kuldeepsingh.art',
+        courseId: course.id,
+        courseTitle: course.title,
+        batchSchedule: course.schedule || 'Live Atelier Batch',
+        enrolledDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        feesPaid: course.price,
+        paymentStatus: 'Paid',
+        progressPercent: 0
+      });
 
       // Record in customer Order History
       addOrder({
@@ -307,38 +323,48 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
                     {activeModuleIndex === idx && (
                       <div className="px-5 pb-5 pt-2 border-t border-stone-100 bg-stone-50/50 space-y-2.5">
                         {mod.lectures && mod.lectures.length > 0 ? (
-                          mod.lectures.map((lec) => (
-                            <div
-                              key={lec.id}
-                              className="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200/80 text-xs hover:border-artisan-gold transition-colors"
-                            >
-                              <div className="flex items-center gap-2.5 text-stone-800 font-medium truncate flex-1 min-w-0 pr-2">
-                                <Play className="w-3.5 h-3.5 text-artisan-gold fill-artisan-gold flex-shrink-0" />
-                                <span className="truncate font-medium">{lec.title}</span>
+                          mod.lectures.map((lec) => {
+                            const isFree = lec.accessType === 'free' || lec.isFreePreview;
+                            const canStream = isUnlocked || isFree;
+                            return (
+                              <div
+                                key={lec.id}
+                                className="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200/80 text-xs hover:border-artisan-gold transition-colors gap-2"
+                              >
+                                <div className="flex items-center gap-2.5 text-stone-800 font-medium truncate flex-1 min-w-0 pr-2">
+                                  <Play className="w-3.5 h-3.5 text-artisan-gold fill-artisan-gold flex-shrink-0" />
+                                  <span className="truncate font-medium">{lec.title}</span>
+                                  {isFree && (
+                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0">
+                                      Free Preview
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                  <span className="text-[11px] text-stone-500 font-mono bg-stone-100 px-2 py-0.5 rounded-md">
+                                    {lec.duration}
+                                  </span>
+                                  {canStream && (
+                                    <button
+                                      onClick={() => setSelectedLectureForStream(lec)}
+                                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 border ${
+                                        isFree && !isUnlocked
+                                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700'
+                                          : 'bg-artisan-gold/15 hover:bg-artisan-gold text-stone-900 border-artisan-gold/30'
+                                      }`}
+                                    >
+                                      <Play className="w-3 h-3 fill-current" />
+                                      <span>{isFree && !isUnlocked ? 'Watch Free Trailer' : 'Stream'}</span>
+                                    </button>
+                                  )}
+                                </div>
                               </div>
-                              <div className="flex items-center gap-2 flex-shrink-0">
-                                <span className="text-[11px] text-stone-500 font-mono bg-stone-100 px-2 py-0.5 rounded-md">
-                                  {lec.duration}
-                                </span>
-                                {isUnlocked && (
-                                  <button
-                                    onClick={() => setSelectedLectureForStream(lec)}
-                                    className="px-3 py-1 bg-artisan-gold/15 hover:bg-artisan-gold text-stone-900 rounded-lg text-xs font-bold transition-all flex items-center gap-1 border border-artisan-gold/30"
-                                  >
-                                    <Play className="w-3 h-3 text-artisan-crimson fill-artisan-crimson" />
-                                    <span>Stream</span>
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-                          ))
+                            );
+                          })
                         ) : (
-                          mod.topics.map((topic, tIdx) => (
-                            <div key={tIdx} className="flex items-center gap-2.5 text-xs sm:text-sm text-stone-700">
-                              <Play className="w-3.5 h-3.5 text-artisan-gold fill-artisan-gold flex-shrink-0" />
-                              <span>{topic}</span>
-                            </div>
-                          ))
+                          <div className="py-4 text-center text-xs text-stone-500 bg-stone-100/50 rounded-xl">
+                            Lectures and video demonstrations will be published here for this module.
+                          </div>
                         )}
                       </div>
                     )}
@@ -530,10 +556,68 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
               </button>
             </div>
 
-            <div className="relative aspect-video rounded-2xl overflow-hidden bg-stone-950 border border-stone-800 shadow-inner">
-              {selectedLectureForStream.videoUrl?.includes('youtube') || selectedLectureForStream.videoUrl?.includes('youtu.be') ? (
+            <div className="relative aspect-video rounded-2xl overflow-hidden bg-stone-950 border border-stone-800 shadow-inner flex items-center justify-center">
+              {selectedLectureForStream.videoUrl && (selectedLectureForStream.videoUrl.includes('youtube') || selectedLectureForStream.videoUrl.includes('youtu.be')) ? (
                 <iframe
-                  src={selectedLectureForStream.videoUrl.replace('watch?v=', 'embed/')}
+                  src={
+                    selectedLectureForStream.videoUrl.includes('watch?v=')
+                      ? selectedLectureForStream.videoUrl.replace('watch?v=', 'embed/')
+                      : selectedLectureForStream.videoUrl.includes('youtu.be/')
+                      ? selectedLectureForStream.videoUrl.replace('youtu.be/', 'www.youtube.com/embed/')
+                      : selectedLectureForStream.videoUrl.includes('shorts/')
+                      ? selectedLectureForStream.videoUrl.replace('shorts/', 'embed/')
+                      : selectedLectureForStream.videoUrl
+                  }
+                  title={selectedLectureForStream.title}
+                  className="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : selectedLectureForStream.videoUrl && selectedLectureForStream.videoUrl.includes('vimeo.com') ? (
+                <iframe
+                  src={
+                    selectedLectureForStream.videoUrl.includes('player.vimeo.com')
+                      ? selectedLectureForStream.videoUrl
+                      : selectedLectureForStream.videoUrl.replace(/vimeo\.com\/(\d+)/, 'player.vimeo.com/video/$1')
+                  }
+                  title={selectedLectureForStream.title}
+                  className="w-full h-full border-0"
+                  allow="accelerometer; autoplay; fullscreen; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : selectedLectureForStream.videoUrl && selectedLectureForStream.videoUrl.includes('drive.google.com') ? (
+                <iframe
+                  src={
+                    selectedLectureForStream.videoUrl.includes('/preview')
+                      ? selectedLectureForStream.videoUrl
+                      : selectedLectureForStream.videoUrl.replace(/\/view(\?.*)?$/, '/preview')
+                  }
+                  title={selectedLectureForStream.title}
+                  className="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : selectedLectureForStream.videoUrl && (
+                selectedLectureForStream.videoUrl.startsWith('data:video') ||
+                selectedLectureForStream.videoUrl.startsWith('blob:') ||
+                selectedLectureForStream.videoUrl.match(/\.(mp4|webm|ogg|m4v)($|\?)/i) ||
+                selectedLectureForStream.videoUrl.includes('r2.dev') ||
+                selectedLectureForStream.videoUrl.includes('cloudflare') ||
+                selectedLectureForStream.videoUrl.includes('s3') ||
+                selectedLectureForStream.videoUrl.includes('googleapis.com')
+              ) ? (
+                <video
+                  src={selectedLectureForStream.videoUrl}
+                  controls
+                  controlsList="nodownload"
+                  className="w-full h-full object-contain bg-black"
+                  autoPlay
+                >
+                  Your browser does not support HTML5 video streaming.
+                </video>
+              ) : selectedLectureForStream.videoUrl?.startsWith('http') ? (
+                <iframe
+                  src={selectedLectureForStream.videoUrl}
                   title={selectedLectureForStream.title}
                   className="w-full h-full border-0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

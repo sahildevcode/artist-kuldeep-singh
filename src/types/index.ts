@@ -26,6 +26,8 @@ export interface CourseLecture {
   duration: string;
   videoUrl?: string;
   summary?: string;
+  accessType?: 'enrolled' | 'free';
+  isFreePreview?: boolean;
 }
 
 export interface CourseModule {
@@ -42,7 +44,7 @@ export interface Course {
   title: string;
   subtitle: string;
   level: 'Beginner' | 'Intermediate' | 'Master / Advanced' | 'All Levels';
-  category: 'Oil Painting' | 'Realistic Sketching' | 'Color Theory' | 'Watercolor & Fluid';
+  category: 'Oil Painting' | 'Realistic Sketching' | 'Color Theory' | 'Watercolor & Fluid' | 'Acrylic Painting' | string;
   durationHours: number;
   durationMonths: string;
   schedule: string;
@@ -195,5 +197,6 @@ export interface EnrolledStudent {
   paymentStatus: 'Paid' | 'Processing';
   progressPercent: number;
   avatar?: string;
+  attendanceStatus?: 'Attended' | 'Absent' | 'Pending';
 }
 
