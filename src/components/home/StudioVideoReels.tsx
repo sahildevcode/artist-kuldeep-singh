@@ -52,11 +52,14 @@ export const StudioVideoReels: React.FC = () => {
 
   const currentVideo = videoList[currentIdx] || videoList[0];
 
-  const isYouTube = (url: string) => {
-    return url.includes('youtube.com') || url.includes('youtu.be');
+  const isEmbedPlayer = (url: string) => {
+    return url.includes('mediadelivery.net') || url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com');
   };
 
-  const getYouTubeEmbedUrl = (url: string) => {
+  const getEmbedUrl = (url: string) => {
+    if (url.includes('mediadelivery.net') || url.includes('vimeo.com')) {
+      return url;
+    }
     if (url.includes('youtu.be/')) {
       const id = url.split('youtu.be/')[1]?.split('?')[0];
       return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
@@ -74,9 +77,9 @@ export const StudioVideoReels: React.FC = () => {
         {/* Direct Cinema Video Player (Zero Clutter, 100% Video) */}
         <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-black border border-stone-200/80 aspect-video group">
           {isPlaying ? (
-            isYouTube(currentVideo.videoUrl) ? (
+            isEmbedPlayer(currentVideo.videoUrl) ? (
               <iframe
-                src={getYouTubeEmbedUrl(currentVideo.videoUrl)}
+                src={getEmbedUrl(currentVideo.videoUrl)}
                 title={currentVideo.title}
                 className="w-full h-full border-0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
