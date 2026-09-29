@@ -5,6 +5,7 @@ import { MagneticButton } from '../components/ui/MagneticButton';
 import { useCart } from '../context/CartContext';
 import { useStudioData } from '../context/StudioDataContext';
 import { useAudio } from '../context/AudioContext';
+import { StudioVideoReels } from '../components/home/StudioVideoReels';
 
 interface HomePageProps {
   setActivePage: (page: 'home' | 'about' | 'courses' | 'store') => void;
@@ -179,6 +180,12 @@ export const HomePage: React.FC<HomePageProps> = ({
           ))}
         </div>
       </section>
+
+      {/* ------------------------------------------------------------- */}
+      {/* 1.5 ATELIER VIDEO REELS & MASTERCLASS PROCESS SHOWCASE         */}
+      {/* Zero initial video payload, 100% on-demand streaming           */}
+      {/* ------------------------------------------------------------- */}
+      <StudioVideoReels />
 
       {/* ------------------------------------------------------------- */}
       {/* 2. SELECTED MASTERWORKS SHOWCASE */}
