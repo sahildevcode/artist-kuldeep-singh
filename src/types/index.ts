@@ -182,6 +182,9 @@ export interface ArtistProfile {
   sanctuaryLocation: string;
   contactEmail: string;
   studioAddress: string;
+  studioVideoUrl?: string;
+  studioVideoTitle?: string;
+  studioVideoPoster?: string;
 }
 
 export interface EnrolledStudent {

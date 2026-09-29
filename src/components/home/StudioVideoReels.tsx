@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Play } from 'lucide-react';
 import { useAudio } from '../../context/AudioContext';
+import { useStudioData } from '../../context/StudioDataContext';
 
 export interface StudioVideo {
   id: string;
@@ -34,8 +35,22 @@ export const StudioVideoReels: React.FC = () => {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const { playClick } = useAudio();
+  const { artistProfile } = useStudioData();
 
-  const currentVideo = DEFAULT_VIDEOS[currentIdx];
+  // Custom video updated via Admin takes highest priority
+  const videoList = artistProfile?.studioVideoUrl
+    ? [
+        {
+          id: 'custom-admin-vid',
+          title: artistProfile.studioVideoTitle || 'Artist Kuldeep Singh • Master Oil Painting in Atelier',
+          videoUrl: artistProfile.studioVideoUrl,
+          thumbnail: artistProfile.studioVideoPoster || DEFAULT_VIDEOS[0].thumbnail,
+        },
+        ...DEFAULT_VIDEOS.filter((v) => v.videoUrl !== artistProfile.studioVideoUrl),
+      ]
+    : DEFAULT_VIDEOS;
+
+  const currentVideo = videoList[currentIdx] || videoList[0];
 
   const isYouTube = (url: string) => {
     return url.includes('youtube.com') || url.includes('youtu.be');
@@ -114,9 +129,9 @@ export const StudioVideoReels: React.FC = () => {
         </div>
 
         {/* Minimal Video Switcher (If multiple videos available) */}
-        {DEFAULT_VIDEOS.length > 1 && (
+        {videoList.length > 1 && (
           <div className="mt-4 flex items-center justify-center gap-2">
-            {DEFAULT_VIDEOS.map((vid, idx) => (
+            {videoList.map((vid, idx) => (
               <button
                 key={vid.id}
                 onClick={() => {
