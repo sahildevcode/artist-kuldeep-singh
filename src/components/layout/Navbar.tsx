@@ -61,23 +61,15 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <a
-                href={liveStatus.liveStreamUrl || 'https://meet.google.com/ks-studio-atelier'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-white text-red-700 hover:bg-amber-50 font-bold px-3 py-1 rounded-full text-[11px] sm:text-xs transition-transform shadow-md flex items-center gap-1 active:scale-95 cursor-pointer"
-              >
-                <span>Join Google Meet</span>
-                <span className="text-[10px]">↗</span>
-              </a>
               <button
                 onClick={() => {
                   setActivePage('student-portal');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className="bg-black/35 hover:bg-black/55 text-white px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold border border-white/20 transition hidden md:inline"
+                className="bg-white text-red-700 hover:bg-amber-50 font-bold px-3 py-1 rounded-full text-[11px] sm:text-xs transition-transform shadow-md flex items-center gap-1.5 active:scale-95 cursor-pointer"
               >
-                Student Portal
+                <span>Enter Live Classroom</span>
+                <span className="text-[10px]">→</span>
               </button>
             </div>
           </div>
