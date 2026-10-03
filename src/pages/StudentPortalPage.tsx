@@ -12,6 +12,7 @@ import {
   Tv,
   Lock,
   ShieldCheck,
+  ShieldAlert,
   Sparkles,
   Radio,
   Calendar
@@ -27,7 +28,7 @@ interface StudentPortalPageProps {
 
 export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActivePage }) => {
   const { courses, liveStatus, students, addStudent } = useStudioData();
-  const { currentUser, login, isCourseUnlocked, unlockCourse } = useAuth();
+  const { currentUser, login, logout, isCourseUnlocked, unlockCourse } = useAuth();
 
   // Selected Course (persists on reload)
   const [selectedCourseId, setSelectedCourseId] = useState<string>(() => {
@@ -124,6 +125,95 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
     });
   };
 
+  // Unique Device & Tab Session Identifier
+  const [deviceId] = useState<string>(() => {
+    try {
+      let id = sessionStorage.getItem('ks_student_device_id');
+      if (!id) {
+        id = 'dev_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now();
+        sessionStorage.setItem('ks_student_device_id', id);
+      }
+      return id;
+    } catch {
+      return 'dev_' + Date.now();
+    }
+  });
+
+  // Concurrent Session / Single-Device Enforcement State
+  const [isDeviceBlocked, setIsDeviceBlocked] = useState(false);
+  const [blockMessage, setBlockMessage] = useState<string>('');
+  const [isTransferringSession, setIsTransferringSession] = useState(false);
+
+  // Send Heartbeat every 3.5 seconds when an enrolled student is in portal / watching live
+  useEffect(() => {
+    if (!currentUser?.email || !isEnrolled) {
+      setIsDeviceBlocked(false);
+      return;
+    }
+
+    let isMounted = true;
+
+    const checkHeartbeat = async () => {
+      try {
+        const res = await fetch('https://kuldeep-singh-backend.onrender.com/api/session/heartbeat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: currentUser.email,
+            deviceId: deviceId,
+            courseId: activeCourse?.id
+          })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted) {
+            if (data.allowed === false) {
+              setIsDeviceBlocked(true);
+              setBlockMessage(data.message || 'Another device or tab is already watching with your account.');
+              setStreamingLecture(null); // Terminate active video playback immediately
+            } else {
+              setIsDeviceBlocked(false);
+            }
+          }
+        }
+      } catch (err) {
+        // Backend temporarily unavailable, don't interrupt student
+      }
+    };
+
+    checkHeartbeat();
+    const interval = setInterval(checkHeartbeat, 3500);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [currentUser?.email, isEnrolled, deviceId, activeCourse?.id]);
+
+  const handleTakeoverSession = async () => {
+    if (!currentUser?.email) return;
+    setIsTransferringSession(true);
+    try {
+      const res = await fetch('https://kuldeep-singh-backend.onrender.com/api/session/takeover', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: currentUser.email,
+          deviceId: deviceId,
+          courseId: activeCourse?.id
+        })
+      });
+      if (res.ok) {
+        setIsDeviceBlocked(false);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsTransferringSession(false);
+    }
+  };
+
   // Active Lecture Streaming Modal
   const [streamingLecture, setStreamingLecture] = useState<CourseLecture | null>(null);
 
@@ -152,6 +242,52 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
 
   return (
     <div className="pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-8 font-sans">
+      {/* ⚠️ SINGLE-DEVICE CONCURRENT STREAMING LOCKDOWN BANNER */}
+      {isDeviceBlocked && (
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-red-950 via-stone-900 to-amber-950 border-2 border-red-500/80 p-6 sm:p-8 shadow-2xl text-white space-y-4 ring-8 ring-red-500/10 animate-fade-in">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-red-600/30 border border-red-500/50 flex items-center justify-center shrink-0 text-red-400">
+                <ShieldAlert className="w-7 h-7 animate-pulse text-red-400" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-full bg-red-500 text-white text-[10px] font-black uppercase tracking-wider">
+                    Anti-Piracy & Multi-Device Protection
+                  </span>
+                  <span className="text-xs text-red-300 font-mono">1 Device Limit Active</span>
+                </div>
+                <h3 className="font-serif text-xl sm:text-2xl font-bold text-white">
+                  Active Session Detected on Another Device / Tab
+                </h3>
+                <p className="text-xs sm:text-sm text-stone-300 max-w-2xl leading-relaxed">
+                  {blockMessage || (
+                    <>Aapka account (<span className="text-amber-300 font-mono font-semibold">{currentUser?.email}</span>) kisi doosre device (phone/laptop) ya doosre browser tab par live masterclass dekh raha hai. Kuldeep Singh Atelier ki security policy ke mutabik ek email se ek samay par sirf <strong>1 device</strong> par hi live streaming allowed hai.</>
+                  )}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 w-full sm:w-auto">
+              <button
+                onClick={handleTakeoverSession}
+                disabled={isTransferringSession}
+                className="px-5 py-3 rounded-2xl bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold text-xs shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                <Tv className="w-4 h-4" />
+                <span>{isTransferringSession ? 'Transferring...' : 'Stream on THIS Device (End Other)'}</span>
+              </button>
+              <button
+                onClick={() => logout()}
+                className="px-4 py-3 rounded-2xl bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white font-semibold text-xs border border-stone-700 transition-colors cursor-pointer text-center"
+              >
+                Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 1. STUDENT PROFILE HEADER */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1A1816] via-[#241F1C] to-[#12100E] text-stone-100 p-6 sm:p-8 border border-stone-800 shadow-2xl">
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-artisan-crimson/15 to-artisan-ochre/15 rounded-full blur-3xl pointer-events-none" />
@@ -389,7 +525,15 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
 
                 {/* Live Meet Action */}
                 <div>
-                  {isEnrolled ? (
+                  {isDeviceBlocked ? (
+                    <button
+                      onClick={handleTakeoverSession}
+                      className="px-5 py-3 rounded-xl font-bold text-xs bg-red-950/80 border border-red-500 text-red-200 flex items-center gap-2 cursor-pointer hover:bg-red-900 transition-colors shadow-md"
+                    >
+                      <ShieldAlert className="w-4 h-4 text-red-400 animate-pulse" />
+                      <span>Live Stream Locked (Click to Takeover)</span>
+                    </button>
+                  ) : isEnrolled ? (
                     <a
                       href={liveMeetUrl}
                       target="_blank"
