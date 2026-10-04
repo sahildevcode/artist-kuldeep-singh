@@ -532,9 +532,10 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
 
       {/* Student Video Lecture Streaming Player Modal */}
       {selectedLectureForStream && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in">
-          <div className="relative w-full max-w-3xl bg-[#1A1816] text-stone-100 rounded-3xl border border-artisan-gold/40 shadow-2xl p-6 sm:p-8 space-y-4">
-            <div className="flex items-center justify-between border-b border-stone-800 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-md overflow-y-auto animate-in fade-in">
+          <div className="relative w-full max-w-3xl bg-[#1A1816] text-stone-100 rounded-3xl border border-artisan-gold/40 shadow-2xl flex flex-col max-h-[92vh] my-auto overflow-hidden">
+            {/* Modal Header (Fixed at top) */}
+            <div className="flex items-center justify-between border-b border-stone-800 p-4 sm:p-6 pb-3 shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-artisan-gold/10 text-artisan-gold flex items-center justify-center font-bold">
                   <Video className="w-5 h-5" />
@@ -543,105 +544,110 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
                   <span className="text-[10px] uppercase font-bold text-artisan-gold tracking-widest block">
                     Kuldeep Singh Fine Art Académie • HD Stream
                   </span>
-                  <h4 className="font-serif font-bold text-lg text-white">
+                  <h4 className="font-serif font-bold text-base sm:text-lg text-white">
                     {selectedLectureForStream.title}
                   </h4>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedLectureForStream(null)}
-                className="p-2 rounded-full text-stone-400 hover:text-white hover:bg-stone-800 transition-colors"
+                className="p-2 rounded-full text-stone-400 hover:text-white hover:bg-stone-800 transition-colors cursor-pointer"
+                title="Close Video"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="relative aspect-video rounded-2xl overflow-hidden bg-stone-950 border border-stone-800 shadow-inner flex items-center justify-center">
-              {selectedLectureForStream.videoUrl && (selectedLectureForStream.videoUrl.includes('youtube') || selectedLectureForStream.videoUrl.includes('youtu.be')) ? (
-                <iframe
-                  src={
-                    selectedLectureForStream.videoUrl.includes('watch?v=')
-                      ? selectedLectureForStream.videoUrl.replace('watch?v=', 'embed/')
-                      : selectedLectureForStream.videoUrl.includes('youtu.be/')
-                      ? selectedLectureForStream.videoUrl.replace('youtu.be/', 'www.youtube.com/embed/')
-                      : selectedLectureForStream.videoUrl.includes('shorts/')
-                      ? selectedLectureForStream.videoUrl.replace('shorts/', 'embed/')
-                      : selectedLectureForStream.videoUrl
-                  }
-                  title={selectedLectureForStream.title}
-                  className="w-full h-full border-0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              ) : selectedLectureForStream.videoUrl && selectedLectureForStream.videoUrl.includes('vimeo.com') ? (
-                <iframe
-                  src={
-                    selectedLectureForStream.videoUrl.includes('player.vimeo.com')
-                      ? selectedLectureForStream.videoUrl
-                      : selectedLectureForStream.videoUrl.replace(/vimeo\.com\/(\d+)/, 'player.vimeo.com/video/$1')
-                  }
-                  title={selectedLectureForStream.title}
-                  className="w-full h-full border-0"
-                  allow="accelerometer; autoplay; fullscreen; picture-in-picture"
-                  allowFullScreen
-                />
-              ) : selectedLectureForStream.videoUrl && selectedLectureForStream.videoUrl.includes('drive.google.com') ? (
-                <iframe
-                  src={
-                    selectedLectureForStream.videoUrl.includes('/preview')
-                      ? selectedLectureForStream.videoUrl
-                      : selectedLectureForStream.videoUrl.replace(/\/view(\?.*)?$/, '/preview')
-                  }
-                  title={selectedLectureForStream.title}
-                  className="w-full h-full border-0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              ) : selectedLectureForStream.videoUrl && (
-                selectedLectureForStream.videoUrl.startsWith('data:video') ||
-                selectedLectureForStream.videoUrl.startsWith('blob:') ||
-                selectedLectureForStream.videoUrl.match(/\.(mp4|webm|ogg|m4v)($|\?)/i) ||
-                selectedLectureForStream.videoUrl.includes('r2.dev') ||
-                selectedLectureForStream.videoUrl.includes('cloudflare') ||
-                selectedLectureForStream.videoUrl.includes('s3') ||
-                selectedLectureForStream.videoUrl.includes('googleapis.com')
-              ) ? (
-                <video
-                  src={selectedLectureForStream.videoUrl}
-                  controls
-                  controlsList="nodownload"
-                  className="w-full h-full object-contain bg-black"
-                  autoPlay
-                >
-                  Your browser does not support HTML5 video streaming.
-                </video>
-              ) : selectedLectureForStream.videoUrl?.startsWith('http') ? (
-                <iframe
-                  src={selectedLectureForStream.videoUrl}
-                  title={selectedLectureForStream.title}
-                  className="w-full h-full border-0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center text-center p-6 space-y-3">
-                  <div className="w-16 h-16 rounded-full bg-artisan-gold/10 border border-artisan-gold/30 flex items-center justify-center">
-                    <Play className="w-8 h-8 text-artisan-gold fill-artisan-gold ml-1" />
+            {/* Scrollable Modal Content (Video Player) */}
+            <div className="p-4 sm:p-6 overflow-y-auto flex-1 overscroll-contain space-y-4">
+              <div className="relative aspect-video rounded-2xl overflow-hidden bg-stone-950 border border-stone-800 shadow-inner flex items-center justify-center">
+                {selectedLectureForStream.videoUrl && (selectedLectureForStream.videoUrl.includes('youtube') || selectedLectureForStream.videoUrl.includes('youtu.be')) ? (
+                  <iframe
+                    src={
+                      selectedLectureForStream.videoUrl.includes('watch?v=')
+                        ? selectedLectureForStream.videoUrl.replace('watch?v=', 'embed/')
+                        : selectedLectureForStream.videoUrl.includes('youtu.be/')
+                        ? selectedLectureForStream.videoUrl.replace('youtu.be/', 'www.youtube.com/embed/')
+                        : selectedLectureForStream.videoUrl.includes('shorts/')
+                        ? selectedLectureForStream.videoUrl.replace('shorts/', 'embed/')
+                        : selectedLectureForStream.videoUrl
+                    }
+                    title={selectedLectureForStream.title}
+                    className="w-full h-full border-0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : selectedLectureForStream.videoUrl && selectedLectureForStream.videoUrl.includes('vimeo.com') ? (
+                  <iframe
+                    src={
+                      selectedLectureForStream.videoUrl.includes('player.vimeo.com')
+                        ? selectedLectureForStream.videoUrl
+                        : selectedLectureForStream.videoUrl.replace(/vimeo\.com\/(\d+)/, 'player.vimeo.com/video/$1')
+                    }
+                    title={selectedLectureForStream.title}
+                    className="w-full h-full border-0"
+                    allow="accelerometer; autoplay; fullscreen; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : selectedLectureForStream.videoUrl && selectedLectureForStream.videoUrl.includes('drive.google.com') ? (
+                  <iframe
+                    src={
+                      selectedLectureForStream.videoUrl.includes('/preview')
+                        ? selectedLectureForStream.videoUrl
+                        : selectedLectureForStream.videoUrl.replace(/\/view(\?.*)?$/, '/preview')
+                    }
+                    title={selectedLectureForStream.title}
+                    className="w-full h-full border-0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : selectedLectureForStream.videoUrl && (
+                  selectedLectureForStream.videoUrl.startsWith('data:video') ||
+                  selectedLectureForStream.videoUrl.startsWith('blob:') ||
+                  selectedLectureForStream.videoUrl.match(/\.(mp4|webm|ogg|m4v)($|\?)/i) ||
+                  selectedLectureForStream.videoUrl.includes('r2.dev') ||
+                  selectedLectureForStream.videoUrl.includes('cloudflare') ||
+                  selectedLectureForStream.videoUrl.includes('s3') ||
+                  selectedLectureForStream.videoUrl.includes('googleapis.com')
+                ) ? (
+                  <video
+                    src={selectedLectureForStream.videoUrl}
+                    controls
+                    controlsList="nodownload"
+                    className="w-full h-full object-contain bg-black"
+                    autoPlay
+                  >
+                    Your browser does not support HTML5 video streaming.
+                  </video>
+                ) : selectedLectureForStream.videoUrl?.startsWith('http') ? (
+                  <iframe
+                    src={selectedLectureForStream.videoUrl}
+                    title={selectedLectureForStream.title}
+                    className="w-full h-full border-0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-center p-6 space-y-3">
+                    <div className="w-16 h-16 rounded-full bg-artisan-gold/10 border border-artisan-gold/30 flex items-center justify-center">
+                      <Play className="w-8 h-8 text-artisan-gold fill-artisan-gold ml-1" />
+                    </div>
+                    <p className="font-serif text-white text-lg">
+                      Streaming Secure Video: {selectedLectureForStream.title}
+                    </p>
+                    <p className="text-xs text-stone-400 font-mono">
+                      Stream URL: {selectedLectureForStream.videoUrl}
+                    </p>
+                    <p className="text-[11px] text-stone-500 max-w-md">
+                      * Ultra-secure player. Screen recording, unauthorized sharing, and video downloads are strictly disabled.
+                    </p>
                   </div>
-                  <p className="font-serif text-white text-lg">
-                    Streaming Secure Video: {selectedLectureForStream.title}
-                  </p>
-                  <p className="text-xs text-stone-400 font-mono">
-                    Stream URL: {selectedLectureForStream.videoUrl}
-                  </p>
-                  <p className="text-[11px] text-stone-500 max-w-md">
-                    * Ultra-secure player. Screen recording, unauthorized sharing, and video downloads are strictly disabled.
-                  </p>
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-stone-300 pt-2 border-t border-stone-800">
+            {/* Modal Footer (Fixed at bottom) */}
+            <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-stone-300 p-4 sm:p-6 pt-3 border-t border-stone-800 bg-[#1A1816] shrink-0">
               <span className="text-stone-400">
                 Duration: <strong className="text-white">{selectedLectureForStream.duration}</strong>
               </span>
@@ -650,7 +656,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
               </p>
               <button
                 onClick={() => setSelectedLectureForStream(null)}
-                className="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-white rounded-xl text-xs font-bold"
+                className="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-white rounded-xl text-xs font-bold cursor-pointer transition-colors"
               >
                 Close Video
               </button>
