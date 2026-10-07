@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Play, X, Volume2, VolumeX, ChevronLeft, ChevronRight, Film, Sparkles } from 'lucide-react';
 import { useAudio } from '../../context/AudioContext';
 import { useStudioData } from '../../context/StudioDataContext';
@@ -258,10 +259,10 @@ export const StudioVideoReels: React.FC = () => {
 
       {/* ============================================================== */}
       {/* IMMERSIVE 9:16 VERTICAL REEL PLAYER MODAL                     */}
-      {/* Fit cleanly inside 100% of screens with h-[76vh] max-h-[600px]*/}
+      {/* Rendered via Portal directly into document.body with z-[999999]*/}
       {/* ============================================================== */}
-      {activeReel !== null && activeReelIndex !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/90 backdrop-blur-md animate-in fade-in">
+      {activeReel !== null && activeReelIndex !== null && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[999999] flex items-center justify-center p-3 sm:p-5 bg-black/95 backdrop-blur-md animate-in fade-in">
           {/* Previous Reel Navigation Button (Desktop) */}
           <button
             onClick={(e) => {
@@ -289,7 +290,7 @@ export const StudioVideoReels: React.FC = () => {
           </button>
 
           {/* 9:16 Vertical Reel Player Card (Guaranteed screen-contained) */}
-          <div className="relative h-[76vh] max-h-[600px] aspect-[9/16] w-auto max-w-[92vw] bg-stone-950 rounded-3xl overflow-hidden shadow-2xl border border-stone-800 flex flex-col justify-between my-auto select-none">
+          <div className="relative h-[78vh] max-h-[620px] aspect-[9/16] w-auto max-w-[92vw] bg-stone-950 rounded-3xl overflow-hidden shadow-2xl border border-stone-800 flex flex-col justify-between my-auto select-none">
             {/* Reel Header (Top Controls - Always visible) */}
             <div className="absolute top-0 inset-x-0 p-3 sm:p-4 flex items-center justify-between z-30 bg-gradient-to-b from-black/85 via-black/40 to-transparent">
               <div className="flex items-center gap-2">
@@ -346,6 +347,7 @@ export const StudioVideoReels: React.FC = () => {
               ) : (
                 <video
                   ref={videoRef}
+                  key={activeReel.videoUrl}
                   src={activeReel.videoUrl}
                   autoPlay
                   playsInline
@@ -353,6 +355,8 @@ export const StudioVideoReels: React.FC = () => {
                   muted={isMuted}
                   preload="auto"
                   onTimeUpdate={handleTimeUpdate}
+                  onPlay={() => setIsPlaying(true)}
+                  onPause={() => setIsPlaying(false)}
                   className="w-full h-full object-cover bg-black"
                 />
               )}
@@ -392,7 +396,8 @@ export const StudioVideoReels: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </section>
   );
