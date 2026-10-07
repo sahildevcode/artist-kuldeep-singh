@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Play, X, Volume2, VolumeX, ChevronLeft, ChevronRight, Film, Sparkles } from 'lucide-react';
 import { useAudio } from '../../context/AudioContext';
 import { useStudioData } from '../../context/StudioDataContext';
@@ -18,7 +18,7 @@ const DEFAULT_REELS: StudioReel[] = [
     title: 'Master Oil Glazing & Luminous Flesh Tones',
     category: 'Oil Glazing',
     duration: '0:58',
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+    videoUrl: 'https://vjs.zencdn.net/v/oceans.mp4',
     thumbnail: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=900&auto=format&fit=crop',
   },
   {
@@ -26,7 +26,7 @@ const DEFAULT_REELS: StudioReel[] = [
     title: 'Impasto Palette Knife Sculptural Textures',
     category: 'Palette Knife',
     duration: '0:45',
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
     thumbnail: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=900&auto=format&fit=crop',
   },
   {
@@ -34,7 +34,7 @@ const DEFAULT_REELS: StudioReel[] = [
     title: 'Sight-Size Charcoal Portrait Anatomy',
     category: 'Charcoal Study',
     duration: '1:12',
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+    videoUrl: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
     thumbnail: 'https://images.unsplash.com/photo-1577720643272-265f09367456?q=80&w=900&auto=format&fit=crop',
   },
   {
@@ -42,35 +42,66 @@ const DEFAULT_REELS: StudioReel[] = [
     title: 'Raw Mineral Pigment & Walnut Oil Prep',
     category: 'Atelier Secrets',
     duration: '0:52',
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+    videoUrl: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.360p.vp9.webm',
     thumbnail: 'https://images.unsplash.com/photo-1582561424760-0321d75e81fa?q=80&w=900&auto=format&fit=crop',
   },
 ];
 
 export const StudioVideoReels: React.FC = () => {
   const [activeReelIndex, setActiveReelIndex] = useState<number | null>(null);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true); // Default muted so all browsers permit instant autoplay
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const { playClick } = useAudio();
   const { artistProfile } = useStudioData();
 
-  // Combine custom admin video (as featured Reel 1) + default reels to maintain exactly 4 in one frame
+  // Safely clean custom video url (ignore outdated broken google sample URLs)
+  const customVideoUrl = artistProfile?.studioVideoUrl && !artistProfile.studioVideoUrl.includes('commondatastorage.googleapis.com')
+    ? artistProfile.studioVideoUrl
+    : null;
+
+  // Build exactly 4 reels in the frame
   const reelsList: StudioReel[] = [
-    ...(artistProfile?.studioVideoUrl
+    ...(customVideoUrl
       ? [
           {
             id: 'custom-admin-reel',
-            title: artistProfile.studioVideoTitle || 'Artist Kuldeep Singh • Atelier Demonstration',
+            title: artistProfile?.studioVideoTitle || 'Artist Kuldeep Singh • Atelier Demonstration',
             category: 'Featured Reel',
             duration: '0:55',
-            videoUrl: artistProfile.studioVideoUrl,
-            thumbnail: artistProfile.studioVideoPoster || DEFAULT_REELS[0].thumbnail,
+            videoUrl: customVideoUrl,
+            thumbnail: artistProfile?.studioVideoPoster || DEFAULT_REELS[0].thumbnail,
           },
         ]
       : []),
-    ...DEFAULT_REELS.filter((r) => r.videoUrl !== artistProfile?.studioVideoUrl),
+    ...DEFAULT_REELS.filter((r) => r.videoUrl !== customVideoUrl),
   ].slice(0, 4);
 
   const activeReel = activeReelIndex !== null ? reelsList[activeReelIndex] : null;
+
+  // Auto-play and reset whenever active reel changes
+  useEffect(() => {
+    if (activeReelIndex !== null && videoRef.current) {
+      setProgress(0);
+      videoRef.current.currentTime = 0;
+      videoRef.current.muted = isMuted;
+
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => setIsPlaying(true))
+          .catch(() => {
+            // If browser blocked unmuted playback, force mute and play
+            if (videoRef.current) {
+              videoRef.current.muted = true;
+              setIsMuted(true);
+              videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+            }
+          });
+      }
+    }
+  }, [activeReelIndex, isMuted]);
 
   // Handle keyboard navigation in reel player
   useEffect(() => {
@@ -83,10 +114,39 @@ export const StudioVideoReels: React.FC = () => {
       if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
         setActiveReelIndex((prev) => (prev !== null && prev > 0 ? prev - 1 : reelsList.length - 1));
       }
+      if (e.key === ' ' || e.key === 'k') {
+        e.preventDefault();
+        togglePlayPause();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeReelIndex, reelsList.length]);
+  }, [activeReelIndex, reelsList.length, isPlaying]);
+
+  const togglePlayPause = () => {
+    if (!videoRef.current) return;
+    if (videoRef.current.paused) {
+      videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+    } else {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const toggleSound = () => {
+    if (videoRef.current) {
+      const nextMuted = !isMuted;
+      videoRef.current.muted = nextMuted;
+      setIsMuted(nextMuted);
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (videoRef.current && videoRef.current.duration) {
+      const pct = (videoRef.current.currentTime / videoRef.current.duration) * 100;
+      setProgress(pct);
+    }
+  };
 
   const isEmbedPlayer = (url: string) => {
     return (
@@ -198,12 +258,14 @@ export const StudioVideoReels: React.FC = () => {
 
       {/* ============================================================== */}
       {/* IMMERSIVE 9:16 VERTICAL REEL PLAYER MODAL                     */}
+      {/* Fit cleanly inside 100% of screens with h-[76vh] max-h-[600px]*/}
       {/* ============================================================== */}
       {activeReel !== null && activeReelIndex !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/90 backdrop-blur-md animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/90 backdrop-blur-md animate-in fade-in">
           {/* Previous Reel Navigation Button (Desktop) */}
           <button
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               playClick();
               setActiveReelIndex((prev) => (prev !== null && prev > 0 ? prev - 1 : reelsList.length - 1));
             }}
@@ -215,7 +277,8 @@ export const StudioVideoReels: React.FC = () => {
 
           {/* Next Reel Navigation Button (Desktop) */}
           <button
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               playClick();
               setActiveReelIndex((prev) => (prev !== null && prev < reelsList.length - 1 ? prev + 1 : 0));
             }}
@@ -225,34 +288,53 @@ export const StudioVideoReels: React.FC = () => {
             <ChevronRight className="w-6 h-6" />
           </button>
 
-          {/* 9:16 Vertical Reel Player Card */}
-          <div className="relative w-full max-w-[360px] sm:max-w-[390px] aspect-[9/16] max-h-[92vh] bg-stone-950 rounded-3xl overflow-hidden shadow-2xl border border-stone-800 flex flex-col justify-between">
-            {/* Reel Header (Top Controls) */}
-            <div className="absolute top-0 inset-x-0 p-4 flex items-center justify-between z-30 bg-gradient-to-b from-black/80 via-black/40 to-transparent">
+          {/* 9:16 Vertical Reel Player Card (Guaranteed screen-contained) */}
+          <div className="relative h-[76vh] max-h-[600px] aspect-[9/16] w-auto max-w-[92vw] bg-stone-950 rounded-3xl overflow-hidden shadow-2xl border border-stone-800 flex flex-col justify-between my-auto select-none">
+            {/* Reel Header (Top Controls - Always visible) */}
+            <div className="absolute top-0 inset-x-0 p-3 sm:p-4 flex items-center justify-between z-30 bg-gradient-to-b from-black/85 via-black/40 to-transparent">
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setIsMuted(!isMuted)}
-                  className="p-2 rounded-full bg-black/50 hover:bg-black/80 text-white backdrop-blur-md border border-white/10 transition-colors cursor-pointer"
-                  title={isMuted ? 'Unmute' : 'Mute'}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleSound();
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md border border-white/20 text-xs font-semibold cursor-pointer transition-colors"
+                  title={isMuted ? 'Click for Sound' : 'Mute'}
                 >
-                  {isMuted ? <VolumeX className="w-4 h-4 text-red-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
+                  {isMuted ? (
+                    <>
+                      <VolumeX className="w-3.5 h-3.5 text-amber-400" />
+                      <span className="text-[10px] text-amber-300">Tap for Sound</span>
+                    </>
+                  ) : (
+                    <>
+                      <Volume2 className="w-3.5 h-3.5 text-emerald-400" />
+                      <span className="text-[10px] text-emerald-300">Sound On</span>
+                    </>
+                  )}
                 </button>
-                <span className="text-[10px] font-mono font-bold text-white/80 bg-black/50 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10">
-                  Reel {activeReelIndex + 1} of {reelsList.length}
+                <span className="text-[10px] font-mono font-bold text-white/80 bg-black/50 backdrop-blur-md px-2 py-1 rounded-full border border-white/10">
+                  {activeReelIndex + 1}/{reelsList.length}
                 </span>
               </div>
 
               <button
-                onClick={() => setActiveReelIndex(null)}
-                className="p-2 rounded-full bg-black/60 hover:bg-red-600 text-white backdrop-blur-md border border-white/20 transition-all cursor-pointer"
-                title="Close Reel"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveReelIndex(null);
+                }}
+                className="p-1.5 sm:p-2 rounded-full bg-black/60 hover:bg-red-600 text-white backdrop-blur-md border border-white/20 transition-all cursor-pointer"
+                title="Close Reel (Esc)"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
 
             {/* Video Player Display */}
-            <div className="relative w-full h-full bg-black flex items-center justify-center overflow-hidden">
+            <div
+              onClick={togglePlayPause}
+              className="relative w-full h-full bg-black flex items-center justify-center overflow-hidden cursor-pointer"
+            >
               {isEmbedPlayer(activeReel.videoUrl) ? (
                 <iframe
                   src={getEmbedUrl(activeReel.videoUrl)}
@@ -263,31 +345,50 @@ export const StudioVideoReels: React.FC = () => {
                 />
               ) : (
                 <video
+                  ref={videoRef}
                   src={activeReel.videoUrl}
-                  controls
                   autoPlay
+                  playsInline
                   loop
                   muted={isMuted}
-                  playsInline
+                  preload="auto"
+                  onTimeUpdate={handleTimeUpdate}
                   className="w-full h-full object-cover bg-black"
                 />
               )}
+
+              {/* Pause / Play Tap Overlay Indicator */}
+              {!isPlaying && !isEmbedPlayer(activeReel.videoUrl) && (
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center pointer-events-none animate-in fade-in">
+                  <div className="w-16 h-16 rounded-full bg-black/70 text-white flex items-center justify-center border border-white/20 shadow-2xl">
+                    <Play className="w-8 h-8 fill-current ml-1" />
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Reel Footer (Overlay Details) */}
-            <div className="absolute bottom-0 inset-x-0 p-4 sm:p-5 z-30 bg-gradient-to-t from-black/95 via-black/60 to-transparent text-white space-y-2 pointer-events-none">
+            {/* Reel Footer (Overlay Details + Progress Bar) */}
+            <div className="absolute bottom-0 inset-x-0 p-4 sm:p-5 z-30 bg-gradient-to-t from-black/95 via-black/60 to-transparent text-white space-y-1.5 pointer-events-none">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] uppercase font-bold text-artisan-gold tracking-wider bg-black/60 px-2 py-0.5 rounded-full border border-artisan-gold/30">
                   {activeReel.category}
                 </span>
                 <span className="text-xs text-stone-300 font-medium">@artist.kuldeepsingh</span>
               </div>
-              <h4 className="font-serif font-bold text-base sm:text-lg leading-snug drop-shadow-md">
+              <h4 className="font-serif font-bold text-sm sm:text-base leading-snug drop-shadow-md">
                 {activeReel.title}
               </h4>
-              <div className="flex items-center justify-between text-[11px] text-stone-400 pt-1">
-                <span>Swipe / arrow keys for next reel</span>
+              <div className="flex items-center justify-between text-[10px] text-stone-400 pt-0.5">
+                <span>{isPlaying ? 'Tap to pause' : 'Tap to resume'} • Arrow keys to switch</span>
                 <span className="font-mono text-artisan-gold">{activeReel.duration}</span>
+              </div>
+
+              {/* Sleek Custom Progress Bar (Instagram / TikTok timeline) */}
+              <div className="w-full h-1 bg-white/20 rounded-full overflow-hidden mt-1">
+                <div
+                  className="h-full bg-artisan-crimson transition-all duration-150"
+                  style={{ width: `${progress}%` }}
+                />
               </div>
             </div>
           </div>
