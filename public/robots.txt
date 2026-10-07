@@ -3,4 +3,4 @@ User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://artist-kuldeepsingh.netlify.app/sitemap.xml
+Sitemap: https://artist-kuldeep-singh.vercel.app/sitemap.xml
