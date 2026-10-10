@@ -62,22 +62,24 @@ export const StudioVideoReels: React.FC = () => {
     ? artistProfile.studioVideoUrl
     : null;
 
-  // Build exactly 4 reels in the frame
-  const reelsList: StudioReel[] = [
-    ...(customVideoUrl
-      ? [
-          {
-            id: 'custom-admin-reel',
-            title: artistProfile?.studioVideoTitle || 'Artist Kuldeep Singh • Atelier Demonstration',
-            category: 'Featured Reel',
-            duration: '0:55',
-            videoUrl: customVideoUrl,
-            thumbnail: artistProfile?.studioVideoPoster || DEFAULT_REELS[0].thumbnail,
-          },
-        ]
-      : []),
-    ...DEFAULT_REELS.filter((r) => r.videoUrl !== customVideoUrl),
-  ].slice(0, 4);
+  // Build exactly 4 reels in the frame (prioritizing custom studioReels from Admin)
+  const customReels = artistProfile?.studioReels && Array.isArray(artistProfile.studioReels) ? artistProfile.studioReels : [];
+  const reelsList: StudioReel[] = [0, 1, 2, 3].map((idx) => {
+    if (customReels[idx]?.videoUrl) {
+      return customReels[idx];
+    }
+    if (idx === 0 && customVideoUrl) {
+      return {
+        id: 'custom-admin-reel',
+        title: artistProfile?.studioVideoTitle || 'Artist Kuldeep Singh • Atelier Demonstration',
+        category: 'Featured Reel',
+        duration: '0:55',
+        videoUrl: customVideoUrl,
+        thumbnail: artistProfile?.studioVideoPoster || DEFAULT_REELS[0].thumbnail,
+      };
+    }
+    return DEFAULT_REELS[idx];
+  });
 
   const activeReel = activeReelIndex !== null ? reelsList[activeReelIndex] : null;
 
