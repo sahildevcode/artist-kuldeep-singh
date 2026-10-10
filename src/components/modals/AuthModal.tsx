@@ -4,19 +4,34 @@ import { useAuth } from '../../context/AuthContext';
 import { MagneticButton } from '../ui/MagneticButton';
 
 export const AuthModal: React.FC = () => {
-  const { isAuthModalOpen, setIsAuthModalOpen, login, quickDemoLogin } = useAuth();
-  const [role, setRole] = useState<'collector' | 'student'>('collector');
+  const { isAuthModalOpen, setIsAuthModalOpen, login } = useAuth();
+  const [role, setRole] = useState<'collector' | 'student'>('student');
   const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
   if (!isAuthModalOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
-    login(email, name || (role === 'collector' ? 'Art Collector' : 'Academy Scholar'), role);
+    setErrorMsg('');
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPassword = password.trim();
+
+    if (!cleanEmail) {
+      setErrorMsg('Please enter your valid email address.');
+      return;
+    }
+    if (!cleanPassword || cleanPassword.length < 4) {
+      setErrorMsg('Please enter your password (minimum 4 characters).');
+      return;
+    }
+
+    const displayName = name.trim() || (role === 'collector' ? 'Art Collector' : 'Academy Scholar');
+    login(cleanEmail, displayName, role);
+    setIsAuthModalOpen(false);
   };
 
   return (
@@ -77,36 +92,20 @@ export const AuthModal: React.FC = () => {
             </button>
           </div>
 
-          {/* Quick Demo Buttons for Instant 1-Click Login */}
-          <div className="bg-stone-50 p-3 rounded-2xl border border-dashed border-stone-300 space-y-2">
-            <p className="text-[11px] font-semibold text-stone-500 text-center uppercase tracking-wider">
-              Quick 1-Click Demo Login:
+          {/* Role Helper Description */}
+          <div className="bg-stone-50 p-3.5 rounded-2xl border border-stone-200 text-center">
+            <p className="text-xs text-stone-600 font-medium">
+              {role === 'student'
+                ? 'Sign in with your registered student email and password to access your live classes, meeting link, and recorded lectures.'
+                : 'Sign in with your collector email and password to view private acquisitions and certificates of authenticity.'}
             </p>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => quickDemoLogin('collector')}
-                className="px-3 py-2 bg-white hover:bg-stone-100 text-[#1A1816] rounded-xl text-xs font-semibold border border-stone-200 shadow-xs flex items-center justify-center gap-1.5 transition-all"
-              >
-                <span>Demo Collector</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => quickDemoLogin('student')}
-                className="px-3 py-2 bg-white hover:bg-stone-100 text-[#1A1816] rounded-xl text-xs font-semibold border border-stone-200 shadow-xs flex items-center justify-center gap-1.5 transition-all"
-              >
-                <span>Demo Student</span>
-              </button>
-            </div>
           </div>
 
-          <div className="relative flex py-1 items-center">
-            <div className="flex-grow border-t border-stone-200" />
-            <span className="flex-shrink mx-3 text-[11px] text-stone-400 uppercase tracking-widest font-medium">
-              or enter credentials
-            </span>
-            <div className="flex-grow border-t border-stone-200" />
-          </div>
+          {errorMsg && (
+            <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold text-center">
+              {errorMsg}
+            </div>
+          )}
 
           {/* Standard Form */}
           <form onSubmit={handleSubmit} className="space-y-3.5">

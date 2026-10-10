@@ -15,7 +15,8 @@ import {
   ShieldAlert,
   Sparkles,
   Radio,
-  Calendar
+  Calendar,
+  LogOut
 } from 'lucide-react';
 import { useStudioData } from '../context/StudioDataContext';
 import { useAuth } from '../context/AuthContext';
@@ -28,7 +29,7 @@ interface StudentPortalPageProps {
 
 export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActivePage }) => {
   const { courses, liveStatus, students, addStudent } = useStudioData();
-  const { currentUser, login, logout, isCourseUnlocked, unlockCourse } = useAuth();
+  const { currentUser, login, logout, setIsAuthModalOpen, isCourseUnlocked, unlockCourse } = useAuth();
 
   // Selected Course (persists on reload)
   const [selectedCourseId, setSelectedCourseId] = useState<string>(() => {
@@ -53,7 +54,7 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
 
   const activeCourse = courses.find((c) => c.id === selectedCourseId) || courses[0];
 
-  // Enrollment Verification
+  // Enrollment Verification (Requires logged in student)
   const isEnrolled = useMemo(() => {
     if (!activeCourse) return false;
     if (currentUser?.email) {
@@ -61,8 +62,8 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
         (s) => s.courseId === activeCourse.id && s.email.toLowerCase() === currentUser.email.toLowerCase()
       );
       if (inDatabase) return true;
+      if (isCourseUnlocked(activeCourse.id)) return true;
     }
-    if (isCourseUnlocked(activeCourse.id)) return true;
     return false;
   }, [activeCourse, currentUser, students, isCourseUnlocked]);
 
@@ -232,8 +233,8 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
   };
 
   // Student Profile Data
-  const studentName = currentUser?.name || 'Aarav Sharma';
-  const studentEmail = currentUser?.email || 'aarav.sharma@gmail.com';
+  const studentName = currentUser?.name || 'Guest Scholar';
+  const studentEmail = currentUser?.email || 'Not Signed In';
   const studentAvatar = currentUser?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=150&auto=format&fit=crop';
 
   // Google Meet link for live studio
@@ -321,33 +322,53 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
             </div>
           </div>
 
-          {/* Quick Demo Switchers for testing */}
+          {/* Real Authentication Controls */}
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => login('aarav.sharma@gmail.com', 'Aarav Sharma', 'student')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors flex items-center gap-1.5 ${
-                currentUser?.email === 'aarav.sharma@gmail.com'
-                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                  : 'bg-stone-800 text-stone-300 border-stone-700 hover:text-white'
-              }`}
-            >
-              <User className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Student: Aarav (Enrolled)</span>
-            </button>
-            <button
-              onClick={() => login('guest@test.com', 'Guest User', 'student')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors flex items-center gap-1.5 ${
-                currentUser?.email === 'guest@test.com'
-                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                  : 'bg-stone-800 text-stone-300 border-stone-700 hover:text-white'
-              }`}
-            >
-              <User className="w-3.5 h-3.5 text-amber-400" />
-              <span>Guest (New User)</span>
-            </button>
+            {currentUser ? (
+              <button
+                onClick={logout}
+                className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-stone-800 text-stone-300 border border-stone-700 hover:text-white hover:bg-stone-700 transition-colors flex items-center gap-1.5 cursor-pointer"
+                title="Sign Out of Portal"
+              >
+                <LogOut className="w-3.5 h-3.5 text-stone-400" />
+                <span>Sign Out</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => setIsAuthModalOpen(true)}
+                className="px-4 py-2.5 rounded-xl text-xs font-bold bg-artisan-gold hover:bg-amber-400 text-stone-950 transition-colors flex items-center gap-1.5 shadow-md cursor-pointer"
+              >
+                <User className="w-3.5 h-3.5" />
+                <span>Sign In with Email</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Not Signed In Notice */}
+      {!currentUser && (
+        <div className="p-4 sm:p-5 rounded-3xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+              <Lock className="w-4 h-4" />
+            </div>
+            <div>
+              <strong className="block text-white text-xs font-semibold">Student Sign In Required</strong>
+              <span className="text-amber-200/80 text-[11px]">
+                Please sign in with your registered student email and password to unlock live meeting links and lecture recordings.
+              </span>
+            </div>
+          </div>
+          <button
+            onClick={() => setIsAuthModalOpen(true)}
+            className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs shrink-0 cursor-pointer shadow transition-all flex items-center justify-center gap-1.5"
+          >
+            <User className="w-3.5 h-3.5" />
+            <span>Sign In to Student Portal</span>
+          </button>
+        </div>
+      )}
 
       {/* 2. COURSE / LIVE BATCH SELECTOR TABS */}
       <div className="space-y-4">
@@ -860,14 +881,14 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
               </p>
             </div>
 
-            {/* Test Simulation Notice */}
-            <div className="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-200 text-xs space-y-1">
-              <div className="flex items-center gap-1.5 font-bold text-emerald-400">
+            {/* Enrollment Access Notice */}
+            <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs space-y-1">
+              <div className="flex items-center gap-1.5 font-bold text-amber-400">
                 <ShieldCheck className="w-4 h-4" />
-                <span>Simulated / Test Gateway Active</span>
+                <span>Atelier Student Enrollment</span>
               </div>
-              <p className="text-[11px] text-emerald-300/80 leading-relaxed">
-                Testing ke liye real payment gateway ki zaroorat nahi hai. Neeche diye button par click karke aap instantly is course ko unlock aur video playback test kar sakte hain.
+              <p className="text-[11px] text-stone-300 leading-relaxed">
+                Apna registered student name aur email verify karein to access your live classes, Google Meet link, and recorded lecture demos.
               </p>
             </div>
 
@@ -882,19 +903,19 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
                     type="text"
                     value={enrollName}
                     onChange={(e) => setEnrollName(e.target.value)}
-                    placeholder="e.g. Aarav Sharma"
+                    placeholder="Enter your full name"
                     className="w-full px-4 py-2.5 rounded-xl bg-stone-950 border border-stone-700 text-white text-xs focus:outline-none focus:border-amber-400"
                   />
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-stone-300 block mb-1">
-                    Student Email Address
+                    Student Registered Email Address
                   </label>
                   <input
                     type="email"
                     value={enrollEmail}
                     onChange={(e) => setEnrollEmail(e.target.value)}
-                    placeholder="e.g. aarav.sharma@gmail.com"
+                    placeholder="student@example.com"
                     className="w-full px-4 py-2.5 rounded-xl bg-stone-950 border border-stone-700 text-white text-xs focus:outline-none focus:border-amber-400"
                   />
                 </div>
@@ -906,7 +927,7 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
                   className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-bold text-xs tracking-wide shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Sparkles className="w-4 h-4 text-stone-950" />
-                  <span>Simulate Instant Payment & Unlock (₹0 Test)</span>
+                  <span>Confirm Enrollment & Unlock Course</span>
                 </button>
                 <button
                   onClick={() => setIsEnrollModalOpen(false)}
