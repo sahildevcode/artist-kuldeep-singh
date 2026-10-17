@@ -82,6 +82,39 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
     );
   }
 
+  const finalizeOrder = async (paymentRefId?: string) => {
+    const courseItem = cart.find((i) => i.type === 'course');
+    const fullDeliveryAddress = `${streetAddress}, ${city}, ${stateName ? stateName + ' ' : ''}${pincode ? '- ' + pincode : ''}`.trim();
+    const chosenPaymentLabel = paymentMethod === 'online'
+      ? `Razorpay (${paymentRefId || 'Verified'})`
+      : 'Cash on Delivery (COD)';
+
+    await performCheckout({
+      name: fullName.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      address: fullDeliveryAddress,
+      city: city.trim(),
+      state: stateName.trim(),
+      paymentMethod: chosenPaymentLabel,
+      paymentStatus: paymentMethod === 'online' ? 'Paid' : 'Pending Payment',
+      notes: notes.trim()
+    });
+
+    if (courseItem) {
+      try {
+        localStorage.setItem('ks_student_selected_course', courseItem.id);
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+
+    onClose();
+    if (courseItem && onSuccessCourseEnroll) {
+      onSuccessCourseEnroll(courseItem.id);
+    }
+  };
+
   // 2. Checkout Submission Handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,35 +125,68 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
       return;
     }
 
-    const fullDeliveryAddress = `${streetAddress}, ${city}, ${stateName ? stateName + ' ' : ''}${pincode ? '- ' + pincode : ''}`.trim();
-    const chosenPaymentLabel = paymentMethod === 'online'
-      ? 'Online Payment (Demo Razorpay / UPI)'
-      : 'Cash on Delivery (COD)';
-
     try {
-      const courseItem = cart.find((i) => i.type === 'course');
-      await performCheckout({
-        name: fullName.trim(),
-        email: email.trim(),
-        phone: phone.trim(),
-        address: fullDeliveryAddress,
-        city: city.trim(),
-        state: stateName.trim(),
-        paymentMethod: chosenPaymentLabel,
-        paymentStatus: paymentMethod === 'online' ? 'Paid' : 'Pending Payment',
-        notes: notes.trim()
-      });
-      if (courseItem) {
-        try {
-          localStorage.setItem('ks_student_selected_course', courseItem.id);
-        } catch (e) {
-          console.warn(e);
+      if (paymentMethod === 'online' && typeof (window as any).Razorpay !== 'undefined') {
+        const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+          ? 'http://localhost:5000'
+          : 'https://kuldeep-singh-backend.onrender.com';
+
+        const orderRes = await fetch(`${baseUrl}/api/payment/create-order`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: finalTotal,
+            currency: 'INR',
+            notes: {
+              customer_name: fullName.trim(),
+              customer_email: email.trim(),
+              customer_phone: phone.trim()
+            }
+          })
+        });
+
+        if (orderRes.ok) {
+          const orderData = await orderRes.json();
+          const rzp = new (window as any).Razorpay({
+            key: orderData.keyId || 'rzp_test_Tov2TH73ygLA8W',
+            amount: orderData.amount,
+            currency: orderData.currency || 'INR',
+            name: 'Artist Kuldeep Singh Atelier',
+            description: cart.map((i) => i.title).join(', ').slice(0, 100),
+            order_id: orderData.orderId,
+            prefill: {
+              name: fullName.trim(),
+              email: email.trim(),
+              contact: phone.trim()
+            },
+            theme: {
+              color: '#1A1816'
+            },
+            handler: async (resp: any) => {
+              try {
+                await fetch(`${baseUrl}/api/payment/verify-payment`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(resp)
+                });
+              } catch (e) {
+                console.warn(e);
+              }
+              await finalizeOrder(resp.razorpay_payment_id);
+            },
+            modal: {
+              ondismiss: () => {
+                console.log('Payment modal dismissed');
+              }
+            }
+          });
+
+          rzp.open();
+          return;
         }
       }
-      onClose();
-      if (courseItem && onSuccessCourseEnroll) {
-        onSuccessCourseEnroll(courseItem.id);
-      }
+
+      await finalizeOrder();
     } catch (err: any) {
       console.error('Checkout error:', err);
       setErrorMessage(err.message || 'Error processing your order. Please try again.');
