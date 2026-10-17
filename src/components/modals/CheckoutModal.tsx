@@ -7,9 +7,10 @@ import { MagneticButton } from '../ui/MagneticButton';
 interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccessCourseEnroll?: (courseId: string) => void;
 }
 
-export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose }) => {
+export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, onSuccessCourseEnroll }) => {
   const { cart, subtotal, discount, shipping, finalTotal, performCheckout, isCheckingOut } = useCart();
   const { currentUser, setIsAuthModalOpen } = useAuth();
 
@@ -97,6 +98,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose })
       : 'Cash on Delivery (COD)';
 
     try {
+      const courseItem = cart.find((i) => i.type === 'course');
       await performCheckout({
         name: fullName.trim(),
         email: email.trim(),
@@ -108,7 +110,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose })
         paymentStatus: paymentMethod === 'online' ? 'Paid' : 'Pending Payment',
         notes: notes.trim()
       });
+      if (courseItem) {
+        try {
+          localStorage.setItem('ks_student_selected_course', courseItem.id);
+        } catch (e) {
+          console.warn(e);
+        }
+      }
       onClose();
+      if (courseItem && onSuccessCourseEnroll) {
+        onSuccessCourseEnroll(courseItem.id);
+      }
     } catch (err: any) {
       console.error('Checkout error:', err);
       setErrorMessage(err.message || 'Error processing your order. Please try again.');

@@ -155,12 +155,30 @@ const AppInner: React.FC = () => {
           <AboutPage setActivePage={handlePageChange} />
         )}
         {activePage === 'courses' && (
-          <CoursesPage onSelectCourse={handleSelectCourse} />
+          <CoursesPage
+            onSelectCourse={handleSelectCourse}
+            onGoToPortal={(courseId) => {
+              try {
+                localStorage.setItem('ks_student_selected_course', courseId);
+              } catch (e) {
+                console.warn(e);
+              }
+              handlePageChange('student-portal');
+            }}
+          />
         )}
         {activePage === 'course-detail' && selectedCourse && (
           <CourseDetailPage
             course={courses.find((c) => c.id === selectedCourse.id) || selectedCourse}
             onBack={() => handlePageChange('courses')}
+            onGoToPortal={(courseId) => {
+              try {
+                localStorage.setItem('ks_student_selected_course', courseId);
+              } catch (e) {
+                console.warn(e);
+              }
+              handlePageChange('student-portal');
+            }}
           />
         )}
         {activePage === 'store' && (
@@ -189,11 +207,23 @@ const AppInner: React.FC = () => {
       <CheckoutModal
         isOpen={isCheckoutModalOpen}
         onClose={() => setIsCheckoutModalOpen(false)}
+        onSuccessCourseEnroll={(courseId) => {
+          try {
+            localStorage.setItem('ks_student_selected_course', courseId);
+          } catch (e) {
+            console.warn(e);
+          }
+          handlePageChange('student-portal');
+        }}
       />
       <OrderHistoryModal
         onNavigateToCourse={(courseId) => {
-          const found = courses.find((c) => c.id === courseId);
-          if (found) handleSelectCourse(found);
+          try {
+            localStorage.setItem('ks_student_selected_course', courseId);
+          } catch (e) {
+            console.warn(e);
+          }
+          handlePageChange('student-portal');
         }}
       />
       {/* Artwork Modal */}

@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { BookOpen, Star, Clock, Sparkles, Shield, Search, Play, Calendar, ArrowRight, Video } from 'lucide-react';
+import { BookOpen, Star, Clock, Sparkles, Shield, Search, Play, Calendar, ArrowRight, Video, CheckCircle2 } from 'lucide-react';
 import type { Course } from '../types';
 import { useStudioData } from '../context/StudioDataContext';
+import { useAuth } from '../context/AuthContext';
 
 interface CoursesPageProps {
   onSelectCourse: (course: Course) => void;
+  onGoToPortal?: (courseId: string) => void;
 }
 
-export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse }) => {
+export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoToPortal }) => {
   const { courses } = useStudioData();
+  const { isCourseUnlocked } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -104,116 +107,161 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse }) => {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {filteredCourses.map((course) => (
-              <div
-                key={course.id}
-                onClick={() => onSelectCourse(course)}
-                className="bg-white rounded-3xl overflow-hidden border border-stone-200 shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1.5 cursor-pointer"
-              >
-                {/* Course Banner Visual */}
-                <div className="relative h-64 overflow-hidden bg-stone-900">
-                  <img
-                    src={course.thumbnail}
-                    alt={course.title}
-                    className="w-full h-full object-cover opacity-85 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+            {filteredCourses.map((course) => {
+              const isUnlocked = isCourseUnlocked(course.id);
+              const handleCardClick = () => {
+                if (isUnlocked && onGoToPortal) {
+                  onGoToPortal(course.id);
+                } else {
+                  onSelectCourse(course);
+                }
+              };
 
-                  {/* Top Badges */}
-                  <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2">
-                    {course.liveClassStatus === 'live' && (
-                      <span className="bg-red-600 text-white animate-pulse px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-lg border border-red-400">
-                        <span className="w-2 h-2 rounded-full bg-white animate-ping" />
-                        🔴 Live Studio Class Active
-                      </span>
-                    )}
-                    <span className="bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-wider">
-                      {course.category}
-                    </span>
-                    <span className="bg-white/95 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-stone-800 flex items-center gap-1">
-                      <Calendar className="w-3 h-3 text-artisan-gold" />
-                      {course.durationMonths}
-                    </span>
-                  </div>
+              return (
+                <div
+                  key={course.id}
+                  onClick={handleCardClick}
+                  className="bg-white rounded-3xl overflow-hidden border border-stone-200 shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1.5 cursor-pointer"
+                >
+                  {/* Course Banner Visual */}
+                  <div className="relative h-64 overflow-hidden bg-stone-900">
+                    <img
+                      src={course.thumbnail}
+                      alt={course.title}
+                      className="w-full h-full object-cover opacity-85 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
 
-                  <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between text-white">
-                    <div>
-                      <div className="flex items-center gap-1 text-amber-400 text-xs font-bold">
-                        <Star className="w-3.5 h-3.5 fill-amber-400" />
-                        <span>{course.rating}</span>
-                        <span className="text-stone-300 font-normal">({course.studentsEnrolled} artists)</span>
-                      </div>
-                      <p className="text-[11px] text-stone-300 mt-0.5">
-                        Mentor: Artist Kuldeep Singh
-                      </p>
-                    </div>
-
-                    <span className="px-3 py-1.5 rounded-full bg-white/95 text-stone-900 text-xs font-bold flex items-center gap-1 group-hover:bg-white shadow-md">
-                      <Play className="w-3 h-3 text-artisan-crimson fill-artisan-crimson" />
-                      View Full Details
-                    </span>
-                  </div>
-                </div>
-
-                {/* Body Details */}
-                <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between space-y-6">
-                  <div className="space-y-3">
-                    <h3 className="font-serif font-bold text-2xl text-stone-900 group-hover:text-artisan-crimson transition-colors">
-                      {course.title}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-stone-600 leading-relaxed line-clamp-2">
-                      {course.summary}
-                    </p>
-
-                    <div className="grid grid-cols-2 gap-2 pt-2 text-xs text-stone-600">
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="w-4 h-4 text-artisan-gold flex-shrink-0" />
-                        <span>{course.durationHours} Hours Video Curriculum</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <BookOpen className="w-4 h-4 text-artisan-crimson flex-shrink-0" />
-                        <span>{course.totalLessons} Step-by-Step Lessons</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Pricing & CTA */}
-                  <div className="space-y-3 pt-4 border-t border-stone-100">
-                    <div className="flex items-baseline justify-between">
-                      <div>
-                        <span className="text-[10px] text-stone-400 uppercase tracking-wider block font-bold">
-                          Tuition Fee ({course.durationMonths.split(' ')[0]} {course.durationMonths.split(' ')[1]})
+                    {/* Top Badges */}
+                    <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2">
+                      {isUnlocked && (
+                        <span className="bg-emerald-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md">
+                          <CheckCircle2 className="w-3 h-3" />
+                          Enrolled & Active
                         </span>
-                        <div className="flex items-baseline gap-2">
-                          {course.originalPrice && (
-                            <span className="text-xs text-stone-400 line-through">
-                              ${course.originalPrice}
-                            </span>
-                          )}
-                          <span className="font-serif font-bold text-2xl text-artisan-crimson">
-                            ${course.price}
-                          </span>
-                          <span className="text-xs text-stone-500 font-semibold">USD</span>
+                      )}
+                      {course.liveClassStatus === 'live' && (
+                        <span className="bg-red-600 text-white animate-pulse px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-lg border border-red-400">
+                          <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+                          🔴 Live Studio Class Active
+                        </span>
+                      )}
+                      <span className="bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-wider">
+                        {course.category}
+                      </span>
+                      <span className="bg-white/95 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-stone-800 flex items-center gap-1">
+                        <Calendar className="w-3 h-3 text-artisan-gold" />
+                        {course.durationMonths}
+                      </span>
+                    </div>
+
+                    <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between text-white">
+                      <div>
+                        <div className="flex items-center gap-1 text-amber-400 text-xs font-bold">
+                          <Star className="w-3.5 h-3.5 fill-amber-400" />
+                          <span>{course.rating}</span>
+                          <span className="text-stone-300 font-normal">({course.studentsEnrolled} artists)</span>
+                        </div>
+                        <p className="text-[11px] text-stone-300 mt-0.5">
+                          Mentor: Artist Kuldeep Singh
+                        </p>
+                      </div>
+
+                      <span className={`px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1 shadow-md ${
+                        isUnlocked
+                          ? 'bg-emerald-600 text-white'
+                          : 'bg-white/95 text-stone-900 group-hover:bg-white'
+                      }`}>
+                        <Play className="w-3 h-3 text-artisan-crimson fill-artisan-crimson" />
+                        {isUnlocked ? 'Enter Classroom' : 'View Full Details'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Body Details */}
+                  <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between space-y-6">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="font-serif font-bold text-2xl text-stone-900 group-hover:text-artisan-crimson transition-colors">
+                          {course.title}
+                        </h3>
+                      </div>
+                      <p className="text-xs sm:text-sm text-stone-600 leading-relaxed line-clamp-2">
+                        {course.summary}
+                      </p>
+
+                      <div className="grid grid-cols-2 gap-2 pt-2 text-xs text-stone-600">
+                        <div className="flex items-center gap-1.5">
+                          <Clock className="w-4 h-4 text-artisan-gold flex-shrink-0" />
+                          <span>{course.durationHours} Hours Video Curriculum</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <BookOpen className="w-4 h-4 text-artisan-crimson flex-shrink-0" />
+                          <span>{course.totalLessons} Step-by-Step Lessons</span>
                         </div>
                       </div>
+                    </div>
 
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onSelectCourse(course);
-                          }}
-                          className="px-5 py-2.5 bg-[#1A1816] group-hover:bg-artisan-crimson text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
-                        >
-                          <span>Full Syllabus & Enroll</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </button>
+                    {/* Pricing & CTA */}
+                    <div className="space-y-3 pt-4 border-t border-stone-100">
+                      <div className="flex items-baseline justify-between">
+                        <div>
+                          <span className="text-[10px] text-stone-400 uppercase tracking-wider block font-bold">
+                            Tuition Fee ({course.durationMonths.split(' ')[0]} {course.durationMonths.split(' ')[1]})
+                          </span>
+                          <div className="flex items-baseline gap-2">
+                            {course.originalPrice && (
+                              <span className="text-xs text-stone-400 line-through">
+                                ${course.originalPrice}
+                              </span>
+                            )}
+                            <span className="font-serif font-bold text-2xl text-artisan-crimson">
+                              ${course.price}
+                            </span>
+                            <span className="text-xs text-stone-500 font-semibold">USD</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          {isUnlocked ? (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (onGoToPortal) {
+                                  onGoToPortal(course.id);
+                                } else {
+                                  try {
+                                    localStorage.setItem('ks_student_selected_course', course.id);
+                                  } catch (err) {
+                                    console.warn(err);
+                                  }
+                                  window.location.hash = 'student-portal';
+                                }
+                              }}
+                              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+                            >
+                              <span>Enter Classroom</span>
+                              <ArrowRight className="w-3.5 h-3.5" />
+                            </button>
+                          ) : (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onSelectCourse(course);
+                              }}
+                              className="px-5 py-2.5 bg-[#1A1816] group-hover:bg-artisan-crimson text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+                            >
+                              <span>Full Syllabus & Enroll</span>
+                              <ArrowRight className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>

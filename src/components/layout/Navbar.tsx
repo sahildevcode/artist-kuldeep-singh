@@ -190,10 +190,18 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                         </button>
                         <button
                           onClick={() => {
-                            setActivePage('courses');
+                            if (currentUser.enrolledCourseIds && currentUser.enrolledCourseIds.length > 0) {
+                              try {
+                                localStorage.setItem('ks_student_selected_course', currentUser.enrolledCourseIds[0]);
+                              } catch (e) {
+                                console.warn(e);
+                              }
+                            }
+                            setActivePage('student-portal');
                             setIsUserMenuOpen(false);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
                           }}
-                          className="w-full text-left px-3 py-2 text-xs text-stone-700 hover:bg-stone-100 rounded-lg flex items-center justify-between"
+                          className="w-full text-left px-3 py-2 text-xs font-medium text-stone-700 hover:bg-stone-100 rounded-lg flex items-center justify-between"
                         >
                           Enrolled Courses
                           <span className="text-[10px] bg-stone-200 px-1.5 py-0.5 rounded-full">

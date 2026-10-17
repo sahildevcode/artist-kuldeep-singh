@@ -28,9 +28,10 @@ import confetti from 'canvas-confetti';
 interface CourseDetailPageProps {
   course: Course;
   onBack: () => void;
+  onGoToPortal?: (courseId: string) => void;
 }
 
-export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBack }) => {
+export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBack, onGoToPortal }) => {
   const { currentUser, setIsAuthModalOpen, unlockCourse, isCourseUnlocked } = useAuth();
   const { addOrder } = useCart();
   const { addStudent } = useStudioData();
@@ -109,6 +110,17 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
       } catch {
         // ignore
       }
+
+      setTimeout(() => {
+        try {
+          localStorage.setItem('ks_student_selected_course', course.id);
+        } catch (e) {
+          console.warn(e);
+        }
+        if (onGoToPortal) {
+          onGoToPortal(course.id);
+        }
+      }, 1000);
     }, 1200);
   };
 
@@ -442,12 +454,23 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
               <div>
                 {isUnlocked ? (
                   <MagneticButton
-                    onClick={() => setIsPlayingTeaser(true)}
+                    onClick={() => {
+                      try {
+                        localStorage.setItem('ks_student_selected_course', course.id);
+                      } catch (e) {
+                        console.warn(e);
+                      }
+                      if (onGoToPortal) {
+                        onGoToPortal(course.id);
+                      } else {
+                        window.location.hash = 'student-portal';
+                      }
+                    }}
                     variant="primary"
                     className="w-full py-4 text-sm font-bold flex items-center justify-center gap-2 shadow-lg"
                   >
                     <Play className="w-4 h-4" />
-                    <span>Access Classroom & Lectures</span>
+                    <span>Access Classroom & Lectures (Student Portal)</span>
                   </MagneticButton>
                 ) : (
                   <MagneticButton
