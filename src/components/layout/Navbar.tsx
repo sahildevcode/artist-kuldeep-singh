@@ -190,18 +190,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                         </button>
                         <button
                           onClick={() => {
-                            setActivePage('store');
-                            setIsUserMenuOpen(false);
-                          }}
-                          className="w-full text-left px-3 py-2 text-xs text-stone-700 hover:bg-stone-100 rounded-lg flex items-center justify-between"
-                        >
-                          Acquired Artworks
-                          <span className="text-[10px] bg-stone-200 px-1.5 py-0.5 rounded-full">
-                            {currentUser.collectedCount || 0}
-                          </span>
-                        </button>
-                        <button
-                          onClick={() => {
                             setActivePage('courses');
                             setIsUserMenuOpen(false);
                           }}
@@ -210,18 +198,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                           Enrolled Courses
                           <span className="text-[10px] bg-stone-200 px-1.5 py-0.5 rounded-full">
                             {currentUser.enrolledCoursesCount || 0}
-                          </span>
-                        </button>
-                        <button
-                          onClick={() => {
-                            setActivePage('student-portal');
-                            setIsUserMenuOpen(false);
-                          }}
-                          className="w-full text-left px-3 py-2 text-xs font-semibold text-artisan-gold hover:bg-stone-100 rounded-lg flex items-center justify-between"
-                        >
-                          <span>🎓 Student Portal (LMS)</span>
-                          <span className="text-[10px] bg-artisan-gold/20 text-stone-800 font-bold px-1.5 py-0.5 rounded-full">
-                            Active
                           </span>
                         </button>
                       </div>
