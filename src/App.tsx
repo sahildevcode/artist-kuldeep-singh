@@ -11,7 +11,6 @@ import { CustomCursor } from './components/layout/CustomCursor';
 import { IntroSplash } from './components/layout/IntroSplash';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
-import { AtelierAudioPlayer } from './components/layout/AtelierAudioPlayer';
 import { CartDrawer } from './components/modals/CartDrawer';
 import { AuthModal } from './components/modals/AuthModal';
 import { ArtworkModal } from './components/modals/ArtworkModal';
@@ -160,9 +159,6 @@ const AppInner: React.FC = () => {
         artwork={selectedArtwork}
         onClose={() => setSelectedArtwork(null)}
       />
-
-      {/* Floating Atelier Audio & 3D Control Center */}
-      <AtelierAudioPlayer />
     </div>
   );
 };

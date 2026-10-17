@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react';
-import { audioEngine } from '../../utils/audioEngine';
 
 interface MagneticButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'glass' | 'gold';
@@ -57,13 +56,9 @@ export const MagneticButton: React.FC<MagneticButtonProps> = ({
   return (
     <button
       ref={btnRef}
-      onMouseEnter={() => audioEngine.playHoverSFX()}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      onClick={(e) => {
-        audioEngine.playClickSFX();
-        if (onClick) onClick(e);
-      }}
+      onClick={onClick}
       style={{
         transform: `translate(${position.x}px, ${position.y}px)`,
         transition: position.x === 0 && position.y === 0 ? 'transform 0.4s ease-out' : 'transform 0.05s linear',

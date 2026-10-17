@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { useAudio } from '../../context/AudioContext';
-import { audioEngine } from '../../utils/audioEngine';
 
 export const ScrollSignatureBackground: React.FC = () => {
   const { activeTheme3D } = useAudio();
@@ -14,7 +13,6 @@ export const ScrollSignatureBackground: React.FC = () => {
   const targetProgressRef = useRef<number>(0);
   const currentProgressRef = useRef<number>(0);
   const isRunningRef = useRef<boolean>(false);
-  const lastSoundTimeRef = useRef<number>(0);
   const flourishLengthRef = useRef<number>(1200);
 
   // Measure flourish path length once on mount
@@ -33,26 +31,13 @@ export const ScrollSignatureBackground: React.FC = () => {
 
   // Hardware-accelerated smooth scroll tracker
   useEffect(() => {
-    let lastScrollY = window.scrollY;
-
     const handleScroll = () => {
       if (activeTheme3D !== 'kuldeep') return;
       const currentScrollY = window.scrollY;
-      const delta = Math.abs(currentScrollY - lastScrollY);
-      lastScrollY = currentScrollY;
 
       // Reveal signature smoothly across 1800px of page scroll
       const maxScroll = 1800;
       targetProgressRef.current = Math.min(1, Math.max(0, currentScrollY / maxScroll));
-
-      // Throttled procedural brush friction sound (max once per 140ms)
-      if (activeTheme3D === 'kuldeep' && delta > 2) {
-        const now = Date.now();
-        if (now - lastSoundTimeRef.current > 140) {
-          lastSoundTimeRef.current = now;
-          audioEngine.playBrushStroke(Math.min(delta / 18, 1.2));
-        }
-      }
 
       // Start animation loop if idle
       if (!isRunningRef.current) {

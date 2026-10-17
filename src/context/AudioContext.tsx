@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { audioEngine } from '../utils/audioEngine';
 
 export type Theme3DMode = 'brush' | 'kuldeep' | 'celestial';
 
@@ -30,19 +29,14 @@ interface AudioContextType {
 const AudioContext = createContext<AudioContextType | undefined>(undefined);
 
 export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // DEFAULT ON as requested by user ("song be defalut on hi rahega")
-  const [isPlaying, setIsPlaying] = useState<boolean>(() => {
-    const saved = localStorage.getItem('artisan_sound_autoplay');
-    return saved !== 'false'; // Default TRUE
-  });
-  const [isMuted, setIsMuted] = useState<boolean>(() => {
-    return localStorage.getItem('artisan_sound_muted') === 'true';
-  });
-  const [volume, setVolumeState] = useState<number>(0.65);
+  // All sound permanently disabled per user request
+  const [isPlaying] = useState<boolean>(false);
+  const [isMuted] = useState<boolean>(true);
+  const [volume] = useState<number>(0);
 
   // 3D Background Theme (Default to 'kuldeep' or saved theme)
   const [activeTheme3D, setActiveTheme3DState] = useState<Theme3DMode>(() => {
-    const saved = localStorage.getItem('artisan_3d_theme') as Theme3DMode;
+    const saved = typeof window !== 'undefined' ? (localStorage.getItem('artisan_3d_theme') as Theme3DMode) : 'kuldeep';
     return saved === 'brush' || saved === 'kuldeep' || saved === 'celestial' ? saved : 'kuldeep';
   });
   const [autoCycle3D, setAutoCycle3D] = useState<boolean>(false);
@@ -53,7 +47,9 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Set theme & persist
   const setActiveTheme3D = (mode: Theme3DMode) => {
     setActiveTheme3DState(mode);
-    localStorage.setItem('artisan_3d_theme', mode);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('artisan_3d_theme', mode);
+    }
   };
 
   // Auto-Cycle 3D Themes if enabled (switches every 22 seconds)
@@ -69,57 +65,16 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return () => clearInterval(interval);
   }, [autoCycle3D]);
 
-  // Audio start/stop handler
-  const togglePlay = () => {
-    if (isPlaying) {
-      audioEngine.stopAmbientSound();
-      setIsPlaying(false);
-      localStorage.setItem('artisan_sound_autoplay', 'false');
-    } else {
-      audioEngine.startAmbientSound();
-      setIsPlaying(true);
-      localStorage.setItem('artisan_sound_autoplay', 'true');
-    }
-  };
+  // Audio start/stop handler - disabled
+  const togglePlay = () => {};
+  const toggleMute = () => {};
+  const setVolume = (_val: number) => {};
 
-  const toggleMute = () => {
-    const muted = audioEngine.toggleMute();
-    setIsMuted(muted);
-    localStorage.setItem('artisan_sound_muted', muted ? 'true' : 'false');
-  };
-
-  const setVolume = (val: number) => {
-    audioEngine.setVolume(val);
-    setVolumeState(val);
-  };
-
-  // Sound effects
-  const playClick = () => audioEngine.playClickSFX();
-  const playBubbleBurst = () => audioEngine.playBubbleBurst();
-  const playHover = () => audioEngine.playHoverSFX();
-  const playBrushStroke = () => audioEngine.playBrushStroke();
-
-  // DEFAULT ON: Start immediately or on the very first user interaction (browser policy)
-  useEffect(() => {
-    if (!isPlaying) return;
-
-    // Try starting immediately
-    audioEngine.startAmbientSound();
-
-    // Browser audio policy wakeup on first user touch/scroll/click
-    const handleFirstGesture = () => {
-      if (isPlaying && !audioEngine.getIsPlaying()) {
-        audioEngine.startAmbientSound();
-      }
-    };
-
-    const events = ['click', 'pointerdown', 'touchstart', 'scroll', 'wheel', 'keydown'];
-    events.forEach((evt) => window.addEventListener(evt, handleFirstGesture, { passive: true, once: true }));
-
-    return () => {
-      events.forEach((evt) => window.removeEventListener(evt, handleFirstGesture));
-    };
-  }, [isPlaying]);
+  // Sound effects - disabled
+  const playClick = () => {};
+  const playBubbleBurst = () => {};
+  const playHover = () => {};
+  const playBrushStroke = () => {};
 
   return (
     <AudioContext.Provider

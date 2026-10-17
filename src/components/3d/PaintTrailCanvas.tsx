@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { audioEngine } from '../../utils/audioEngine';
 
 interface Particle {
   x: number;
@@ -83,7 +82,6 @@ export const PaintTrailCanvas: React.FC = () => {
       }
     };
 
-    let lastBrushSoundTime = 0;
     const handlePointerMove = (e: PointerEvent) => {
       const x = e.clientX;
       const y = e.clientY;
@@ -94,11 +92,6 @@ export const PaintTrailCanvas: React.FC = () => {
 
       lastX = x;
       lastY = y;
-
-      if (speed > 24 && Date.now() - lastBrushSoundTime > 350) {
-        lastBrushSoundTime = Date.now();
-        audioEngine.playBrushStroke();
-      }
 
       spawnParticles(x, y, speed);
     };
