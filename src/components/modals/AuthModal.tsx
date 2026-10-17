@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Sparkles, User, Lock, Mail, Shield, BookOpen, Loader2, AtSign, CheckCircle2, AlertCircle, ArrowLeft, KeyRound } from 'lucide-react';
+import { X, Sparkles, User, Lock, Mail, Loader2, AtSign, CheckCircle2, AlertCircle, ArrowLeft, KeyRound } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { MagneticButton } from '../ui/MagneticButton';
 
@@ -13,8 +13,10 @@ export const AuthModal: React.FC = () => {
     checkUsernameAvailability
   } = useAuth();
 
-  const [role, setRole] = useState<'collector' | 'student'>('student');
-  // 1. Default view is STRICTLY Registration as requested
+  // Default role is student
+  const role: 'student' = 'student';
+
+  // 1. Default view is Registration
   const [isRegister, setIsRegister] = useState(true);
   const [regStep, setRegStep] = useState<'form' | 'otp'>('form');
 
@@ -203,39 +205,45 @@ export const AuthModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-4">
       {/* Backdrop */}
       <div
         onClick={() => !isLoading && setIsAuthModalOpen(false)}
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300"
+        className="fixed inset-0 bg-black/75 backdrop-blur-sm transition-opacity duration-300"
       />
 
-      {/* Modal Dialog */}
-      <div className="relative w-full max-w-md bg-[#FDFBF7] rounded-3xl shadow-2xl border border-stone-200 overflow-hidden z-10 animate-in zoom-in-95 duration-200">
-        {/* Header Ribbon */}
-        <div className="bg-[#1A1816] text-white p-6 text-center relative">
+      {/* Modal Dialog with Fixed Header and Scrollable Body */}
+      <div className="relative w-full max-w-md bg-[#FDFBF7] rounded-3xl shadow-2xl border border-stone-200 z-10 my-auto flex flex-col max-h-[92vh] overflow-hidden animate-in zoom-in-95 duration-200">
+        
+        {/* Fixed Header Ribbon (Always visible with Close Button) */}
+        <div className="shrink-0 bg-[#1A1816] text-white px-5 py-4 text-center relative border-b border-stone-800">
           <button
             onClick={() => !isLoading && setIsAuthModalOpen(false)}
             disabled={isLoading}
-            className="absolute top-4 right-4 p-1.5 rounded-full text-stone-400 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-50"
+            className="absolute top-3.5 right-3.5 p-2 rounded-full text-stone-300 hover:text-white bg-white/10 hover:bg-white/20 transition-all cursor-pointer shadow-sm disabled:opacity-50"
+            title="Close"
           >
             <X className="w-5 h-5" />
           </button>
-          <div className="w-12 h-12 rounded-full bg-artisan-gold/20 text-artisan-gold flex items-center justify-center mx-auto mb-3 border border-artisan-gold/30">
-            <Sparkles className="w-6 h-6" />
+          
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <div className="w-7 h-7 rounded-full bg-artisan-gold/20 text-artisan-gold flex items-center justify-center border border-artisan-gold/30">
+              <Sparkles className="w-3.5 h-3.5" />
+            </div>
+            <h3 className="font-display font-bold text-base sm:text-lg tracking-tight">
+              Kuldeep Singh Atelier & Academy
+            </h3>
           </div>
-          <h3 className="font-display font-bold text-xl tracking-tight">
-            Kuldeep Singh Atelier & Academy
-          </h3>
-          <p className="text-xs text-stone-300 mt-1">
+          <p className="text-[11px] text-stone-300">
             {isRegister
-              ? 'New Student / Collector Official Registration'
+              ? 'New Student Official Registration'
               : 'Sign In with Registered Email or Username'}
           </p>
         </div>
 
-        {/* Content */}
-        <div className="p-6 space-y-4">
+        {/* Scrollable Modal Body */}
+        <div className="p-4 sm:p-5 space-y-3.5 overflow-y-auto flex-1 overscroll-contain">
+          
           {/* Main Mode Toggle: Registration (Default) vs Sign In */}
           <div className="grid grid-cols-2 p-1 bg-stone-100 rounded-2xl border border-stone-200">
             <button
@@ -275,38 +283,8 @@ export const AuthModal: React.FC = () => {
             </button>
           </div>
 
-          {/* Role Toggle Switch */}
-          <div className="grid grid-cols-2 p-1 bg-stone-50 rounded-xl border border-stone-200 text-xs">
-            <button
-              type="button"
-              disabled={isLoading || regStep === 'otp'}
-              onClick={() => setRole('student')}
-              className={`py-1.5 font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
-                role === 'student'
-                  ? 'bg-white text-stone-900 shadow-sm'
-                  : 'text-stone-500 hover:text-stone-800'
-              }`}
-            >
-              <BookOpen className="w-3 h-3 text-artisan-crimson" />
-              Masterclass Student
-            </button>
-            <button
-              type="button"
-              disabled={isLoading || regStep === 'otp'}
-              onClick={() => setRole('collector')}
-              className={`py-1.5 font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
-                role === 'collector'
-                  ? 'bg-white text-stone-900 shadow-sm'
-                  : 'text-stone-500 hover:text-stone-800'
-              }`}
-            >
-              <Shield className="w-3 h-3 text-artisan-gold" />
-              Art Collector
-            </button>
-          </div>
-
-          {/* Information & Policy Note */}
-          <div className="bg-amber-50/60 p-2.5 rounded-xl border border-amber-200/70 text-center">
+          {/* Security & 1-Email Policy Note */}
+          <div className="bg-amber-50/70 p-2.5 rounded-xl border border-amber-200/80 text-center">
             <p className="text-[11px] text-amber-900 font-medium leading-relaxed">
               🔒 <strong>Security Policy:</strong> 1 Email = 1 Permanent Account. Account sharing across phone and laptop is strictly monitored.
             </p>
@@ -328,7 +306,7 @@ export const AuthModal: React.FC = () => {
             </div>
           )}
 
-          {/* Demo OTP Banner for Local/Simulator verification */}
+          {/* Demo OTP Banner for Local / Testing */}
           {demoOtpNotice && (
             <div className="p-2.5 bg-yellow-50 border border-yellow-300 rounded-xl text-center space-y-1">
               <p className="text-[11px] font-bold text-yellow-900">
@@ -399,7 +377,7 @@ export const AuthModal: React.FC = () => {
                     />
                   </div>
                   <p className="text-[10px] text-stone-500 mt-0.5">
-                    Lowercase letters, numbers & underscore (_) only. You can log in using this username later.
+                    Letters, numbers & underscore (_) only. You can log in using this username.
                   </p>
                 </div>
 
@@ -446,7 +424,7 @@ export const AuthModal: React.FC = () => {
                   type="submit"
                   variant="primary"
                   disabled={isLoading || usernameStatus === 'taken'}
-                  className="w-full py-3 mt-3 flex items-center justify-center gap-2"
+                  className="w-full py-3 mt-2 flex items-center justify-center gap-2"
                 >
                   {isLoading ? (
                     <>
@@ -597,7 +575,7 @@ export const AuthModal: React.FC = () => {
                 setIsRegister(!isRegister);
                 setRegStep('form');
               }}
-              className="text-xs text-stone-600 hover:text-stone-900 transition-colors font-medium hover:underline"
+              className="text-xs text-stone-600 hover:text-stone-900 transition-colors font-medium hover:underline cursor-pointer"
             >
               {isRegister
                 ? 'Already have an account? Sign In with Email or Username →'
