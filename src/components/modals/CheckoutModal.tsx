@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, ShieldCheck, Truck, Lock, CreditCard, Banknote, CheckCircle2, User, Phone, Mail, MapPin } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
@@ -192,20 +192,37 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose })
                 </div>
 
                 <div>
-                  <label className="block text-stone-600 font-semibold mb-1">
-                    Email Address <span className="text-red-500">*</span>
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-stone-600 font-semibold text-xs">
+                      Email Address <span className="text-red-500">*</span>
+                    </label>
+                    {currentUser && (
+                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 flex items-center gap-1">
+                        <Lock className="w-2.5 h-2.5" /> Verified & Locked
+                      </span>
+                    )}
+                  </div>
                   <div className="relative">
                     <Mail className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
                     <input
                       type="email"
                       required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      readOnly={Boolean(currentUser)}
+                      value={currentUser?.email || email}
+                      onChange={(e) => !currentUser && setEmail(e.target.value)}
                       placeholder="collector@domain.com"
-                      className="w-full bg-white border border-stone-300 rounded-xl pl-9 pr-3 py-2.5 text-xs text-stone-900 focus:outline-none focus:border-stone-800"
+                      className={`w-full border rounded-xl pl-9 pr-3 py-2.5 text-xs font-medium focus:outline-none ${
+                        currentUser
+                          ? 'bg-stone-100/80 border-stone-300 text-stone-700 cursor-not-allowed select-none'
+                          : 'bg-white border-stone-300 text-stone-900 focus:border-stone-800'
+                      }`}
                     />
                   </div>
+                  {currentUser && (
+                    <p className="text-[10px] text-stone-500 mt-1">
+                      Account email cannot be modified. Purchased courses will be auto-unlocked for <strong>{currentUser.email}</strong>.
+                    </p>
+                  )}
                 </div>
               </div>
 

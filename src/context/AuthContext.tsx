@@ -7,13 +7,29 @@ interface AuthResponse {
   user?: UserProfile;
 }
 
+interface SendOtpResponse {
+  success: boolean;
+  message?: string;
+  error?: string;
+  demoOtp?: string;
+}
+
+interface CheckUsernameResponse {
+  available: boolean;
+  username?: string;
+  error?: string;
+}
+
 interface AuthContextType {
   currentUser: UserProfile | null;
   deviceId: string;
   isAuthModalOpen: boolean;
   setIsAuthModalOpen: (open: boolean) => void;
-  loginWithCredentials: (email: string, password: string) => Promise<AuthResponse>;
-  registerWithCredentials: (email: string, password: string, name: string, role?: 'collector' | 'student') => Promise<AuthResponse>;
+  loginWithCredentials: (loginIdentifier: string, password: string) => Promise<AuthResponse>;
+  sendRegistrationOtp: (email: string, username: string, password: string, name: string, role?: 'collector' | 'student') => Promise<SendOtpResponse>;
+  verifyRegistrationOtp: (email: string, otp: string) => Promise<AuthResponse>;
+  checkUsernameAvailability: (username: string) => Promise<CheckUsernameResponse>;
+  registerWithCredentials: (email: string, password: string, name: string, role?: 'collector' | 'student', username?: string) => Promise<AuthResponse>;
   login: (email: string, name?: string, role?: 'collector' | 'student') => void;
   logout: () => void;
   quickDemoLogin: (role: 'collector' | 'student') => Promise<void>;
@@ -122,9 +138,139 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [currentUser?.email, currentUser?.sessionToken, deviceId]);
 
-  // Login with email & password against backend
-  const loginWithCredentials = async (email: string, password: string): Promise<AuthResponse> => {
+  // Check unique username availability
+  const checkUsernameAvailability = async (username: string): Promise<CheckUsernameResponse> => {
+    const cleanUsername = username.trim().toLowerCase();
+    if (!cleanUsername || cleanUsername.length < 3) {
+      return { available: false, error: 'Username must be at least 3 characters long.' };
+    }
+    const primaryUrl = getBackendUrl();
+    const urlsToTry = [primaryUrl, 'https://kuldeep-singh-backend.onrender.com'];
+    const uniqueUrls = Array.from(new Set(urlsToTry));
+
+    for (const baseUrl of uniqueUrls) {
+      try {
+        const res = await fetch(`${baseUrl}/api/auth/check-username`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: cleanUsername })
+        });
+        const data = await res.json();
+        return { available: Boolean(data.available), username: cleanUsername, error: data.error };
+      } catch {}
+    }
+    return { available: true, username: cleanUsername };
+  };
+
+  // Step 1: Send 6-digit OTP to user email
+  const sendRegistrationOtp = async (
+    email: string,
+    username: string,
+    password: string,
+    name: string,
+    role: 'collector' | 'student' = 'student'
+  ): Promise<SendOtpResponse> => {
     const cleanEmail = email.trim().toLowerCase();
+    const cleanUsername = username.trim().toLowerCase();
+    const cleanPassword = password.trim();
+    const cleanName = name.trim();
+
+    const primaryUrl = getBackendUrl();
+    const urlsToTry = [primaryUrl, 'https://kuldeep-singh-backend.onrender.com'];
+    const uniqueUrls = Array.from(new Set(urlsToTry));
+
+    let lastError = 'Failed to send verification code. Kripya punah prayas karein.';
+
+    for (const baseUrl of uniqueUrls) {
+      try {
+        const res = await fetch(`${baseUrl}/api/auth/send-registration-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: cleanEmail,
+            username: cleanUsername,
+            password: cleanPassword,
+            name: cleanName,
+            role
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          return { success: true, message: data.message, demoOtp: data.demoOtp };
+        } else {
+          return { success: false, error: data.error || 'Registration verification could not be started.' };
+        }
+      } catch (err: any) {
+        lastError = err.message || lastError;
+      }
+    }
+
+    return { success: false, error: lastError };
+  };
+
+  // Step 2: Verify 6-digit OTP and finalize account registration
+  const verifyRegistrationOtp = async (email: string, otp: string): Promise<AuthResponse> => {
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanOtp = otp.trim();
+
+    const primaryUrl = getBackendUrl();
+    const urlsToTry = [primaryUrl, 'https://kuldeep-singh-backend.onrender.com'];
+    const uniqueUrls = Array.from(new Set(urlsToTry));
+
+    let lastError = 'OTP verification failed. Kripya punah prayas karein.';
+
+    for (const baseUrl of uniqueUrls) {
+      try {
+        const res = await fetch(`${baseUrl}/api/auth/verify-registration-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: cleanEmail,
+            otp: cleanOtp,
+            deviceId: deviceId
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success && data.user) {
+          const userWithProfile: UserProfile = {
+            id: data.user.id || `usr_${Date.now()}`,
+            name: data.user.name,
+            email: data.user.email,
+            username: data.user.username,
+            role: data.user.role || 'student',
+            avatar:
+              data.user.role === 'collector'
+                ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop'
+                : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop',
+            memberSince: '2026',
+            collectedCount: data.user.role === 'collector' ? 1 : 0,
+            enrolledCoursesCount: (data.user.enrolledCourseIds || []).length,
+            enrolledCourseIds: data.user.enrolledCourseIds || [],
+            sessionToken: data.user.sessionToken,
+            deviceId: deviceId,
+            isEmailVerified: true
+          };
+
+          setCurrentUser(userWithProfile);
+          setIsAuthModalOpen(false);
+          setSessionKickedOutAlert(null);
+          return { success: true, user: userWithProfile };
+        } else {
+          return { success: false, error: data.error || 'Galat ya expired OTP code.' };
+        }
+      } catch (err: any) {
+        lastError = err.message || lastError;
+      }
+    }
+
+    return { success: false, error: lastError };
+  };
+
+  // Login with Email OR Username + Password against backend
+  const loginWithCredentials = async (loginIdentifier: string, password: string): Promise<AuthResponse> => {
+    const cleanIdentifier = loginIdentifier.trim().toLowerCase();
     const cleanPassword = password.trim();
 
     const primaryUrl = getBackendUrl();
@@ -139,7 +285,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            email: cleanEmail,
+            loginIdentifier: cleanIdentifier,
             password: cleanPassword,
             deviceId: deviceId
           })
@@ -151,6 +297,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             id: data.user.id || `usr_${Date.now()}`,
             name: data.user.name || 'Fine Art Patron',
             email: data.user.email,
+            username: data.user.username,
             role: data.user.role || 'student',
             avatar:
               data.user.role === 'collector'
@@ -161,7 +308,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             enrolledCoursesCount: (data.user.enrolledCourseIds || []).length,
             enrolledCourseIds: data.user.enrolledCourseIds || [],
             sessionToken: data.user.sessionToken,
-            deviceId: deviceId
+            deviceId: deviceId,
+            isEmailVerified: Boolean(data.user.isEmailVerified)
           };
 
           setCurrentUser(userWithProfile);
@@ -179,14 +327,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { success: false, error: lastError };
   };
 
-  // Register with email, password & name against backend
+  // Direct Register with credentials
   const registerWithCredentials = async (
     email: string,
     password: string,
     name: string,
-    role: 'collector' | 'student' = 'student'
+    role: 'collector' | 'student' = 'student',
+    username?: string
   ): Promise<AuthResponse> => {
     const cleanEmail = email.trim().toLowerCase();
+    const cleanUsername = (username || cleanEmail.split('@')[0]).trim().toLowerCase();
     const cleanPassword = password.trim();
     const cleanName = name.trim();
 
@@ -203,6 +353,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             email: cleanEmail,
+            username: cleanUsername,
             password: cleanPassword,
             name: cleanName,
             role: role,
@@ -216,6 +367,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             id: data.user.id || `usr_${Date.now()}`,
             name: data.user.name || cleanName,
             email: data.user.email,
+            username: data.user.username,
             role: data.user.role || role,
             avatar:
               role === 'collector'
@@ -226,7 +378,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             enrolledCoursesCount: (data.user.enrolledCourseIds || []).length,
             enrolledCourseIds: data.user.enrolledCourseIds || [],
             sessionToken: data.user.sessionToken,
-            deviceId: deviceId
+            deviceId: deviceId,
+            isEmailVerified: true
           };
 
           setCurrentUser(userWithProfile);
@@ -324,6 +477,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAuthModalOpen,
         setIsAuthModalOpen,
         loginWithCredentials,
+        sendRegistrationOtp,
+        verifyRegistrationOtp,
+        checkUsernameAvailability,
         registerWithCredentials,
         login,
         logout,

@@ -121,6 +121,8 @@ export interface UserProfile {
   id: string;
   name: string;
   email: string;
+  username?: string;
+  isEmailVerified?: boolean;
   role: 'collector' | 'student';
   avatar?: string;
   memberSince: string;

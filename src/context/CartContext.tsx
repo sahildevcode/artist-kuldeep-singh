@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { CartItem, OrderRecord } from '../types';
 import confetti from 'canvas-confetti';
+import { useAuth } from './AuthContext';
 
 interface CartContextType {
   cart: CartItem[];
@@ -99,6 +100,7 @@ const SAMPLE_INITIAL_ORDERS: OrderRecord[] = [
 ];
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { unlockCourse } = useAuth();
   const [cart, setCart] = useState<CartItem[]>(() => {
     try {
       const saved = localStorage.getItem('kuldeep_art_cart');
@@ -203,14 +205,20 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
 
-const BACKEND_API_BASE = 'https://kuldeep-singh-backend.onrender.com/api/orders';
+  const getBackendUrl = (): string => {
+    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+      return 'http://localhost:5000';
+    }
+    return 'https://kuldeep-singh-backend.onrender.com';
+  };
 
   // Sync orders with backend database every 2.5s
   useEffect(() => {
     let isMounted = true;
     const fetchBackendOrders = async () => {
       try {
-        const res = await fetch(BACKEND_API_BASE);
+        const baseUrl = getBackendUrl();
+        const res = await fetch(`${baseUrl}/api/orders`);
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data) && isMounted) {
@@ -292,8 +300,9 @@ const BACKEND_API_BASE = 'https://kuldeep-singh-backend.onrender.com/api/orders'
     };
 
     // Save to 24/7 backend database
+    const baseUrl = getBackendUrl();
     try {
-      const res = await fetch(BACKEND_API_BASE, {
+      const res = await fetch(`${baseUrl}/api/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newOrder)
@@ -313,11 +322,15 @@ const BACKEND_API_BASE = 'https://kuldeep-singh-backend.onrender.com/api/orders'
       addOrder(newOrder);
     }
 
-    // If order contains courses, register student enrollments to backend
+    // If order contains courses, unlock courses in student profile and sync enrollment
     const courseItems = cart.filter((i) => i.type === 'course');
     for (const cItem of courseItems) {
+      // 1. Immediately unlock course in student session
+      unlockCourse(cItem.id);
+
+      // 2. Register student in backend students list
       try {
-        await fetch('https://kuldeep-singh-backend.onrender.com/api/students', {
+        await fetch(`${baseUrl}/api/students`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
