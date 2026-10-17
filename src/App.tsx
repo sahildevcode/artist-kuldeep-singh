@@ -13,6 +13,7 @@ import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { CartDrawer } from './components/modals/CartDrawer';
 import { AuthModal } from './components/modals/AuthModal';
+import { AtelierAudioPlayer } from './components/layout/AtelierAudioPlayer';
 import { ArtworkModal } from './components/modals/ArtworkModal';
 import { OrderHistoryModal } from './components/modals/OrderHistoryModal';
 import { CheckoutModal } from './components/modals/CheckoutModal';
@@ -142,6 +143,7 @@ const AppInner: React.FC = () => {
       <Footer setActivePage={handlePageChange} />
 
       {/* Global Modals & Drawers */}
+      <AtelierAudioPlayer />
       <CartDrawer />
       <AuthModal />
       <CheckoutModal
