@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, User, Menu, X, Sparkles, LogOut, BookOpen, Image as ImageIcon, Award, Compass } from 'lucide-react';
+import { ShoppingBag, User, Menu, X, Sparkles, LogOut, BookOpen, Image as ImageIcon, Award, Compass, ShieldCheck } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useStudioData } from '../../context/StudioDataContext';
 
 interface NavbarProps {
   activePage: 'home' | 'about' | 'courses' | 'store' | 'student-portal';
-  setActivePage: (page: 'home' | 'about' | 'courses' | 'store' | 'student-portal') => void;
+  setActivePage: (page: any) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => {
@@ -289,6 +289,21 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                   )}
                 </button>
               ))}
+
+              <div className="pt-2 mt-1 border-t border-stone-200/60">
+                <button
+                  onClick={() => {
+                    setActivePage('terms');
+                    setIsMobileMenuOpen(false);
+                    window.location.hash = 'terms';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold text-stone-500 hover:text-stone-900 hover:bg-stone-100 transition-all text-left"
+                >
+                  <ShieldCheck className="w-4 h-4 text-artisan-gold" />
+                  <span>Terms & Legal Compliance (Razorpay)</span>
+                </button>
+              </div>
             </div>
           </div>
         )}

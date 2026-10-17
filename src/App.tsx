@@ -23,13 +23,32 @@ import { CoursesPage } from './pages/CoursesPage';
 import { CourseDetailPage } from './pages/CourseDetailPage';
 import { StorePage } from './pages/StorePage';
 import { StudentPortalPage } from './pages/StudentPortalPage';
+import { LegalPage, type LegalTab } from './pages/LegalPage';
 import type { Artwork, Course } from './types';
 
+export type AppNavPage = 
+  | 'home' 
+  | 'about' 
+  | 'courses' 
+  | 'store' 
+  | 'course-detail' 
+  | 'student-portal' 
+  | 'terms' 
+  | 'privacy' 
+  | 'refund' 
+  | 'shipping' 
+  | 'contact';
+
 const AppInner: React.FC = () => {
-  const getInitialPage = (): 'home' | 'about' | 'courses' | 'store' | 'course-detail' | 'student-portal' => {
+  const getInitialPage = (): AppNavPage => {
     const path = window.location.pathname.toLowerCase();
     const hash = window.location.hash.replace('#', '').toLowerCase();
 
+    if (path.includes('terms') || hash === 'terms') return 'terms';
+    if (path.includes('privacy') || hash === 'privacy') return 'privacy';
+    if (path.includes('refund') || hash === 'refund') return 'refund';
+    if (path.includes('shipping') || hash === 'shipping') return 'shipping';
+    if (path.includes('contact') || hash === 'contact') return 'contact';
     if (path.includes('student-portal') || hash.includes('student-portal')) return 'student-portal';
     if (path.includes('about') || hash === 'about') return 'about';
     if (path.includes('courses') || hash === 'courses') return 'courses';
@@ -37,7 +56,7 @@ const AppInner: React.FC = () => {
     return 'home';
   };
 
-  const [activePage, setActivePage] = useState<'home' | 'about' | 'courses' | 'store' | 'course-detail' | 'student-portal'>(getInitialPage);
+  const [activePage, setActivePage] = useState<AppNavPage>(getInitialPage);
   const [showSplash, setShowSplash] = useState(true);
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
@@ -50,7 +69,17 @@ const AppInner: React.FC = () => {
       const path = window.location.pathname.toLowerCase();
       const hash = window.location.hash.replace('#', '').toLowerCase();
 
-      if (path.includes('student-portal') || hash.includes('student-portal')) {
+      if (path.includes('terms') || hash === 'terms') {
+        setActivePage('terms');
+      } else if (path.includes('privacy') || hash === 'privacy') {
+        setActivePage('privacy');
+      } else if (path.includes('refund') || hash === 'refund') {
+        setActivePage('refund');
+      } else if (path.includes('shipping') || hash === 'shipping') {
+        setActivePage('shipping');
+      } else if (path.includes('contact') || hash === 'contact') {
+        setActivePage('contact');
+      } else if (path.includes('student-portal') || hash.includes('student-portal')) {
         setActivePage('student-portal');
       } else if (path.includes('about') || hash === 'about') {
         setActivePage('about');
@@ -72,7 +101,7 @@ const AppInner: React.FC = () => {
   }, []);
 
   // Scroll to top on page switch and sync URL hash
-  const handlePageChange = (page: 'home' | 'about' | 'courses' | 'store' | 'course-detail' | 'student-portal') => {
+  const handlePageChange = (page: AppNavPage) => {
     setActivePage(page);
     window.location.hash = page === 'home' ? '' : page;
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -83,7 +112,12 @@ const AppInner: React.FC = () => {
     handlePageChange('course-detail');
   };
 
-  const navbarActivePage = activePage === 'course-detail' ? 'courses' : activePage;
+  const navbarActivePage: 'home' | 'about' | 'courses' | 'store' | 'student-portal' = 
+    activePage === 'course-detail'
+      ? 'courses'
+      : (['home', 'about', 'courses', 'store', 'student-portal'].includes(activePage)
+          ? (activePage as 'home' | 'about' | 'courses' | 'store' | 'student-portal')
+          : 'home');
 
   return (
     <div className="relative min-h-screen bg-[#FDFBF7] text-[#1A1816] selection:bg-artisan-crimson selection:text-white">
@@ -106,7 +140,7 @@ const AppInner: React.FC = () => {
       <CustomCursor />
 
       {/* Navigation Bar */}
-      <Navbar activePage={navbarActivePage} setActivePage={handlePageChange} />
+      <Navbar activePage={navbarActivePage} setActivePage={handlePageChange as any} />
 
       {/* Active Page View */}
       <main className="relative z-10">
@@ -136,6 +170,12 @@ const AppInner: React.FC = () => {
         )}
         {activePage === 'student-portal' && (
           <StudentPortalPage setActivePage={handlePageChange} />
+        )}
+        {['terms', 'privacy', 'refund', 'shipping', 'contact'].includes(activePage) && (
+          <LegalPage
+            initialTab={activePage as LegalTab}
+            setActivePage={handlePageChange}
+          />
         )}
       </main>
 

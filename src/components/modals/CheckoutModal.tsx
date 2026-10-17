@@ -413,6 +413,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose })
                   Live 4-Step Tracking
                 </span>
               </div>
+
+              {/* Mandatory Razorpay Compliance & Policy Agreement */}
+              <div className="p-2.5 bg-stone-100/90 border border-stone-200 rounded-xl text-[10px] text-stone-600 text-center leading-relaxed">
+                By confirming this acquisition, you agree to our{' '}
+                <a href="#terms" target="_blank" rel="noreferrer" className="text-stone-900 font-bold underline hover:text-artisan-crimson">Terms of Service</a>,{' '}
+                <a href="#privacy" target="_blank" rel="noreferrer" className="text-stone-900 font-bold underline hover:text-artisan-crimson">Privacy Policy</a>, and{' '}
+                <a href="#refund" target="_blank" rel="noreferrer" className="text-stone-900 font-bold underline hover:text-artisan-crimson">Refund Policy</a>.
+              </div>
             </div>
           </div>
 
