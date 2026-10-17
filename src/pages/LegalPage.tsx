@@ -257,7 +257,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({ initialTab = 'terms', setA
                     <div className="bg-stone-50 p-4 rounded-xl border border-stone-200 text-xs text-stone-700 space-y-1">
                       <p><strong>Grievance Officer:</strong> Mr. Kuldeep Singh</p>
                       <p><strong>Email:</strong> privacy@kuldeepsingh.art</p>
-                      <p><strong>Address:</strong> South Extension Part II, New Delhi 110049, India</p>
+                      <p><strong>Address:</strong> 33, Bheem Nagar, Erich, Uttar Pradesh 284302, India</p>
                     </div>
                   </section>
                 </div>
@@ -406,8 +406,8 @@ export const LegalPage: React.FC<LegalPageProps> = ({ initialTab = 'terms', setA
                       <strong className="text-stone-900 block text-sm">Principal Atelier & Gallery</strong>
                       <p className="text-stone-600 leading-relaxed">
                         Artist Kuldeep Singh Studio<br />
-                        Bungalow 14, South Extension Part II,<br />
-                        New Delhi, Delhi 110049, India
+                        33, Bheem Nagar, Erich, Jhansi District,<br />
+                        Uttar Pradesh 284302, India
                       </p>
                     </div>
 

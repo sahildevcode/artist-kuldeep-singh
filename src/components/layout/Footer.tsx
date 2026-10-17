@@ -49,7 +49,7 @@ export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
             <div className="space-y-2 text-xs text-stone-400">
               <div className="flex items-start gap-2">
                 <MapPin className="w-3.5 h-3.5 text-artisan-gold shrink-0 mt-0.5" />
-                <span>Atelier: South Extension Part II, New Delhi 110049, India</span>
+                <span>Atelier: 33, Bheem Nagar, Erich, Uttar Pradesh 284302, India</span>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
@@ -244,7 +244,7 @@ export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
 
         {/* Local SEO & Authenticity Guarantee */}
         <div className="pt-5 mt-5 border-t border-stone-800/50 text-[10px] sm:text-[11px] text-stone-500 flex flex-wrap items-center justify-between gap-2">
-          <span>Operating Entity: Kuldeep Singh Fine Art Atelier • New Delhi, India</span>
+          <span>Operating Entity: Kuldeep Singh Gautam (Artist Atelier & Academy) • UP, India</span>
           <span className="text-stone-600">100% Insured Delivery • Certificate of Authenticity Included</span>
         </div>
       </div>
