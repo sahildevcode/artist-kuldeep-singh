@@ -207,7 +207,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoTo
                       <div className="flex items-baseline justify-between">
                         <div>
                           <span className="text-[10px] text-stone-400 uppercase tracking-wider block font-bold">
-                            Tuition Fee ({course.durationMonths.split(' ')[0]} {course.durationMonths.split(' ')[1]})
+                            Tuition Fee ({course.durationMonths ? `${course.durationMonths.split(' ')[0] || ''} ${course.durationMonths.split(' ')[1] || ''}`.trim() : 'Full Course'})
                           </span>
                           <div className="flex items-baseline gap-2">
                             {course.originalPrice && (

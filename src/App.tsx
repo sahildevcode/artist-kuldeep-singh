@@ -5,9 +5,6 @@ import { StudioDataProvider, useStudioData } from './context/StudioDataContext';
 import { AudioProvider } from './context/AudioContext';
 import { ThreeBackground } from './components/3d/ThreeBackground';
 import { ScrollSignatureBackground } from './components/3d/ScrollSignatureBackground';
-import { PaintTrailCanvas } from './components/3d/PaintTrailCanvas';
-import { ClickBubbleBurst } from './components/3d/ClickBubbleBurst';
-import { CustomCursor } from './components/layout/CustomCursor';
 import { IntroSplash } from './components/layout/IntroSplash';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
@@ -24,6 +21,7 @@ import { CourseDetailPage } from './pages/CourseDetailPage';
 import { StorePage } from './pages/StorePage';
 import { StudentPortalPage } from './pages/StudentPortalPage';
 import { LegalPage, type LegalTab } from './pages/LegalPage';
+import { ErrorBoundary } from './components/layout/ErrorBoundary';
 import type { Artwork, Course } from './types';
 
 export type AppNavPage = 
@@ -130,72 +128,65 @@ const AppInner: React.FC = () => {
       {/* Dynamic Calligraphy Handwriting Signature Background with Luminous Halo */}
       <ScrollSignatureBackground />
 
-      {/* Real-time Mouse Paint Droplet Trail */}
-      <PaintTrailCanvas />
-
-      {/* Click Bubble Burst Ripples */}
-      <ClickBubbleBurst />
-
-      {/* Boutique Cursor */}
-      <CustomCursor />
-
       {/* Navigation Bar */}
       <Navbar activePage={navbarActivePage} setActivePage={handlePageChange as any} />
 
-      {/* Active Page View */}
-      <main className="relative z-10">
-        {activePage === 'home' && (
-          <HomePage
-            setActivePage={handlePageChange}
-            onSelectArtwork={(art) => setSelectedArtwork(art)}
-            onSelectCourse={handleSelectCourse}
-          />
-        )}
-        {activePage === 'about' && (
-          <AboutPage setActivePage={handlePageChange} />
-        )}
-        {activePage === 'courses' && (
-          <CoursesPage
-            onSelectCourse={handleSelectCourse}
-            onGoToPortal={(courseId) => {
-              try {
-                localStorage.setItem('ks_student_selected_course', courseId);
-              } catch (e) {
-                console.warn(e);
-              }
-              handlePageChange('student-portal');
-            }}
-          />
-        )}
-        {activePage === 'course-detail' && selectedCourse && (
-          <CourseDetailPage
-            course={courses.find((c) => c.id === selectedCourse.id) || selectedCourse}
-            onBack={() => handlePageChange('courses')}
-            onGoToPortal={(courseId) => {
-              try {
-                localStorage.setItem('ks_student_selected_course', courseId);
-              } catch (e) {
-                console.warn(e);
-              }
-              handlePageChange('student-portal');
-            }}
-          />
-        )}
-        {activePage === 'store' && (
-          <StorePage
-            onSelectArtwork={(art) => setSelectedArtwork(art)}
-          />
-        )}
-        {activePage === 'student-portal' && (
-          <StudentPortalPage setActivePage={handlePageChange} />
-        )}
-        {['terms', 'privacy', 'refund', 'shipping', 'contact'].includes(activePage) && (
-          <LegalPage
-            initialTab={activePage as LegalTab}
-            setActivePage={handlePageChange}
-          />
-        )}
-      </main>
+      {/* Active Page View wrapped in ErrorBoundary */}
+      <ErrorBoundary>
+        <main className="relative z-10">
+          {activePage === 'home' && (
+            <HomePage
+              setActivePage={handlePageChange}
+              onSelectArtwork={(art) => setSelectedArtwork(art)}
+              onSelectCourse={handleSelectCourse}
+            />
+          )}
+          {activePage === 'about' && (
+            <AboutPage setActivePage={handlePageChange} />
+          )}
+          {activePage === 'courses' && (
+            <CoursesPage
+              onSelectCourse={handleSelectCourse}
+              onGoToPortal={(courseId) => {
+                try {
+                  localStorage.setItem('ks_student_selected_course', courseId);
+                } catch (e) {
+                  console.warn(e);
+                }
+                handlePageChange('student-portal');
+              }}
+            />
+          )}
+          {activePage === 'course-detail' && (
+            <CourseDetailPage
+              course={courses.find((c) => selectedCourse && c.id === selectedCourse.id) || selectedCourse || courses[0]}
+              onBack={() => handlePageChange('courses')}
+              onGoToPortal={(courseId) => {
+                try {
+                  localStorage.setItem('ks_student_selected_course', courseId);
+                } catch (e) {
+                  console.warn(e);
+                }
+                handlePageChange('student-portal');
+              }}
+            />
+          )}
+          {activePage === 'store' && (
+            <StorePage
+              onSelectArtwork={(art) => setSelectedArtwork(art)}
+            />
+          )}
+          {activePage === 'student-portal' && (
+            <StudentPortalPage setActivePage={handlePageChange} />
+          )}
+          {['terms', 'privacy', 'refund', 'shipping', 'contact'].includes(activePage) && (
+            <LegalPage
+              initialTab={activePage as LegalTab}
+              setActivePage={handlePageChange}
+            />
+          )}
+        </main>
+      </ErrorBoundary>
 
       {/* Footer */}
       <Footer setActivePage={handlePageChange} />
