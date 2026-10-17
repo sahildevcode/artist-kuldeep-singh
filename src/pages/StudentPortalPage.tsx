@@ -29,7 +29,7 @@ interface StudentPortalPageProps {
 
 export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActivePage }) => {
   const { courses, liveStatus, students, addStudent } = useStudioData();
-  const { currentUser, login, logout, setIsAuthModalOpen, isCourseUnlocked, unlockCourse } = useAuth();
+  const { currentUser, deviceId, login, logout, setIsAuthModalOpen, isCourseUnlocked, unlockCourse, sessionKickedOutAlert, clearSessionAlert } = useAuth();
 
   // Selected Course (persists on reload)
   const [selectedCourseId, setSelectedCourseId] = useState<string>(() => {
@@ -126,24 +126,32 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
     });
   };
 
-  // Unique Device & Tab Session Identifier
-  const [deviceId] = useState<string>(() => {
-    try {
-      let id = sessionStorage.getItem('ks_student_device_id');
-      if (!id) {
-        id = 'dev_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now();
-        sessionStorage.setItem('ks_student_device_id', id);
-      }
-      return id;
-    } catch {
-      return 'dev_' + Date.now();
-    }
-  });
+  // Active Lecture Streaming Modal
+  const [streamingLecture, setStreamingLecture] = useState<CourseLecture | null>(null);
 
   // Concurrent Session / Single-Device Enforcement State
   const [isDeviceBlocked, setIsDeviceBlocked] = useState(false);
   const [blockMessage, setBlockMessage] = useState<string>('');
   const [isTransferringSession, setIsTransferringSession] = useState(false);
+
+  // Dynamic Floating Watermark position for screen recording / piracy defense
+  const [watermarkOffset, setWatermarkOffset] = useState({ top: '12%', left: '10%' });
+  useEffect(() => {
+    if (!streamingLecture) return;
+    const positions = [
+      { top: '12%', left: '10%' },
+      { top: '12%', left: '55%' },
+      { top: '78%', left: '12%' },
+      { top: '78%', left: '55%' },
+      { top: '45%', left: '32%' },
+    ];
+    let idx = 0;
+    const interval = setInterval(() => {
+      idx = (idx + 1) % positions.length;
+      setWatermarkOffset(positions[idx]);
+    }, 7000);
+    return () => clearInterval(interval);
+  }, [streamingLecture]);
 
   // Send Heartbeat every 3.5 seconds when an enrolled student is in portal / watching live
   useEffect(() => {
@@ -156,12 +164,17 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
 
     const checkHeartbeat = async () => {
       try {
-        const res = await fetch('https://kuldeep-singh-backend.onrender.com/api/session/heartbeat', {
+        const primaryUrl = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+          ? 'http://localhost:5000'
+          : 'https://kuldeep-singh-backend.onrender.com';
+
+        const res = await fetch(`${primaryUrl}/api/session/heartbeat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             email: currentUser.email,
             deviceId: deviceId,
+            sessionToken: currentUser.sessionToken,
             courseId: activeCourse?.id
           })
         });
@@ -173,6 +186,9 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
               setIsDeviceBlocked(true);
               setBlockMessage(data.message || 'Another device or tab is already watching with your account.');
               setStreamingLecture(null); // Terminate active video playback immediately
+              if (data.kickedOut) {
+                logout();
+              }
             } else {
               setIsDeviceBlocked(false);
             }
@@ -190,18 +206,23 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
       isMounted = false;
       clearInterval(interval);
     };
-  }, [currentUser?.email, isEnrolled, deviceId, activeCourse?.id]);
+  }, [currentUser?.email, currentUser?.sessionToken, isEnrolled, deviceId, activeCourse?.id, logout]);
 
   const handleTakeoverSession = async () => {
     if (!currentUser?.email) return;
     setIsTransferringSession(true);
     try {
-      const res = await fetch('https://kuldeep-singh-backend.onrender.com/api/session/takeover', {
+      const primaryUrl = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? 'http://localhost:5000'
+        : 'https://kuldeep-singh-backend.onrender.com';
+
+      const res = await fetch(`${primaryUrl}/api/session/takeover`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: currentUser.email,
           deviceId: deviceId,
+          sessionToken: currentUser.sessionToken,
           courseId: activeCourse?.id
         })
       });
@@ -214,9 +235,6 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
       setIsTransferringSession(false);
     }
   };
-
-  // Active Lecture Streaming Modal
-  const [streamingLecture, setStreamingLecture] = useState<CourseLecture | null>(null);
 
   // Completed Lectures Tracker
   const [completedLectureIds, setCompletedLectureIds] = useState<string[]>([
@@ -243,6 +261,32 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
 
   return (
     <div className="pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-8 font-sans">
+      {/* ⚠️ Session Kicked Out Modal Dialog */}
+      {sessionKickedOutAlert && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
+          <div className="relative w-full max-w-md bg-[#1A1816] border-2 border-red-500/80 rounded-3xl p-6 sm:p-8 text-center text-white space-y-4 shadow-2xl">
+            <div className="w-14 h-14 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center mx-auto border border-red-500/40">
+              <ShieldAlert className="w-8 h-8 animate-pulse text-red-400" />
+            </div>
+            <h3 className="font-serif font-bold text-xl text-white">
+              Security Alert: Logged Out
+            </h3>
+            <p className="text-xs sm:text-sm text-stone-300 leading-relaxed">
+              {sessionKickedOutAlert}
+            </p>
+            <button
+              onClick={() => {
+                clearSessionAlert();
+                setIsAuthModalOpen(true);
+              }}
+              className="w-full py-3 px-4 rounded-xl bg-red-600 hover:bg-red-500 font-bold text-xs uppercase tracking-wider text-white transition-colors cursor-pointer shadow-lg"
+            >
+              Sign In Again on This Device
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ⚠️ SINGLE-DEVICE CONCURRENT STREAMING LOCKDOWN BANNER */}
       {isDeviceBlocked && (
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-red-950 via-stone-900 to-amber-950 border-2 border-red-500/80 p-6 sm:p-8 shadow-2xl text-white space-y-4 ring-8 ring-red-500/10 animate-fade-in">
@@ -813,6 +857,21 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
                   <p className="text-xs text-stone-400 font-mono">
                     Stream URL: {streamingLecture.videoUrl || 'No URL specified'}
                   </p>
+                </div>
+              )}
+
+              {/* Dynamic Floating Watermark for Anti-Piracy */}
+              {currentUser?.email && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    ...watermarkOffset,
+                    pointerEvents: 'none',
+                    zIndex: 30
+                  }}
+                  className="px-3 py-1 rounded-full bg-black/50 backdrop-blur-xs border border-white/10 text-[10px] font-mono text-white/50 tracking-wider transition-all duration-1000 select-none shadow-sm"
+                >
+                  🔒 {currentUser.email} • ID: {currentUser.id.slice(-6)} • Protected Stream
                 </div>
               )}
             </div>

@@ -127,6 +127,8 @@ export interface UserProfile {
   collectedCount?: number;
   enrolledCoursesCount?: number;
   enrolledCourseIds?: string[];
+  sessionToken?: string;
+  deviceId?: string;
 }
 
 export type OrderPipelineStep = 1 | 2 | 3 | 4;
