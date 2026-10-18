@@ -227,7 +227,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
                             ? 'bg-emerald-600 text-white'
                             : art.status === 'reserved'
                             ? 'bg-amber-600 text-white'
-                            : 'bg-stone-900 text-white'
+                            : 'bg-red-600 text-white shadow-md shadow-red-600/30'
                         }`}
                       >
                         {art.status}

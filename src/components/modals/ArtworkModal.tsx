@@ -447,11 +447,11 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({ artwork: initialArtw
                           ? 'bg-stone-100 text-stone-800 border border-stone-300'
                           : activeArtwork.status === 'reserved'
                           ? 'bg-amber-50 text-amber-900 border border-amber-200'
-                          : 'bg-stone-200 text-stone-700 border border-stone-300'
+                          : 'bg-red-50 text-red-700 border border-red-300'
                       }`}
                     >
                       <span className={`w-1.5 h-1.5 rounded-full ${
-                        activeArtwork.status === 'available' ? 'bg-emerald-600' : activeArtwork.status === 'reserved' ? 'bg-amber-600' : 'bg-stone-500'
+                        activeArtwork.status === 'available' ? 'bg-emerald-600' : activeArtwork.status === 'reserved' ? 'bg-amber-600' : 'bg-red-600'
                       }`} />
                       {activeArtwork.status === 'available' && 'Available'}
                       {activeArtwork.status === 'reserved' && 'Reserved'}

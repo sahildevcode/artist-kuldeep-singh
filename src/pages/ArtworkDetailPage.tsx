@@ -498,15 +498,15 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
                     ? 'bg-emerald-50 text-emerald-800 border border-emerald-300'
                     : activeArtwork.status === 'reserved'
                     ? 'bg-amber-50 text-amber-900 border border-amber-300'
-                    : 'bg-stone-100 text-stone-700 border border-stone-300'
+                    : 'bg-red-50 text-red-700 border border-red-300'
                 }`}
               >
                 <span className={`w-2 h-2 rounded-full ${
-                  activeArtwork.status === 'available' ? 'bg-emerald-600' : activeArtwork.status === 'reserved' ? 'bg-amber-600' : 'bg-stone-500'
+                  activeArtwork.status === 'available' ? 'bg-emerald-600' : activeArtwork.status === 'reserved' ? 'bg-amber-600' : 'bg-red-600'
                 }`} />
                 {activeArtwork.status === 'available' && 'Available in Atelier'}
                 {activeArtwork.status === 'reserved' && 'Reserved for Exhibition'}
-                {activeArtwork.status === 'sold' && 'Acquired / Private Collection'}
+                {activeArtwork.status === 'sold' && 'Sold / Private Collection'}
               </span>
             </div>
 
