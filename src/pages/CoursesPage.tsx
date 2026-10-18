@@ -11,7 +11,7 @@ interface CoursesPageProps {
 }
 
 export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoToPortal }) => {
-  const { courses } = useStudioData();
+  const { courses, liveStatus } = useStudioData();
   const { isCourseUnlocked } = useAuth();
   const { addToCart, setIsCheckoutModalOpen } = useCart();
 
@@ -215,7 +215,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoTo
                         </span>
                       ) : null}
 
-                      {course.liveClassStatus === 'live' && (
+                      {(liveStatus ? (liveStatus.isLive && (liveStatus.courseId ? liveStatus.courseId === course.id : course.liveClassStatus === 'live')) : course.liveClassStatus === 'live') && (
                         <span className="bg-red-600 text-white animate-pulse px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-lg border border-red-400">
                           <span className="w-2 h-2 rounded-full bg-white animate-ping" />
                           🔴 Live Class Active

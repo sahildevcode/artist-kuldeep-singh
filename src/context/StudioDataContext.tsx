@@ -224,12 +224,16 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         : {
             isLive: false,
             liveStreamUrl: 'https://meet.google.com/ks-studio-atelier',
+            courseId: null,
+            courseTitle: null,
             topic: 'Masterclass Live Studio Broadcast • Atelier Demonstration'
           };
     } catch {
       return {
         isLive: false,
         liveStreamUrl: 'https://meet.google.com/ks-studio-atelier',
+        courseId: null,
+        courseTitle: null,
         topic: 'Masterclass Live Studio Broadcast • Atelier Demonstration'
       };
     }
@@ -347,6 +351,8 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             setLiveStatus({
               isLive: Boolean(cloudLive.isLive),
               liveStreamUrl: cloudLive.liveStreamUrl || 'https://meet.google.com/ks-studio-atelier',
+              courseId: cloudLive.courseId || null,
+              courseTitle: cloudLive.courseTitle || null,
               topic: cloudLive.topic || 'Masterclass Live Studio Broadcast • Atelier Demonstration',
               updatedAt: cloudLive.updatedAt
             });

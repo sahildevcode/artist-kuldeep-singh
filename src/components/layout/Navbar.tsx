@@ -33,6 +33,15 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
     { id: 'student-portal', label: 'Student Portal', icon: <Sparkles className="w-3.5 h-3.5 text-artisan-gold" /> }
   ];
 
+  const isUserEnrolledInLiveCourse = Boolean(
+    liveStatus?.isLive &&
+    (currentUser?.role === 'admin' || (
+      liveStatus.courseId &&
+      currentUser?.enrolledCourseIds &&
+      currentUser.enrolledCourseIds.includes(liveStatus.courseId)
+    ))
+  );
+
   return (
     <>
       <header
@@ -42,8 +51,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
             : 'bg-white/60 backdrop-blur-md border-b border-black/[0.03]'
         }`}
       >
-        {/* Real-Time Global Broadcast Alert Banner */}
-        {liveStatus?.isLive && (
+        {/* Real-Time Global Broadcast Alert Banner (ONLY for Enrolled Students of this course) */}
+        {isUserEnrolledInLiveCourse && (
           <div className="bg-gradient-to-r from-red-600 via-rose-700 to-amber-600 text-white px-3 sm:px-6 py-2 shadow-lg border-b border-red-400/40 flex items-center justify-between gap-3 text-xs sm:text-sm font-medium">
             <div className="flex items-center gap-2.5 truncate">
               <span className="flex h-3 w-3 relative shrink-0">
@@ -55,14 +64,20 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                   🔴 ON AIR
                 </span>
                 <span className="font-semibold text-white truncate text-[11px] sm:text-xs">
-                  <span className="hidden sm:inline">Artist Kuldeep Singh is currently streaming live from the Atelier Studio!</span>
-                  <span className="sm:hidden">Kuldeep Singh Live Atelier Class</span>
+                  <span>Live Atelier Session Active: {liveStatus?.courseTitle || 'Your Enrolled Course'}</span>
                 </span>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => {
+                  if (liveStatus?.courseId) {
+                    try {
+                      localStorage.setItem('ks_student_selected_course', liveStatus.courseId);
+                    } catch (e) {
+                      console.warn(e);
+                    }
+                  }
                   setActivePage('student-portal');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
@@ -118,7 +133,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                   >
                     {link.icon}
                     {link.label}
-                    {link.id === 'student-portal' && liveStatus?.isLive && (
+                    {link.id === 'student-portal' && isUserEnrolledInLiveCourse && (
                       <span className="flex items-center gap-1 bg-red-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse shadow-sm">
                         <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
                         LIVE
@@ -265,7 +280,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                 >
                   {link.icon}
                   <span>{link.label}</span>
-                  {link.id === 'student-portal' && liveStatus?.isLive && (
+                  {link.id === 'student-portal' && isUserEnrolledInLiveCourse && (
                     <span className="ml-auto flex items-center gap-1 bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full uppercase animate-pulse">
                       <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
                       LIVE NOW

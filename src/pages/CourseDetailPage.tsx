@@ -23,6 +23,7 @@ import {
 import type { Course, CourseLecture } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useStudioData } from '../context/StudioDataContext';
 import { MagneticButton } from '../components/ui/MagneticButton';
 
 interface CourseDetailPageProps {
@@ -34,6 +35,16 @@ interface CourseDetailPageProps {
 export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBack, onGoToPortal }) => {
   const { currentUser, setIsAuthModalOpen, isCourseUnlocked } = useAuth();
   const { addToCart, setIsCheckoutModalOpen } = useCart();
+  const { liveStatus } = useStudioData();
+
+  const isEnrolled = isCourseUnlocked(course.id) || currentUser?.role === 'admin';
+  const isThisCourseLive = Boolean(
+    liveStatus
+      ? (liveStatus.isLive && (liveStatus.courseId ? liveStatus.courseId === course.id : course.liveClassStatus === 'live'))
+      : course.liveClassStatus === 'live'
+  );
+  const liveMeetUrl = (isThisCourseLive && liveStatus?.liveStreamUrl) || course.liveClassUrl || 'https://meet.google.com';
+
   const [activeModuleIndex, setActiveModuleIndex] = useState<number>(0);
   const [isPlayingTeaser, setIsPlayingTeaser] = useState<boolean>(false);
   const [selectedLectureForStream, setSelectedLectureForStream] = useState<CourseLecture | null>(null);
@@ -135,8 +146,8 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
               </div>
             </div>
 
-            {/* Live Studio Broadcaster Alert Banner */}
-            {course.liveClassStatus === 'live' && (
+            {/* Live Studio Broadcaster Alert Banner (Isolated per Course and Enrolled Students) */}
+            {isThisCourseLive && (
               <div className="p-5 rounded-3xl bg-gradient-to-r from-red-600 via-rose-700 to-amber-700 text-white shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4 border border-red-400/40 animate-in fade-in">
                 <div className="flex items-center gap-3.5">
                   <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center flex-shrink-0">
@@ -158,15 +169,39 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
                   </div>
                 </div>
 
-                <a
-                  href={course.liveClassUrl || 'https://meet.google.com'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-6 py-3 bg-white text-red-700 hover:bg-stone-100 font-bold text-xs rounded-xl shadow-xl flex items-center gap-2 transition-transform hover:scale-105 flex-shrink-0"
-                >
-                  <ExternalLink className="w-4 h-4 text-red-600" />
-                  <span>Join Google Meet Broadcast</span>
-                </a>
+                {isEnrolled ? (
+                  <a
+                    href={liveMeetUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-6 py-3 bg-white text-red-700 hover:bg-stone-100 font-bold text-xs rounded-xl shadow-xl flex items-center gap-2 transition-transform hover:scale-105 flex-shrink-0 cursor-pointer"
+                  >
+                    <ExternalLink className="w-4 h-4 text-red-600" />
+                    <span>Join Google Meet Broadcast</span>
+                  </a>
+                ) : (
+                  <div className="flex flex-col sm:flex-row items-center gap-2.5 flex-shrink-0">
+                    <span className="text-[11px] text-rose-200 italic">Enrolled Scholars Only</span>
+                    <button
+                      onClick={() => {
+                        addToCart({
+                          id: course.id,
+                          type: 'course',
+                          title: course.title,
+                          price: course.price,
+                          image: course.thumbnail || (course.images && course.images[0]) || '',
+                          mediumOrCategory: course.category,
+                          subtitle: `${course.durationMonths || 'Masterclass'} by Artist Kuldeep Singh`
+                        }, 1);
+                        setIsCheckoutModalOpen(true);
+                      }}
+                      className="px-5 py-2.5 bg-white text-red-700 hover:bg-stone-100 font-bold text-xs rounded-xl shadow-xl flex items-center gap-2 transition-transform hover:scale-105 cursor-pointer"
+                    >
+                      <Sparkles className="w-4 h-4 text-amber-500" />
+                      <span>Enroll to Join Live Class</span>
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 

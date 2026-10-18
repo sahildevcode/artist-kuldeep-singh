@@ -255,9 +255,14 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
   const studentEmail = currentUser?.email || 'Not Signed In';
   const studentAvatar = currentUser?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=150&auto=format&fit=crop';
 
-  // Google Meet link for live studio
-  const isClassLive = Boolean(liveStatus?.isLive || activeCourse?.liveClassStatus === 'live');
-  const liveMeetUrl = (liveStatus?.isLive ? liveStatus.liveStreamUrl : '') || activeCourse?.liveClassUrl || 'https://meet.google.com/ks-studio-atelier';
+  // Google Meet link for live studio: ONLY live if THIS specific course is broadcasting
+  const isClassLive = Boolean(
+    activeCourse &&
+    (liveStatus
+      ? (liveStatus.isLive && (liveStatus.courseId ? liveStatus.courseId === activeCourse.id : activeCourse.liveClassStatus === 'live'))
+      : activeCourse.liveClassStatus === 'live')
+  );
+  const liveMeetUrl = (isClassLive && liveStatus?.liveStreamUrl) || activeCourse?.liveClassUrl || 'https://meet.google.com/ks-studio-atelier';
 
   return (
     <div className="pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-8 font-sans">
@@ -473,6 +478,12 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
                       {course.title}
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
+                      {(liveStatus ? (liveStatus.isLive && (liveStatus.courseId ? liveStatus.courseId === course.id : course.liveClassStatus === 'live')) : course.liveClassStatus === 'live') && (
+                        <span className="text-[10px] font-black text-red-500 animate-pulse flex items-center gap-1 bg-red-500/10 px-1.5 py-0.2 rounded-md">
+                          <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                          LIVE
+                        </span>
+                      )}
                       {courseUnlocked ? (
                         <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
                           <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Enrolled

@@ -75,6 +75,8 @@ export interface Course {
 export interface LiveBroadcastStatus {
   isLive: boolean;
   liveStreamUrl: string;
+  courseId?: string | null;
+  courseTitle?: string | null;
   topic?: string;
   updatedAt?: string;
 }
@@ -126,7 +128,7 @@ export interface UserProfile {
   email: string;
   username?: string;
   isEmailVerified?: boolean;
-  role: 'collector' | 'student';
+  role: 'collector' | 'student' | 'admin';
   avatar?: string;
   memberSince: string;
   collectedCount?: number;
