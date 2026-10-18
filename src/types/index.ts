@@ -66,6 +66,8 @@ export interface Course {
   materialsNeeded: string[];
   modules: CourseModule[];
   featured?: boolean;
+  isUpcoming?: boolean;
+  upcomingDate?: string;
   liveClassUrl?: string;
   liveClassStatus?: 'offline' | 'live' | 'scheduled';
 }

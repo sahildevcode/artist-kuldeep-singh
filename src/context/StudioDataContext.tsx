@@ -159,11 +159,11 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [courses, setCourses] = useState<Course[]>(() => {
     try {
       const saved = localStorage.getItem('kuldeep_studio_courses');
-      const loaded: Course[] = saved ? JSON.parse(saved) : [];
-      const clean = (Array.isArray(loaded) ? loaded : []).filter((c) => !DUMMY_COURSE_IDS.includes(c.id));
+      const loaded: Course[] = saved ? JSON.parse(saved) : COURSES;
+      const clean = (Array.isArray(loaded) && loaded.length > 0 ? loaded : COURSES);
       return normalizeCourses(clean);
     } catch {
-      return [];
+      return normalizeCourses(COURSES);
     }
   });
 
@@ -263,10 +263,12 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         const courseRes = await fetch('https://kuldeep-singh-backend.onrender.com/api/courses');
         if (courseRes.ok) {
           const cloudCourses: Course[] = await courseRes.json();
-          if (Array.isArray(cloudCourses) && isMounted) {
+          if (Array.isArray(cloudCourses) && cloudCourses.length > 0 && isMounted) {
             const clean = cloudCourses.filter((c) => !DUMMY_COURSE_IDS.includes(c.id));
-            loadedCourses = clean;
-            setCourses(normalizeCourses(clean));
+            if (clean.length > 0) {
+              loadedCourses = clean;
+              setCourses(normalizeCourses(clean));
+            }
           }
         }
 

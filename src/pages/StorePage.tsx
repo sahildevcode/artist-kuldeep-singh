@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, ShoppingBag, ShieldCheck, Sparkles, Truck } from 'lucide-react';
+import { Eye, ShoppingBag, ShieldCheck, Sparkles, Truck, MessageCircle, Layers, Palette } from 'lucide-react';
 import type { Artwork } from '../types';
 import { useCart } from '../context/CartContext';
 import { useStudioData } from '../context/StudioDataContext';
@@ -11,6 +11,9 @@ interface StorePageProps {
 export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
   const { addToCart } = useCart();
   const { artworks } = useStudioData();
+  
+  // Top-level category: All vs Paintings vs Prints (Client handwritten requirement)
+  const [topCategory, setTopCategory] = useState<'all' | 'paintings' | 'prints'>('all');
   const [selectedMedium, setSelectedMedium] = useState<string>('All');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc'>('featured');
@@ -24,39 +27,96 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
     'Limited Edition Print',
   ];
 
-  const filteredArtworks = artworks.filter((art) => {
-    const matchesMedium = selectedMedium === 'All' || art.medium === selectedMedium;
-    const matchesStatus = statusFilter === 'all' || art.status === statusFilter;
-    return matchesMedium && matchesStatus;
-  }).sort((a, b) => {
-    if (sortBy === 'price-asc') return a.price - b.price;
-    if (sortBy === 'price-desc') return b.price - a.price;
-    return 0; // featured default
-  });
+  const filteredArtworks = artworks
+    .filter((art) => {
+      // 1. Top Category Filter
+      if (topCategory === 'paintings' && art.medium === 'Limited Edition Print') return false;
+      if (topCategory === 'prints' && art.medium !== 'Limited Edition Print') return false;
+
+      // 2. Specific Medium Filter
+      const matchesMedium = selectedMedium === 'All' || art.medium === selectedMedium;
+
+      // 3. Status Filter (Available / Sold / Reserved)
+      const matchesStatus = statusFilter === 'all' || art.status === statusFilter;
+
+      return matchesMedium && matchesStatus;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'price-asc') return a.price - b.price;
+      if (sortBy === 'price-desc') return b.price - a.price;
+      return 0; // featured default
+    });
 
   return (
     <div className="relative z-10 pt-28 sm:pt-36 pb-28">
       {/* ------------------------------------------------------------- */}
       {/* 1. HERO HEADER */}
       {/* ------------------------------------------------------------- */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-artisan-gold/10 border border-artisan-gold/30 text-xs font-bold text-stone-800">
             <Sparkles className="w-3.5 h-3.5 text-artisan-gold" />
-            <span>Artist Kuldeep Singh Original Fine Art Collection</span>
+            <span>Artist Kuldeep Singh Atelier & Fine Art Store</span>
           </div>
           <h1 className="font-serif text-4xl sm:text-6xl font-bold tracking-tight text-[#1A1816] leading-[1.1]">
-            Acquire Original Masterpieces for Your Collection.
+            Acquire Original Paintings & Limited Edition Prints.
           </h1>
           <p className="text-stone-600 text-base sm:text-lg leading-relaxed">
-            Every piece is an original, museum-grade painting or drawing hand-crafted in the artist’s Chelsea studio. 
-            Delivered worldwide in custom bespoke wooden crates with certified provenance.
+            Explore authentic museum-grade masterworks hand-crafted with archival minerals, oils, and charcoals. 
+            Delivered worldwide with hand-embossed Certificates of Authenticity.
           </p>
         </div>
 
-        {/* Filters & Controls */}
-        <div className="mt-12 p-4 rounded-3xl bg-white/80 backdrop-blur-md border border-stone-200 shadow-soft-lux flex flex-col lg:flex-row items-center justify-between gap-4">
-          {/* Mediums */}
+        {/* Top-Level Category Switcher (Paintings | Prints) */}
+        <div className="mt-10 flex justify-center">
+          <div className="inline-flex p-1.5 rounded-full bg-stone-200/80 backdrop-blur-md border border-stone-300 shadow-inner">
+            <button
+              onClick={() => {
+                setTopCategory('all');
+                setSelectedMedium('All');
+              }}
+              className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all ${
+                topCategory === 'all'
+                  ? 'bg-[#1A1816] text-white shadow-md'
+                  : 'text-stone-700 hover:text-black'
+              }`}
+            >
+              All Artworks ({artworks.length})
+            </button>
+            <button
+              onClick={() => {
+                setTopCategory('paintings');
+                setSelectedMedium('All');
+              }}
+              className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all flex items-center gap-1.5 ${
+                topCategory === 'paintings'
+                  ? 'bg-[#1A1816] text-white shadow-md'
+                  : 'text-stone-700 hover:text-black'
+              }`}
+            >
+              <Palette className="w-3.5 h-3.5" />
+              <span>Original Paintings</span>
+            </button>
+            <button
+              onClick={() => {
+                setTopCategory('prints');
+                setSelectedMedium('All');
+              }}
+              className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all flex items-center gap-1.5 ${
+                topCategory === 'prints'
+                  ? 'bg-[#1A1816] text-white shadow-md'
+                  : 'text-stone-700 hover:text-black'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Fine Art Prints</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Secondary Filters & Controls */}
+        <div className="mt-8 p-4 rounded-3xl bg-white/80 backdrop-blur-md border border-stone-200 shadow-soft-lux flex flex-col lg:flex-row items-center justify-between gap-4">
+          {/* Mediums (shown when not filtered exclusively to prints) */}
           <div className="flex flex-wrap items-center gap-1.5 w-full lg:w-auto">
             {mediums.map((med) => (
               <button
@@ -64,7 +124,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
                 onClick={() => setSelectedMedium(med)}
                 className={`px-3.5 py-1.5 rounded-2xl text-xs font-semibold tracking-wide transition-all ${
                   selectedMedium === med
-                    ? 'bg-[#1A1816] text-white shadow-sm'
+                    ? 'bg-artisan-crimson text-white shadow-xs'
                     : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
                 }`}
               >
@@ -83,8 +143,8 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
             >
               <option value="all">All Availability</option>
               <option value="available">Available Only</option>
-              <option value="reserved">Reserved</option>
-              <option value="sold">Sold Pieces</option>
+              <option value="reserved">Reserved Pieces</option>
+              <option value="sold">Sold / Private Collection</option>
             </select>
 
             {/* Sort Filter */}
@@ -107,10 +167,11 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {filteredArtworks.length === 0 ? (
           <div className="py-20 text-center space-y-3 bg-white rounded-3xl border border-stone-200">
-            <h3 className="font-serif text-lg font-bold text-stone-800">No artworks match your criteria</h3>
-            <p className="text-xs text-stone-500">Try broadening your medium or availability filters.</p>
+            <h3 className="font-serif text-lg font-bold text-stone-800">No artworks match your selected criteria</h3>
+            <p className="text-xs text-stone-500">Try broadening your category or availability filters.</p>
             <button
               onClick={() => {
+                setTopCategory('all');
                 setSelectedMedium('All');
                 setStatusFilter('all');
               }}
@@ -121,115 +182,138 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredArtworks.map((art) => (
-              <div
-                key={art.id}
-                className="bg-white rounded-3xl overflow-hidden border border-stone-200 shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between group hover:-translate-y-2"
-              >
-                {/* Artwork Canvas Image */}
-                <div className="relative aspect-[4/5] overflow-hidden bg-stone-100">
-                  <img
-                    src={art.image}
-                    alt={art.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-5">
-                    <button
-                      onClick={() => onSelectArtwork(art)}
-                      className="w-full py-3 bg-white/95 backdrop-blur-md rounded-2xl text-xs font-bold text-stone-900 shadow-lg flex items-center justify-center gap-2 hover:bg-white transition-colors"
-                    >
-                      <Eye className="w-4 h-4 text-artisan-crimson" />
-                      View on Wall & Full Zoom
-                    </button>
-                  </div>
+            {filteredArtworks.map((art) => {
+              const inrPrice = Math.round(art.price * 85);
+              const commissionWhatsAppUrl = `https://wa.me/919810088231?text=${encodeURIComponent(
+                `Hello Artist Kuldeep Singh, I saw your artwork "${art.title}" (${art.medium}) on your store. Since it is ${art.status.toUpperCase()}, I would love to enquire about commissioning a similar custom piece. Please share details.`
+              )}`;
 
-                  {/* Badges */}
-                  <div className="absolute top-4 left-4 flex items-center gap-2">
-                    <span className="bg-white/95 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-stone-800 uppercase tracking-wider shadow-xs">
-                      {art.medium}
-                    </span>
-                  </div>
-
-                  <div className="absolute top-4 right-4">
-                    <span
-                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur-md ${
-                        art.status === 'available'
-                          ? 'bg-emerald-500/90 text-white'
-                          : art.status === 'reserved'
-                          ? 'bg-amber-500/90 text-white'
-                          : 'bg-stone-800/90 text-white'
-                      }`}
-                    >
-                      {art.status}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Details */}
-                <div className="p-6 flex-1 flex flex-col justify-between space-y-5">
-                  <div className="space-y-2">
-                    <h3 className="font-serif font-bold text-xl text-stone-900 group-hover:text-artisan-crimson transition-colors">
-                      {art.title}
-                    </h3>
-                    <p className="text-xs text-stone-500 italic">
-                      {art.subtitle}
-                    </p>
-                    <div className="flex items-center gap-3 text-xs text-stone-600 pt-1">
-                      <span>{art.dimensions}</span>
-                      <span>•</span>
-                      <span>{art.year}</span>
-                      <span>•</span>
-                      <span>{art.framed ? 'Bespoke Framed' : 'Unframed'}</span>
-                    </div>
-                  </div>
-
-                  {/* Pigment Swatches & Price */}
-                  <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
-                    <div>
-                      <span className="text-[10px] text-stone-400 block uppercase font-bold">
-                        Acquisition
-                      </span>
-                      <span className="font-serif font-bold text-2xl text-stone-900">
-                        ${art.price.toLocaleString()}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
+              return (
+                <div
+                  key={art.id}
+                  className="bg-white rounded-3xl overflow-hidden border border-stone-200 shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between group hover:-translate-y-2"
+                >
+                  {/* Artwork Canvas Image */}
+                  <div className="relative aspect-[4/5] overflow-hidden bg-stone-100">
+                    <img
+                      src={art.image}
+                      alt={art.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    
+                    {/* Hover Quick Action */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-5">
                       <button
                         onClick={() => onSelectArtwork(art)}
-                        className="p-2.5 rounded-xl border border-stone-200 hover:bg-stone-100 text-stone-700 transition-colors"
-                        title="Quick View"
+                        className="w-full py-3 bg-white/95 backdrop-blur-md rounded-2xl text-xs font-bold text-stone-900 shadow-lg flex items-center justify-center gap-2 hover:bg-white transition-colors"
                       >
-                        <Eye className="w-4 h-4" />
+                        <Eye className="w-4 h-4 text-artisan-crimson" />
+                        Explore & Inspect Zoom Details
                       </button>
+                    </div>
 
-                      <button
-                        onClick={() =>
-                          addToCart({
-                            id: art.id,
-                            type: 'artwork',
-                            title: art.title,
-                            subtitle: art.subtitle,
-                            price: art.price,
-                            image: art.image,
-                            mediumOrCategory: art.medium,
-                          })
-                        }
-                        disabled={art.status === 'sold'}
-                        className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 ${
-                          art.status === 'sold'
-                            ? 'bg-stone-200 text-stone-400 cursor-not-allowed'
-                            : 'bg-stone-900 hover:bg-artisan-crimson text-white active:scale-95'
+                    {/* Medium Badge */}
+                    <div className="absolute top-4 left-4 flex items-center gap-2">
+                      <span className="bg-white/95 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-stone-800 uppercase tracking-wider shadow-xs">
+                        {art.medium}
+                      </span>
+                    </div>
+
+                    {/* Status Badge: Available / Sold / Reserved */}
+                    <div className="absolute top-4 right-4">
+                      <span
+                        className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur-md shadow-sm ${
+                          art.status === 'available'
+                            ? 'bg-emerald-600 text-white'
+                            : art.status === 'reserved'
+                            ? 'bg-amber-600 text-white'
+                            : 'bg-stone-900 text-white'
                         }`}
                       >
-                        <ShoppingBag className="w-3.5 h-3.5" />
-                        <span>{art.status === 'sold' ? 'Acquired' : 'Acquire'}</span>
-                      </button>
+                        {art.status}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Details */}
+                  <div className="p-6 flex-1 flex flex-col justify-between space-y-5">
+                    <div className="space-y-2">
+                      <h3 className="font-serif font-bold text-xl text-stone-900 group-hover:text-artisan-crimson transition-colors">
+                        {art.title}
+                      </h3>
+                      <p className="text-xs text-stone-500 italic line-clamp-1">
+                        {art.subtitle}
+                      </p>
+                      <div className="flex items-center gap-3 text-xs text-stone-600 pt-1">
+                        <span>{art.dimensions}</span>
+                        <span>•</span>
+                        <span>{art.year}</span>
+                        <span>•</span>
+                        <span>{art.framed ? 'Framed' : 'Unframed'}</span>
+                      </div>
+                    </div>
+
+                    {/* Price & Action Buttons */}
+                    <div className="pt-4 border-t border-stone-100 flex items-center justify-between gap-3">
+                      <div>
+                        <span className="text-[10px] text-stone-400 block uppercase font-bold">
+                          Acquisition Value
+                        </span>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="font-serif font-bold text-xl text-stone-900">
+                            ₹{inrPrice.toLocaleString()}
+                          </span>
+                          <span className="text-[10px] text-stone-400 font-medium">
+                            (${art.price.toLocaleString()})
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => onSelectArtwork(art)}
+                          className="p-2.5 rounded-xl border border-stone-200 hover:bg-stone-100 text-stone-700 transition-colors"
+                          title="Quick View & Zoom"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+
+                        {art.status === 'available' ? (
+                          <button
+                            onClick={() =>
+                              addToCart({
+                                id: art.id,
+                                type: 'artwork',
+                                title: art.title,
+                                subtitle: art.subtitle,
+                                price: inrPrice,
+                                image: art.image,
+                                mediumOrCategory: art.medium,
+                              })
+                            }
+                            className="px-4 py-2.5 rounded-xl text-xs font-bold bg-[#1A1816] hover:bg-artisan-crimson text-white active:scale-95 transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+                          >
+                            <ShoppingBag className="w-3.5 h-3.5" />
+                            <span>Acquire</span>
+                          </button>
+                        ) : (
+                          <a
+                            href={commissionWhatsAppUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-3 py-2.5 rounded-xl text-[11px] font-bold bg-emerald-700 hover:bg-emerald-800 text-white transition-all shadow-xs flex items-center gap-1"
+                            title="Commission similar custom artwork via WhatsApp"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5" />
+                            <span>Commission</span>
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>

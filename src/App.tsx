@@ -12,6 +12,7 @@ import { CartDrawer } from './components/modals/CartDrawer';
 import { AuthModal } from './components/modals/AuthModal';
 import { AtelierAudioPlayer } from './components/layout/AtelierAudioPlayer';
 import { ArtworkModal } from './components/modals/ArtworkModal';
+import { ContactWidget } from './components/layout/ContactWidget';
 import { OrderHistoryModal } from './components/modals/OrderHistoryModal';
 import { CheckoutModal } from './components/modals/CheckoutModal';
 import { HomePage } from './pages/HomePage';
@@ -222,6 +223,9 @@ const AppInner: React.FC = () => {
         artwork={selectedArtwork}
         onClose={() => setSelectedArtwork(null)}
       />
+
+      {/* Floating Multi-Channel Contact Atelier Widget (WhatsApp, Call, Insta, YouTube, Twitter) */}
+      <ContactWidget />
     </div>
   );
 };

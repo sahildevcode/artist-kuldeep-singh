@@ -151,5 +151,42 @@ export const ARTWORKS: Artwork[] = [
     paletteColors: ['#0F0E0D', '#3F3F46', '#D4D4D8', '#FFFFFF'],
     weight: '5.2 lbs (2.4 kg)',
     varnishType: 'Archival Fixative with Low Sheen'
+  },
+  {
+    id: 'art-09',
+    title: 'The Golden Solitude (Fine Art Archival Print)',
+    subtitle: 'Limited Edition Museum Giclée on 310gsm Cotton Rag (Edition of 50)',
+    year: 2025,
+    medium: 'Limited Edition Print',
+    dimensions: '20 x 28 in (51 x 71 cm)',
+    price: 450,
+    image: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1400&auto=format&fit=crop',
+    description: 'Museum-standard archival pigment print capturing the warm chiaroscuro and atmospheric depth of Kuldeep Singh’s renowned solitary landscape series.',
+    story: 'Individually signed, numbered, and embossed with the Atelier Kuldeep Singh archival wax seal. Printed with 12-color archival mineral pigment inks.',
+    framed: false,
+    status: 'available',
+    featured: true,
+    paletteColors: ['#0E2A47', '#D97706', '#E2DDD5'],
+    weight: '0.8 lbs (0.4 kg)',
+    varnishType: 'Archival Matte UV Protection'
+  },
+  {
+    id: 'art-10',
+    title: 'Nocturne in Venetian Indigo (Fine Art Print)',
+    subtitle: 'Hand-Embossed Giclée on Hahnemühle German Etching Paper (Edition of 30)',
+    year: 2025,
+    medium: 'Limited Edition Print',
+    dimensions: '24 x 32 in (61 x 81 cm)',
+    price: 520,
+    image: 'https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?q=80&w=1400&auto=format&fit=crop',
+    description: 'An exquisite collector print capturing the mystical morning twilight of Venice with subtle blue-violet undertones and velvet darks.',
+    story: 'Reproduced directly from the high-resolution master studio scan under the artist’s direct color proofing supervision.',
+    framed: true,
+    status: 'available',
+    featured: false,
+    paletteColors: ['#2563EB', '#60A5FA', '#1E1B4B'],
+    weight: '1.5 lbs (0.7 kg)',
+    varnishType: 'Archival Museum Mount & UV Acrylic'
   }
 ];
+

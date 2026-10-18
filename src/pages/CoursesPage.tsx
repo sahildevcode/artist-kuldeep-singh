@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, Star, Clock, Sparkles, Shield, Search, Play, Calendar, ArrowRight, Video, CheckCircle2 } from 'lucide-react';
+import { BookOpen, Star, Clock, Sparkles, Search, Play, Calendar, ArrowRight, Video, CheckCircle2, MessageCircle } from 'lucide-react';
 import type { Course } from '../types';
 import { useStudioData } from '../context/StudioDataContext';
 import { useAuth } from '../context/AuthContext';
@@ -14,6 +14,9 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoTo
   const { courses } = useStudioData();
   const { isCourseUnlocked } = useAuth();
   const { addToCart, setIsCheckoutModalOpen } = useCart();
+
+  // Top level: Course vs Upcoming Course filter (Client requirement)
+  const [courseTypeFilter, setCourseTypeFilter] = useState<'all' | 'ongoing' | 'upcoming'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -26,12 +29,20 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoTo
   ];
 
   const filteredCourses = courses.filter((course) => {
+    // 1. Ongoing vs Upcoming Filter
+    if (courseTypeFilter === 'ongoing' && course.isUpcoming) return false;
+    if (courseTypeFilter === 'upcoming' && !course.isUpcoming) return false;
+
+    // 2. Category Filter
     const matchesCategory =
       selectedCategory === 'All' || course.category === selectedCategory;
+
+    // 3. Search Filter
     const matchesSearch =
       course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.category.toLowerCase().includes(searchQuery.toLowerCase());
+
     return matchesCategory && matchesSearch;
   });
 
@@ -40,7 +51,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoTo
       {/* ------------------------------------------------------------- */}
       {/* 1. HERO HEADER */}
       {/* ------------------------------------------------------------- */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-artisan-crimson/10 border border-artisan-crimson/20 text-xs font-bold text-artisan-crimson">
             <Sparkles className="w-3.5 h-3.5" />
@@ -51,12 +62,50 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoTo
           </h1>
           <p className="text-stone-600 text-base sm:text-lg leading-relaxed">
             Direct atelier mentorship from Artist Kuldeep Singh with 12+ years of professional practice. 
-            Choose your specialization below to view the complete monthly syllabus and enrollment details.
+            Choose your specialization below to view the syllabus and enrollment details.
           </p>
         </div>
 
+        {/* Course Type Switcher: All | Ongoing Courses | Upcoming Courses */}
+        <div className="mt-10 flex justify-center">
+          <div className="inline-flex p-1.5 rounded-full bg-stone-200/80 backdrop-blur-md border border-stone-300 shadow-inner">
+            <button
+              onClick={() => setCourseTypeFilter('all')}
+              className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all ${
+                courseTypeFilter === 'all'
+                  ? 'bg-[#1A1816] text-white shadow-md'
+                  : 'text-stone-700 hover:text-black'
+              }`}
+            >
+              All Masterclasses ({courses.length})
+            </button>
+            <button
+              onClick={() => setCourseTypeFilter('ongoing')}
+              className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all flex items-center gap-1.5 ${
+                courseTypeFilter === 'ongoing'
+                  ? 'bg-[#1A1816] text-white shadow-md'
+                  : 'text-stone-700 hover:text-black'
+              }`}
+            >
+              <Video className="w-3.5 h-3.5" />
+              <span>Current Courses</span>
+            </button>
+            <button
+              onClick={() => setCourseTypeFilter('upcoming')}
+              className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all flex items-center gap-1.5 ${
+                courseTypeFilter === 'upcoming'
+                  ? 'bg-artisan-crimson text-white shadow-md'
+                  : 'text-stone-700 hover:text-black'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5 text-artisan-gold" />
+              <span>Upcoming Courses</span>
+            </button>
+          </div>
+        </div>
+
         {/* Filters & Search Toolbar */}
-        <div className="mt-12 p-3 sm:p-4 rounded-3xl bg-white/80 backdrop-blur-md border border-stone-200 shadow-soft-lux flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="mt-8 p-3 sm:p-4 rounded-3xl bg-white/80 backdrop-blur-md border border-stone-200 shadow-soft-lux flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Category Tabs */}
           <div className="flex flex-wrap items-center gap-1.5 w-full md:w-auto">
             {categories.map((cat) => (
@@ -99,6 +148,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoTo
             <p className="text-xs text-stone-500">Try selecting 'All' or searching for different topics.</p>
             <button
               onClick={() => {
+                setCourseTypeFilter('all');
                 setSelectedCategory('All');
                 setSearchQuery('');
               }}
@@ -111,13 +161,27 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoTo
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {filteredCourses.map((course) => {
               const isUnlocked = isCourseUnlocked(course.id);
+
               const handleCardClick = () => {
-                if (isUnlocked && onGoToPortal) {
-                  onGoToPortal(course.id);
+                if (isUnlocked) {
+                  if (onGoToPortal) {
+                    onGoToPortal(course.id);
+                  } else {
+                    try {
+                      localStorage.setItem('ks_student_selected_course', course.id);
+                    } catch (err) {
+                      console.warn(err);
+                    }
+                    window.location.hash = 'student-portal';
+                  }
                 } else {
                   onSelectCourse(course);
                 }
               };
+
+              const upcomingWhatsAppUrl = `https://wa.me/919810088231?text=${encodeURIComponent(
+                `Hello Artist Kuldeep Singh, I would like to pre-register / enquire about the upcoming course "${course.title}". Please share details regarding the batch dates, syllabus, and seat confirmation.`
+              )}`;
 
               return (
                 <div
@@ -142,12 +206,22 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoTo
                           Enrolled & Active
                         </span>
                       )}
+
+                      {/* Upcoming Course Highlight Badge */}
+                      {course.isUpcoming ? (
+                        <span className="bg-artisan-gold text-stone-900 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1 shadow-lg border border-yellow-300 animate-pulse">
+                          <Sparkles className="w-3 h-3" />
+                          Upcoming Masterclass • Admissions Open
+                        </span>
+                      ) : null}
+
                       {course.liveClassStatus === 'live' && (
                         <span className="bg-red-600 text-white animate-pulse px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-lg border border-red-400">
                           <span className="w-2 h-2 rounded-full bg-white animate-ping" />
-                          🔴 Live Studio Class Active
+                          🔴 Live Class Active
                         </span>
                       )}
+                      
                       <span className="bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-wider">
                         {course.category}
                       </span>
@@ -191,6 +265,13 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoTo
                       <p className="text-xs sm:text-sm text-stone-600 leading-relaxed line-clamp-2">
                         {course.summary}
                       </p>
+
+                      {course.upcomingDate && (
+                        <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-amber-700 shrink-0" />
+                          <span>{course.upcomingDate}</span>
+                        </div>
+                      )}
 
                       <div className="grid grid-cols-2 gap-2 pt-2 text-xs text-stone-600">
                         <div className="flex items-center gap-1.5">
@@ -256,26 +337,39 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoTo
                               >
                                 <span>Syllabus</span>
                               </button>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  addToCart({
-                                    id: course.id,
-                                    type: 'course',
-                                    title: course.title,
-                                    price: course.price,
-                                    image: course.thumbnail,
-                                    mediumOrCategory: course.category,
-                                    subtitle: `${course.durationMonths} by Artist Kuldeep Singh`
-                                  }, 1, false);
-                                  setIsCheckoutModalOpen(true);
-                                }}
-                                className="px-4 py-2.5 bg-[#1A1816] hover:bg-artisan-crimson text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
-                                title="Direct enrollment & payment"
-                              >
-                                <Sparkles className="w-3.5 h-3.5 text-artisan-gold" />
-                                <span>Enroll (₹{course.price.toLocaleString()})</span>
-                              </button>
+
+                              {course.isUpcoming ? (
+                                <a
+                                  href={upcomingWhatsAppUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="px-4 py-2.5 bg-artisan-gold hover:bg-amber-500 text-stone-900 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+                                >
+                                  <MessageCircle className="w-3.5 h-3.5" />
+                                  <span>Pre-Register</span>
+                                </a>
+                              ) : (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    addToCart({
+                                      id: course.id,
+                                      type: 'course',
+                                      title: course.title,
+                                      price: course.price,
+                                      image: course.thumbnail,
+                                      mediumOrCategory: course.category,
+                                      subtitle: `${course.durationMonths} by Artist Kuldeep Singh`
+                                    }, 1, false);
+                                    setIsCheckoutModalOpen(true);
+                                  }}
+                                  className="px-4 py-2.5 bg-[#1A1816] hover:bg-artisan-crimson text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 active:scale-95"
+                                >
+                                  <span>Enroll Now</span>
+                                  <ArrowRight className="w-3.5 h-3.5" />
+                                </button>
+                              )}
                             </div>
                           )}
                         </div>
@@ -287,51 +381,6 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoTo
             })}
           </div>
         )}
-      </section>
-
-      {/* ------------------------------------------------------------- */}
-      {/* 3. STUDENT SUCCESS & GUARANTEE */}
-      {/* ------------------------------------------------------------- */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
-        <div className="p-8 sm:p-12 rounded-3xl bg-white border border-stone-200 shadow-soft-lux">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="space-y-2">
-              <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                <Shield className="w-5 h-5" />
-              </div>
-              <h4 className="font-display font-bold text-sm text-stone-900">
-                30-Day Artistic Growth Guarantee
-              </h4>
-              <p className="text-xs text-stone-500 leading-relaxed">
-                If your paintings and drawings do not dramatically improve under Kuldeep Singh’s guidance within 30 days, receive a 100% full refund with no questions asked.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                <Video className="w-5 h-5" />
-              </div>
-              <h4 className="font-display font-bold text-sm text-stone-900">
-                4K Video Masterclasses
-              </h4>
-              <p className="text-xs text-stone-500 leading-relaxed">
-                Full HD and 4K step-by-step master demonstrations from initial ground preparation to final signature, accessible on any device.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <h4 className="font-display font-bold text-sm text-stone-900">
-                12 Years of Mentorship
-              </h4>
-              <p className="text-xs text-stone-500 leading-relaxed">
-                Connect with thousands of dedicated artists worldwide. Submit assignments for personalized critique and monthly live studio feedback sessions.
-              </p>
-            </div>
-          </div>
-        </div>
       </section>
     </div>
   );
