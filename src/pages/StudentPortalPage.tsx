@@ -21,8 +21,8 @@ import {
 } from 'lucide-react';
 import { useStudioData } from '../context/StudioDataContext';
 import { useAuth } from '../context/AuthContext';
-import type { CourseLecture, EnrolledStudent } from '../types';
-import confetti from 'canvas-confetti';
+import { useCart } from '../context/CartContext';
+import type { CourseLecture } from '../types';
 
 interface StudentPortalPageProps {
   setActivePage: (page: 'home' | 'about' | 'courses' | 'store' | 'course-detail' | 'student-portal') => void;
@@ -30,7 +30,8 @@ interface StudentPortalPageProps {
 
 export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActivePage }) => {
   const { courses, liveStatus, students, addStudent } = useStudioData();
-  const { currentUser, deviceId, login, logout, setIsAuthModalOpen, isCourseUnlocked, unlockCourse, sessionKickedOutAlert, clearSessionAlert } = useAuth();
+  const { currentUser, deviceId, login, logout, setIsAuthModalOpen, isCourseUnlocked, sessionKickedOutAlert, clearSessionAlert } = useAuth();
+  const { addToCart, setIsCheckoutModalOpen } = useCart();
 
   // Selected Course (persists on reload)
   const [selectedCourseId, setSelectedCourseId] = useState<string>(() => {
@@ -97,34 +98,32 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
   const [enrollName, setEnrollName] = useState(currentUser?.name || '');
   const [enrollEmail, setEnrollEmail] = useState(currentUser?.email || '');
 
-  const handleDemoEnroll = (customEmail?: string, customName?: string) => {
+  const handleEnrollCourse = (customEmail?: string, customName?: string) => {
     if (!activeCourse) return;
-    const targetEmail = customEmail?.trim() || currentUser?.email || 'demo.student@kuldeepsingh.art';
-    const targetName = customName?.trim() || currentUser?.name || 'Enrolled Scholar';
+    const targetEmail = customEmail?.trim() || currentUser?.email;
+    const targetName = customName?.trim() || currentUser?.name;
 
     if (!currentUser) {
-      login(targetEmail, targetName, 'student');
+      if (targetEmail && targetName) {
+        login(targetEmail, targetName, 'student');
+      } else {
+        setIsAuthModalOpen(true);
+        return;
+      }
     }
-    unlockCourse(activeCourse.id);
-    const newEnrolledStudent: EnrolledStudent = {
-      id: 'stu-' + Date.now(),
-      name: targetName,
-      email: targetEmail,
-      courseId: activeCourse.id,
-      courseTitle: activeCourse.title,
-      batchSchedule: activeCourse.schedule || 'Weekend Intensive Batch',
-      enrolledDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-      feesPaid: activeCourse.price,
-      paymentStatus: 'Paid',
-      progressPercent: 0
-    };
-    addStudent(newEnrolledStudent);
+
+    addToCart({
+      id: activeCourse.id,
+      type: 'course',
+      title: activeCourse.title,
+      price: activeCourse.price,
+      image: activeCourse.thumbnail || (activeCourse.images && activeCourse.images[0]) || '',
+      mediumOrCategory: activeCourse.category,
+      subtitle: `${activeCourse.durationMonths || 'Masterclass'} by Artist Kuldeep Singh`
+    }, 1);
+
     setIsEnrollModalOpen(false);
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
+    setIsCheckoutModalOpen(true);
   };
 
   // Active Lecture Streaming Modal
@@ -540,11 +539,17 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
 
                 {!isEnrolled && (
                   <button
-                    onClick={() => setIsEnrollModalOpen(true)}
+                    onClick={() => {
+                      if (!currentUser) {
+                        setIsAuthModalOpen(true);
+                      } else {
+                        handleEnrollCourse();
+                      }
+                    }}
                     className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-artisan-crimson to-artisan-ochre text-white text-xs font-bold shadow-md hover:brightness-105 transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
-                    <span>Enroll to Unlock (${activeCourse.price})</span>
+                    <span>Enroll to Unlock (₹{activeCourse.price.toLocaleString()})</span>
                   </button>
                 )}
               </div>
@@ -616,11 +621,17 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
                     </a>
                   ) : (
                     <button
-                      onClick={() => setIsEnrollModalOpen(true)}
+                      onClick={() => {
+                        if (!currentUser) {
+                          setIsAuthModalOpen(true);
+                        } else {
+                          handleEnrollCourse();
+                        }
+                      }}
                       className="px-4 py-2.5 rounded-xl bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
                     >
                       <Lock className="w-3.5 h-3.5" />
-                      <span>Enroll to Get Meet Link</span>
+                      <span>Enroll to Get Meet Link (₹{activeCourse.price.toLocaleString()})</span>
                     </button>
                   )}
                 </div>
@@ -767,11 +778,17 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
                                 </button>
                               ) : (
                                 <button
-                                  onClick={() => setIsEnrollModalOpen(true)}
+                                  onClick={() => {
+                                    if (!currentUser) {
+                                      setIsAuthModalOpen(true);
+                                    } else {
+                                      handleEnrollCourse();
+                                    }
+                                  }}
                                   className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-500/10 text-amber-800 hover:bg-amber-500 hover:text-white border border-amber-500/30 transition-all flex items-center gap-1.5 cursor-pointer"
                                 >
                                   <Lock className="w-3.5 h-3.5" />
-                                  <span>Locked (Enroll)</span>
+                                  <span>Locked (Enroll ₹{activeCourse.price.toLocaleString()})</span>
                                 </button>
                               )}
                             </div>
@@ -968,7 +985,7 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
               <div className="flex items-center justify-between">
                 <span className="text-xs text-stone-400 uppercase tracking-wider font-semibold">Selected Curriculum</span>
                 <span className="px-2.5 py-0.5 rounded-full bg-artisan-crimson/20 text-artisan-crimson text-xs font-bold">
-                  ₹{activeCourse.price.toLocaleString()} / ${(activeCourse.price / 83).toFixed(0)}
+                  ₹{activeCourse.price.toLocaleString()}
                 </span>
               </div>
               <h4 className="font-serif font-bold text-stone-100 text-base">
@@ -983,10 +1000,10 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
             <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs space-y-1">
               <div className="flex items-center gap-1.5 font-bold text-amber-400">
                 <ShieldCheck className="w-4 h-4" />
-                <span>Atelier Student Enrollment</span>
+                <span>Secure Online Payment & Instant Unlock</span>
               </div>
               <p className="text-[11px] text-stone-300 leading-relaxed">
-                Apna registered student name aur email verify karein to access your live classes, Google Meet link, and recorded lecture demos.
+                Apna student name aur email verify karein to proceed to Razorpay (UPI, Cards, NetBanking). Payment complete hote hi batch turant unlock ho jayega.
               </p>
             </div>
 
@@ -1021,11 +1038,11 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
 
               <div className="flex flex-col gap-2 pt-2">
                 <button
-                  onClick={() => handleDemoEnroll(enrollEmail, enrollName)}
+                  onClick={() => handleEnrollCourse(enrollEmail, enrollName)}
                   className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-bold text-xs tracking-wide shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Sparkles className="w-4 h-4 text-stone-950" />
-                  <span>Confirm Enrollment & Unlock Course</span>
+                  <span>Proceed to Razorpay Payment (₹{activeCourse.price.toLocaleString()})</span>
                 </button>
                 <button
                   onClick={() => setIsEnrollModalOpen(false)}

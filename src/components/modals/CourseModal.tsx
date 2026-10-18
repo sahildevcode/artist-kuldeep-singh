@@ -10,7 +10,7 @@ interface CourseModalProps {
 }
 
 export const CourseModal: React.FC<CourseModalProps> = ({ course, onClose }) => {
-  const { addToCart } = useCart();
+  const { addToCart, setIsCheckoutModalOpen } = useCart();
   const [isPlayingVideo, setIsPlayingVideo] = useState(false);
   const [activeModuleIndex, setActiveModuleIndex] = useState<number>(0);
 
@@ -26,6 +26,8 @@ export const CourseModal: React.FC<CourseModalProps> = ({ course, onClose }) => 
       image: course.thumbnail,
       mediumOrCategory: course.category,
     });
+    onClose();
+    setIsCheckoutModalOpen(true);
   };
 
   return (
@@ -200,7 +202,7 @@ export const CourseModal: React.FC<CourseModalProps> = ({ course, onClose }) => 
               className="w-full sm:w-auto"
             >
               <ShoppingBag className="w-4 h-4 mr-2" />
-              Enroll in Masterclass (${course.price})
+              Enroll in Masterclass (₹{course.price.toLocaleString()})
             </MagneticButton>
           </div>
         </div>

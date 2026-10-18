@@ -480,13 +480,12 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
                   <div className="flex items-baseline gap-3">
                     {course.originalPrice && (
                       <span className="text-sm text-stone-400 line-through">
-                        ${course.originalPrice}
+                        ₹{course.originalPrice.toLocaleString()}
                       </span>
                     )}
                     <span className="font-serif font-bold text-3xl sm:text-4xl text-artisan-crimson">
-                      ${course.price}
+                      ₹{course.price.toLocaleString()}
                     </span>
-                    <span className="text-xs text-stone-500 font-semibold">USD</span>
                   </div>
                   <p className="text-[11px] text-stone-500">
                     One-time payment • Lifetime access to future revisions

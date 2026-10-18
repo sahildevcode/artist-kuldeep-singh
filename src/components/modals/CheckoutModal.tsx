@@ -25,12 +25,20 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
   const [notes, setNotes] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const isOnlyCourses = cart.length > 0 && cart.every((i) => i.type === 'course');
+
   useEffect(() => {
     if (currentUser) {
       setFullName(currentUser.name || '');
       setEmail(currentUser.email || '');
     }
   }, [currentUser]);
+
+  useEffect(() => {
+    if (isOnlyCourses) {
+      setPaymentMethod('online');
+    }
+  }, [isOnlyCourses]);
 
   if (!isOpen) return null;
 
@@ -52,10 +60,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
 
           <div>
             <h3 className="font-serif font-bold text-2xl text-stone-900">
-              Collector Login Required
+              {isOnlyCourses ? 'Student Account Required' : 'Collector Login Required'}
             </h3>
             <p className="text-xs text-stone-600 mt-2 leading-relaxed">
-              To guarantee verified provenance, personalized Certificate of Authenticity, and live 24/7 shipment tracking, please sign in or register before placing an order.
+              {isOnlyCourses
+                ? 'To ensure your live Google Meet link, lecture recordings, and student dashboard are instantly activated, please sign in or register before checking out.'
+                : 'To guarantee verified provenance, personalized Certificate of Authenticity, and live 24/7 shipment tracking, please sign in or register before placing an order.'}
             </p>
           </div>
 
@@ -84,7 +94,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
 
   const finalizeOrder = async (paymentRefId?: string) => {
     const courseItem = cart.find((i) => i.type === 'course');
-    const fullDeliveryAddress = `${streetAddress}, ${city}, ${stateName ? stateName + ' ' : ''}${pincode ? '- ' + pincode : ''}`.trim();
+    const fullDeliveryAddress = isOnlyCourses
+      ? 'Digital Atelier Delivery (Online Course Enrollment)'
+      : `${streetAddress}, ${city}, ${stateName ? stateName + ' ' : ''}${pincode ? '- ' + pincode : ''}`.trim();
+    const resolvedCity = isOnlyCourses ? (city.trim() || 'Online Atelier') : city.trim();
     const chosenPaymentLabel = paymentMethod === 'online'
       ? `Razorpay (${paymentRefId || 'Verified'})`
       : 'Cash on Delivery (COD)';
@@ -94,8 +107,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
       email: email.trim(),
       phone: phone.trim(),
       address: fullDeliveryAddress,
-      city: city.trim(),
-      state: stateName.trim(),
+      city: resolvedCity,
+      state: isOnlyCourses ? 'Online' : stateName.trim(),
       paymentMethod: chosenPaymentLabel,
       paymentStatus: paymentMethod === 'online' ? 'Paid' : 'Pending Payment',
       notes: notes.trim()
@@ -123,8 +136,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
     e.preventDefault();
     setErrorMessage(null);
 
-    if (!fullName.trim() || !phone.trim() || !streetAddress.trim() || !city.trim()) {
-      setErrorMessage('Please fill all required delivery details (Name, Mobile, Street Address, and City).');
+    if (!fullName.trim() || !phone.trim() || (!isOnlyCourses && (!streetAddress.trim() || !city.trim()))) {
+      setErrorMessage(
+        isOnlyCourses
+          ? 'Please enter your Full Name and Mobile Number to proceed with enrollment.'
+          : 'Please fill all required delivery details (Name, Mobile, Street Address, and City).'
+      );
       return;
     }
 
@@ -247,10 +264,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
             </div>
             <div>
               <h2 className="font-serif font-bold text-lg text-stone-900">
-                Secure Fine Art Acquisition
+                {isOnlyCourses ? 'Masterclass Enrollment & Atelier Access' : 'Secure Fine Art Acquisition'}
               </h2>
               <p className="text-[11px] text-stone-500">
-                Artist Kuldeep Singh Atelier • 100% Insured Delivery
+                {isOnlyCourses ? 'Artist Kuldeep Singh Atelier • Instant Live & Recorded Access' : 'Artist Kuldeep Singh Atelier • 100% Insured Delivery'}
               </p>
             </div>
           </div>
@@ -271,17 +288,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Left Column: Collector & Delivery Address */}
+            {/* Left Column: Collector / Student & Delivery Details */}
             <div className="lg:col-span-7 space-y-4 text-xs">
               <div className="flex items-center gap-2 pb-1 border-b border-stone-200 font-bold text-stone-800 text-xs uppercase tracking-wider">
                 <User className="w-3.5 h-3.5 text-artisan-crimson" />
-                <span>1. Collector & Delivery Details</span>
+                <span>{isOnlyCourses ? '1. Student & Contact Details' : '1. Collector & Delivery Details'}</span>
               </div>
 
               {/* Full Name */}
               <div>
                 <label className="block text-stone-600 font-semibold mb-1">
-                  Collector Full Name <span className="text-red-500">*</span>
+                  {isOnlyCourses ? 'Student Full Name' : 'Collector Full Name'} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -347,74 +364,88 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
                 </div>
               </div>
 
-              {/* Delivery Address */}
-              <div>
-                <label className="block text-stone-600 font-semibold mb-1">
-                  Delivery Address (Apartment, House, Street) <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <MapPin className="w-3.5 h-3.5 absolute left-3 top-3 text-stone-400" />
-                  <textarea
-                    rows={2}
-                    required
-                    value={streetAddress}
-                    onChange={(e) => setStreetAddress(e.target.value)}
-                    placeholder="Bungalow / Flat No., Society, Road Area..."
-                    className="w-full bg-white border border-stone-300 rounded-xl pl-9 pr-3 py-2 text-xs text-stone-900 focus:outline-none focus:border-stone-800"
-                  />
-                </div>
-              </div>
+              {!isOnlyCourses ? (
+                <>
+                  {/* Delivery Address */}
+                  <div>
+                    <label className="block text-stone-600 font-semibold mb-1">
+                      Delivery Address (Apartment, House, Street) <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <MapPin className="w-3.5 h-3.5 absolute left-3 top-3 text-stone-400" />
+                      <textarea
+                        rows={2}
+                        required
+                        value={streetAddress}
+                        onChange={(e) => setStreetAddress(e.target.value)}
+                        placeholder="Bungalow / Flat No., Society, Road Area..."
+                        className="w-full bg-white border border-stone-300 rounded-xl pl-9 pr-3 py-2 text-xs text-stone-900 focus:outline-none focus:border-stone-800"
+                      />
+                    </div>
+                  </div>
 
-              {/* City, State, Pincode */}
-              <div className="grid grid-cols-3 gap-2.5">
-                <div>
-                  <label className="block text-stone-600 font-semibold mb-1">
-                    City <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    placeholder="e.g. Mumbai"
-                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900 focus:outline-none focus:border-stone-800"
-                  />
-                </div>
+                  {/* City, State, Pincode */}
+                  <div className="grid grid-cols-3 gap-2.5">
+                    <div>
+                      <label className="block text-stone-600 font-semibold mb-1">
+                        City <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        placeholder="e.g. Mumbai"
+                        className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900 focus:outline-none focus:border-stone-800"
+                      />
+                    </div>
 
-                <div>
-                  <label className="block text-stone-600 font-semibold mb-1">State</label>
-                  <input
-                    type="text"
-                    value={stateName}
-                    onChange={(e) => setStateName(e.target.value)}
-                    placeholder="e.g. Maharashtra"
-                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900 focus:outline-none focus:border-stone-800"
-                  />
-                </div>
+                    <div>
+                      <label className="block text-stone-600 font-semibold mb-1">State</label>
+                      <input
+                        type="text"
+                        value={stateName}
+                        onChange={(e) => setStateName(e.target.value)}
+                        placeholder="e.g. Maharashtra"
+                        className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900 focus:outline-none focus:border-stone-800"
+                      />
+                    </div>
 
-                <div>
-                  <label className="block text-stone-600 font-semibold mb-1">Pincode</label>
-                  <input
-                    type="text"
-                    value={pincode}
-                    onChange={(e) => setPincode(e.target.value)}
-                    placeholder="400049"
-                    className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900 focus:outline-none focus:border-stone-800"
-                  />
-                </div>
-              </div>
+                    <div>
+                      <label className="block text-stone-600 font-semibold mb-1">Pincode</label>
+                      <input
+                        type="text"
+                        value={pincode}
+                        onChange={(e) => setPincode(e.target.value)}
+                        placeholder="400049"
+                        className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900 focus:outline-none focus:border-stone-800"
+                      />
+                    </div>
+                  </div>
 
-              {/* Delivery Notes */}
-              <div>
-                <label className="block text-stone-600 font-semibold mb-1">Special Handover Instructions</label>
-                <input
-                  type="text"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="e.g. Call before delivery, handle with extra care"
-                  className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900 focus:outline-none focus:border-stone-800"
-                />
-              </div>
+                  {/* Delivery Notes */}
+                  <div>
+                    <label className="block text-stone-600 font-semibold mb-1">Special Handover Instructions</label>
+                    <input
+                      type="text"
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="e.g. Call before delivery, handle with extra care"
+                      className="w-full bg-white border border-stone-300 rounded-xl px-3 py-2 text-xs text-stone-900 focus:outline-none focus:border-stone-800"
+                    />
+                  </div>
+                </>
+              ) : (
+                <div className="p-4 bg-emerald-50/90 border border-emerald-200 rounded-2xl text-emerald-900 space-y-2">
+                  <div className="flex items-center gap-2 font-bold text-xs text-emerald-800">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>Instant Digital Atelier Delivery</span>
+                  </div>
+                  <p className="text-[11px] text-emerald-700 leading-relaxed">
+                    Physical delivery address ki zaroorat nahi hai. Razorpay payment verify hote hi batch access, live Google Meet link aur recorded lecture videos <strong>{currentUser?.email || email}</strong> par instantly unlock ho jayenge!
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Right Column: Payment Selection & Order Summary */}
@@ -453,35 +484,42 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
               </label>
 
               {/* Payment Option 2: Cash on Delivery (COD) */}
-              <label
-                className={`p-3.5 rounded-2xl border flex items-start gap-3 cursor-pointer transition-all ${
-                  paymentMethod === 'cod'
-                    ? 'bg-white border-artisan-crimson shadow-md ring-1 ring-artisan-crimson/20'
-                    : 'bg-white/60 border-stone-200 hover:border-stone-400'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="paymentMode"
-                  checked={paymentMethod === 'cod'}
-                  onChange={() => setPaymentMethod('cod')}
-                  className="mt-1 text-artisan-crimson"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-stone-900 flex items-center gap-1.5">
-                      <Banknote className="w-3.5 h-3.5 text-amber-600" />
-                      Cash on Delivery (COD)
-                    </span>
-                    <span className="text-[10px] font-semibold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">
-                      Pay on Delivery
-                    </span>
+              {!isOnlyCourses ? (
+                <label
+                  className={`p-3.5 rounded-2xl border flex items-start gap-3 cursor-pointer transition-all ${
+                    paymentMethod === 'cod'
+                      ? 'bg-white border-artisan-crimson shadow-md ring-1 ring-artisan-crimson/20'
+                      : 'bg-white/60 border-stone-200 hover:border-stone-400'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMode"
+                    checked={paymentMethod === 'cod'}
+                    onChange={() => setPaymentMethod('cod')}
+                    className="mt-1 text-artisan-crimson"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-stone-900 flex items-center gap-1.5">
+                        <Banknote className="w-3.5 h-3.5 text-amber-600" />
+                        Cash on Delivery (COD)
+                      </span>
+                      <span className="text-[10px] font-semibold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">
+                        Pay on Delivery
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-stone-500 mt-0.5">
+                      Pay securely in cash or UPI to the courier agent upon receiving your artwork.
+                    </p>
                   </div>
-                  <p className="text-[11px] text-stone-500 mt-0.5">
-                    Pay securely in cash or UPI to the courier agent upon receiving your artwork.
-                  </p>
+                </label>
+              ) : (
+                <div className="p-3 bg-stone-100/80 border border-stone-200 rounded-xl text-[11px] text-stone-600 flex items-center gap-2">
+                  <Lock className="w-3.5 h-3.5 text-artisan-crimson shrink-0" />
+                  <span>Online masterclasses require instant online verification via Razorpay.</span>
                 </div>
-              </label>
+              )}
 
               {/* Acquisition Order Summary */}
               <div className="p-4 bg-white rounded-2xl border border-stone-200 space-y-2.5">
@@ -511,7 +549,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
                     </div>
                   )}
                   <div className="flex justify-between">
-                    <span>Insured Wooden Crating</span>
+                    <span>{isOnlyCourses ? 'Digital Classroom Delivery' : 'Insured Wooden Crating'}</span>
                     <span>{shipping === 0 ? 'Complimentary' : `₹${shipping}`}</span>
                   </div>
                   <div className="pt-2 border-t border-stone-200 flex justify-between text-sm font-bold text-stone-900">
@@ -567,7 +605,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
                   <span>Connecting 24/7 Database...</span>
                 </div>
               ) : (
-                <span>Confirm & Place Order →</span>
+                <span>{isOnlyCourses ? 'Proceed to Razorpay Payment →' : 'Confirm & Place Order →'}</span>
               )}
             </MagneticButton>
           </div>

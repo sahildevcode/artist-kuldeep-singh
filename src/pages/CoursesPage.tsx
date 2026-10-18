@@ -212,13 +212,12 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoTo
                           <div className="flex items-baseline gap-2">
                             {course.originalPrice && (
                               <span className="text-xs text-stone-400 line-through">
-                                ${course.originalPrice}
+                                ₹{course.originalPrice.toLocaleString()}
                               </span>
                             )}
                             <span className="font-serif font-bold text-2xl text-artisan-crimson">
-                              ${course.price}
+                              ₹{course.price.toLocaleString()}
                             </span>
-                            <span className="text-xs text-stone-500 font-semibold">USD</span>
                           </div>
                         </div>
 
