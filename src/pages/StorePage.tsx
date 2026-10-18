@@ -301,10 +301,10 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
                             href={commissionWhatsAppUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="px-3 py-2.5 rounded-xl text-[11px] font-bold bg-emerald-700 hover:bg-emerald-800 text-white transition-all shadow-xs flex items-center gap-1"
-                            title="Commission similar custom artwork via WhatsApp"
+                            className="px-3 py-2.5 rounded-xl text-[11px] font-serif font-semibold bg-stone-100 hover:bg-stone-200 text-stone-900 border border-stone-300 hover:border-artisan-gold transition-all shadow-xs flex items-center gap-1.5"
+                            title="Enquire & Commission similar custom artwork"
                           >
-                            <MessageCircle className="w-3.5 h-3.5" />
+                            <MessageCircle className="w-3.5 h-3.5 text-stone-700" />
                             <span>Commission</span>
                           </a>
                         )}
