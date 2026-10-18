@@ -126,17 +126,29 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
     }
 
     try {
-      if (paymentMethod === 'online' && typeof (window as any).Razorpay !== 'undefined') {
+      if (paymentMethod === 'online') {
+        if (typeof (window as any).Razorpay === 'undefined') {
+          setErrorMessage('Payment gateway is loading. Please check your internet connection and try again.');
+          return;
+        }
+
+        const amountInPaise = Math.round(Number(finalTotal) * 100);
+        if (amountInPaise < 100) {
+          setErrorMessage('Minimum payment amount must be at least ₹1 (100 paise).');
+          return;
+        }
+
         const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
           ? 'http://localhost:5000'
-          : 'https://kuldeep-singh-backend.onrender.com';
+          : (import.meta.env.VITE_API_URL || 'https://kuldeep-singh-backend.onrender.com');
 
-        const orderRes = await fetch(`${baseUrl}/api/payment/create-order`, {
+        const orderRes = await fetch(`${baseUrl}/api/create-order`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            amount: finalTotal,
+            amount: amountInPaise,
             currency: 'INR',
+            receipt: `rcpt_${Date.now()}`,
             notes: {
               customer_name: fullName.trim(),
               customer_email: email.trim(),
@@ -145,45 +157,73 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
           })
         });
 
-        if (orderRes.ok) {
-          const orderData = await orderRes.json();
-          const rzp = new (window as any).Razorpay({
-            key: orderData.keyId || 'rzp_test_Tov2TH73ygLA8W',
-            amount: orderData.amount,
-            currency: orderData.currency || 'INR',
-            name: 'Artist Kuldeep Singh Atelier',
-            description: cart.map((i) => i.title).join(', ').slice(0, 100),
-            order_id: orderData.orderId,
-            prefill: {
-              name: fullName.trim(),
-              email: email.trim(),
-              contact: phone.trim()
-            },
-            theme: {
-              color: '#1A1816'
-            },
-            handler: async (resp: any) => {
-              try {
-                await fetch(`${baseUrl}/api/payment/verify-payment`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(resp)
-                });
-              } catch (e) {
-                console.warn(e);
-              }
-              await finalizeOrder(resp.razorpay_payment_id);
-            },
-            modal: {
-              ondismiss: () => {
-                console.log('Payment modal dismissed');
-              }
-            }
-          });
-
-          rzp.open();
-          return;
+        if (!orderRes.ok) {
+          const errorPayload = await orderRes.json().catch(() => ({}));
+          throw new Error(errorPayload.error || errorPayload.details || `Order creation failed (${orderRes.status})`);
         }
+
+        const orderData = await orderRes.json();
+        const razorpayKeyId = orderData.key_id || orderData.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID;
+        const razorpayOrderId = orderData.order_id || orderData.orderId;
+
+        const rzp = new (window as any).Razorpay({
+          key: razorpayKeyId,
+          amount: orderData.amount,
+          currency: orderData.currency || 'INR',
+          name: 'Artist Kuldeep Singh Atelier',
+          description: cart.map((i) => i.title).join(', ').slice(0, 100) || 'Fine Art Acquisition',
+          order_id: razorpayOrderId,
+          prefill: {
+            name: fullName.trim(),
+            email: email.trim(),
+            contact: phone.trim()
+          },
+          theme: {
+            color: '#1A1816'
+          },
+          handler: async (resp: {
+            razorpay_payment_id: string;
+            razorpay_order_id: string;
+            razorpay_signature: string;
+          }) => {
+            try {
+              const verifyRes = await fetch(`${baseUrl}/api/verify-payment`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  razorpay_order_id: resp.razorpay_order_id,
+                  razorpay_payment_id: resp.razorpay_payment_id,
+                  razorpay_signature: resp.razorpay_signature
+                })
+              });
+
+              const verifyData = await verifyRes.json().catch(() => ({}));
+
+              if (!verifyRes.ok || !verifyData.success) {
+                throw new Error(verifyData.error || 'Payment signature verification failed.');
+              }
+
+              await finalizeOrder(resp.razorpay_payment_id);
+            } catch (vErr: any) {
+              console.error('Signature verification error:', vErr);
+              setErrorMessage(vErr.message || 'Payment signature could not be verified. Please contact support.');
+            }
+          },
+          modal: {
+            ondismiss: () => {
+              console.log('Payment modal dismissed by user');
+              setErrorMessage('Payment was cancelled. You can retry whenever you are ready.');
+            }
+          }
+        });
+
+        rzp.on('payment.failed', function (failedResp: any) {
+          console.error('Payment failed:', failedResp.error);
+          setErrorMessage(failedResp.error?.description || 'Payment failed. Please try a different card, UPI or netbanking.');
+        });
+
+        rzp.open();
+        return;
       }
 
       await finalizeOrder();
