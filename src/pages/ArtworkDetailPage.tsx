@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   ArrowLeft, ShoppingBag, Eye, ShieldCheck, Sparkles, Palette, 
   Share2, ZoomIn, ZoomOut, RotateCcw, Copy, Check, MessageCircle, Phone, Maximize2, X,
@@ -62,6 +63,18 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isFullscreenOpen]);
+
+  // Lock body scroll when fullscreen lightbox is open
+  useEffect(() => {
+    if (isFullscreenOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isFullscreenOpen]);
 
   if (!activeArtwork) {
@@ -161,42 +174,43 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
   return (
     <div className="relative z-10 pt-28 sm:pt-36 pb-32">
       {/* ------------------------------------------------------------------ */}
-      {/* 1. FULLSCREEN HIGH-RES CANVAS INSPECTOR (Triggered on click)       */}
+      {/* 1. FULLSCREEN HIGH-RES CANVAS INSPECTOR (Portaled to body)         */}
       {/* ------------------------------------------------------------------ */}
-      {isFullscreenOpen && (
+      {isFullscreenOpen && typeof document !== 'undefined' && createPortal(
         <div 
-          className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-2xl flex flex-col justify-between select-none animate-in fade-in duration-200"
+          className="fixed inset-0 z-[999999] bg-black/95 backdrop-blur-2xl flex flex-col justify-between select-none animate-in fade-in duration-200"
           onMouseUp={handleFsMouseUp}
           onMouseLeave={handleFsMouseUp}
         >
-          {/* Top Bar */}
-          <div className="relative z-20 flex items-center justify-between p-4 sm:p-6 bg-gradient-to-b from-black/80 to-transparent">
-            <div className="text-white">
-              <h3 className="font-serif font-bold text-lg sm:text-2xl tracking-tight">
+          {/* Top Bar - High Contrast with Highly Visible Red Cut Button */}
+          <div className="relative z-30 flex items-center justify-between p-4 sm:p-6 bg-gradient-to-b from-black/90 via-black/70 to-transparent">
+            <div className="text-white max-w-[60%] sm:max-w-[70%]">
+              <h3 className="font-serif font-bold text-base sm:text-2xl tracking-tight truncate">
                 {activeArtwork.title}
               </h3>
-              <p className="text-xs text-stone-400 mt-0.5">
-                {activeArtwork.medium} • {activeArtwork.dimensions} • High-Resolution Studio Scan
+              <p className="text-xs text-stone-300 mt-0.5 truncate">
+                {activeArtwork.medium} • {activeArtwork.dimensions} • High-Resolution Studio View
               </p>
             </div>
 
+            {/* Prominent Red Cut/Close Button (Always on top & visible) */}
             <button
               onClick={() => {
                 setIsFullscreenOpen(false);
                 setFsZoom(1);
                 setFsPan({ x: 0, y: 0 });
               }}
-              className="p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all shadow-lg flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
+              className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold text-xs sm:text-sm shadow-2xl flex items-center gap-2 border border-white/20 transition-all cursor-pointer hover:shadow-red-500/30"
               title="Close Fullscreen (Esc)"
             >
-              <X className="w-5 h-5" />
-              <span className="hidden sm:inline">Close Inspector</span>
+              <X className="w-5 h-5 text-white" />
+              <span>Close / कट करें (✕)</span>
             </button>
           </div>
 
           {/* Central Canvas Pan & Zoom Stage */}
           <div
-            className="flex-1 w-full h-full flex items-center justify-center overflow-hidden relative"
+            className="flex-1 w-full h-full flex items-center justify-center overflow-hidden relative px-4"
             onMouseDown={handleFsMouseDown}
             onMouseMove={handleFsMouseMove}
             onWheel={(e) => {
@@ -204,24 +218,33 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
               else handleFsZoomOut();
             }}
             style={{ cursor: fsZoom > 1 ? (fsDragging ? 'grabbing' : 'grab') : 'zoom-in' }}
-            onClick={() => {
-              if (fsZoom === 1) handleFsZoomIn();
+            onClick={(e) => {
+              // Click background backdrop to close
+              if (e.target === e.currentTarget) {
+                setIsFullscreenOpen(false);
+                setFsZoom(1);
+                setFsPan({ x: 0, y: 0 });
+              }
             }}
           >
             <img
               src={currentImage}
               alt={activeArtwork.title}
-              className="max-h-[85vh] max-w-[90vw] object-contain transition-transform duration-150 select-none pointer-events-none drop-shadow-2xl"
+              className="max-h-[66vh] sm:max-h-[72vh] max-w-[85vw] object-contain transition-transform duration-150 select-none drop-shadow-2xl"
               style={{
                 transform: `scale(${fsZoom}) translate(${fsPan.x / fsZoom}px, ${fsPan.y / fsZoom}px)`,
                 transformOrigin: 'center center'
               }}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (fsZoom === 1) handleFsZoomIn();
+              }}
             />
           </div>
 
-          {/* Bottom Floating Luxury Zoom Toolbar */}
-          <div className="relative z-20 pb-6 px-4 flex flex-col items-center gap-3 bg-gradient-to-t from-black/80 to-transparent">
-            <div className="flex items-center gap-3 px-5 py-2.5 rounded-full bg-stone-900/90 backdrop-blur-md border border-stone-700/80 text-white shadow-2xl">
+          {/* Bottom Floating Luxury Zoom & Close Toolbar */}
+          <div className="relative z-30 pb-6 px-4 flex flex-col items-center gap-2 bg-gradient-to-t from-black/90 to-transparent">
+            <div className="flex items-center gap-2 sm:gap-3 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-stone-900/90 backdrop-blur-md border border-stone-700/80 text-white shadow-2xl">
               <button
                 onClick={(e) => { e.stopPropagation(); handleFsZoomOut(); }}
                 disabled={fsZoom <= 1}
@@ -247,22 +270,38 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
               {fsZoom > 1 && (
                 <button
                   onClick={(e) => { e.stopPropagation(); handleFsReset(); }}
-                  className="ml-2 px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-artisan-gold text-[11px] font-semibold flex items-center gap-1 transition-all cursor-pointer"
+                  className="px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-artisan-gold text-[11px] font-semibold flex items-center gap-1 transition-all cursor-pointer"
                   title="Reset to 100%"
                 >
                   <RotateCcw className="w-3 h-3" />
                   <span>Reset</span>
                 </button>
               )}
+
+              {/* Quick Close Button in Toolbar */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsFullscreenOpen(false);
+                  setFsZoom(1);
+                  setFsPan({ x: 0, y: 0 });
+                }}
+                className="ml-2 px-3 py-1 rounded-full bg-red-600/90 hover:bg-red-600 text-white text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer"
+                title="Close View"
+              >
+                <X className="w-3.5 h-3.5" />
+                <span>Close (✕)</span>
+              </button>
             </div>
 
-            <p className="text-[11px] text-stone-400 font-medium">
+            <p className="text-[11px] text-stone-400 font-medium text-center">
               {fsZoom > 1 
-                ? 'Click & drag across the canvas to inspect impasto brushstrokes and glaze details'
-                : 'Click image or use (+) button to zoom up to 400%'}
+                ? 'Drag to explore brushstrokes • Click Close or press ESC to exit'
+                : 'Click image or use (+) to zoom • Click backdrop or Close to exit'}
             </p>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Main Page Container */}

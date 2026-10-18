@@ -145,7 +145,7 @@ const AppInner: React.FC = () => {
 
       {/* Active Page View wrapped in ErrorBoundary */}
       <ErrorBoundary>
-        <main className="relative z-10">
+        <main className="relative">
           {activePage === 'home' && (
             <HomePage
               setActivePage={handlePageChange}
