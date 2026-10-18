@@ -379,10 +379,25 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     };
     window.addEventListener('focus', onFocus);
 
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'kuldeep_studio_courses' && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed) && isMounted) {
+            setCourses(normalizeCourses(parsed));
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+
     return () => {
       isMounted = false;
       clearInterval(interval);
       window.removeEventListener('focus', onFocus);
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 
