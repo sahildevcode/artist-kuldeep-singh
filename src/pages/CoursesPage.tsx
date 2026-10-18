@@ -3,6 +3,7 @@ import { BookOpen, Star, Clock, Sparkles, Shield, Search, Play, Calendar, ArrowR
 import type { Course } from '../types';
 import { useStudioData } from '../context/StudioDataContext';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 
 interface CoursesPageProps {
   onSelectCourse: (course: Course) => void;
@@ -12,6 +13,7 @@ interface CoursesPageProps {
 export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoToPortal }) => {
   const { courses } = useStudioData();
   const { isCourseUnlocked } = useAuth();
+  const { addToCart, setIsCheckoutModalOpen } = useCart();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -243,16 +245,38 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoTo
                               <ArrowRight className="w-3.5 h-3.5" />
                             </button>
                           ) : (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onSelectCourse(course);
-                              }}
-                              className="px-5 py-2.5 bg-[#1A1816] group-hover:bg-artisan-crimson text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
-                            >
-                              <span>Full Syllabus & Enroll</span>
-                              <ArrowRight className="w-3.5 h-3.5" />
-                            </button>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onSelectCourse(course);
+                                }}
+                                className="px-3.5 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-xl text-xs font-semibold transition-all cursor-pointer"
+                                title="View full curriculum, lesson list & details"
+                              >
+                                <span>Syllabus</span>
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  addToCart({
+                                    id: course.id,
+                                    type: 'course',
+                                    title: course.title,
+                                    price: course.price,
+                                    image: course.thumbnail,
+                                    mediumOrCategory: course.category,
+                                    subtitle: `${course.durationMonths} by Artist Kuldeep Singh`
+                                  }, 1, false);
+                                  setIsCheckoutModalOpen(true);
+                                }}
+                                className="px-4 py-2.5 bg-[#1A1816] hover:bg-artisan-crimson text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+                                title="Direct enrollment & payment"
+                              >
+                                <Sparkles className="w-3.5 h-3.5 text-artisan-gold" />
+                                <span>Enroll (₹{course.price.toLocaleString()})</span>
+                              </button>
+                            </div>
                           )}
                         </div>
                       </div>

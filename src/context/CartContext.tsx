@@ -6,7 +6,7 @@ import { useAuth } from './AuthContext';
 interface CartContextType {
   cart: CartItem[];
   orders: OrderRecord[];
-  addToCart: (item: Omit<CartItem, 'quantity'>, quantity?: number) => void;
+  addToCart: (item: Omit<CartItem, 'quantity'>, quantity?: number, openCart?: boolean) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, delta: number) => void;
   clearCart: () => void;
@@ -144,17 +144,23 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [orders]);
 
-  const addToCart = (item: Omit<CartItem, 'quantity'>, quantity = 1) => {
+  const addToCart = (item: Omit<CartItem, 'quantity'>, quantity = 1, openCart = true) => {
     setCart((prev) => {
-      const existing = prev.find((i) => i.id === item.id);
+      if (item.type === 'course') {
+        return [{ ...item, quantity: 1 }];
+      }
+      const withoutCourses = prev.filter((i) => i.type !== 'course');
+      const existing = withoutCourses.find((i) => i.id === item.id);
       if (existing) {
-        return prev.map((i) =>
+        return withoutCourses.map((i) =>
           i.id === item.id ? { ...i, quantity: i.quantity + quantity } : i
         );
       }
-      return [...prev, { ...item, quantity }];
+      return [...withoutCourses, { ...item, quantity }];
     });
-    setIsCartOpen(true);
+    if (openCart && item.type !== 'course') {
+      setIsCartOpen(true);
+    }
   };
 
   const removeFromCart = (id: string) => {

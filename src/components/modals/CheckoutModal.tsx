@@ -82,9 +82,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
             </MagneticButton>
             <button
               onClick={onClose}
-              className="w-full py-2.5 text-xs text-stone-500 hover:text-stone-800 font-medium"
+              className="w-full py-2.5 text-xs text-stone-500 hover:text-stone-800 font-medium cursor-pointer"
             >
-              Back to Studio Gallery
+              {isOnlyCourses ? 'Cancel & Return to Masterclasses' : 'Back to Studio Gallery'}
             </button>
           </div>
         </div>
