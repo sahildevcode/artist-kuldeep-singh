@@ -42,7 +42,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             {/* Top Pill */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-stone-100/90 border border-stone-200/80 backdrop-blur-md text-xs font-semibold text-stone-800 shadow-sm">
               <span className="w-2 h-2 rounded-full bg-artisan-crimson animate-pulse" />
-              <span>12+ Years of Studio Mastery • New York & Florence</span>
+              <span>Artist Kuldeep Singh • Official Fine Art Gallery & Masterclasses</span>
             </div>
 
             {/* Main Headline */}
@@ -56,8 +56,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
             {/* Subtitle */}
             <p className="text-base sm:text-xl text-stone-600 max-w-2xl font-normal leading-relaxed">
-              Welcome to the atelier of Artist Kuldeep Singh. Explore museum-grade original oil paintings, 
-              rare anatomical charcoal studies, and intensive masterclasses designed for artists pursuing true craftsmanship.
+              Explore the fine art paintings, original artwork, art collections and creative work of Artist Kuldeep Singh. Discover the gallery and browse available artworks online.
             </p>
 
             {/* CTAs */}
