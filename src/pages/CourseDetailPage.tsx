@@ -12,7 +12,6 @@ import {
   Lock,
   Unlock,
   ShieldCheck,
-  Check,
   MessageSquare,
   Radio,
   ExternalLink,
@@ -21,9 +20,7 @@ import {
 import type { Course, CourseLecture } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { useStudioData } from '../context/StudioDataContext';
 import { MagneticButton } from '../components/ui/MagneticButton';
-import confetti from 'canvas-confetti';
 
 interface CourseDetailPageProps {
   course: Course;
@@ -32,13 +29,10 @@ interface CourseDetailPageProps {
 }
 
 export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBack, onGoToPortal }) => {
-  const { currentUser, setIsAuthModalOpen, unlockCourse, isCourseUnlocked } = useAuth();
-  const { addOrder } = useCart();
-  const { addStudent } = useStudioData();
+  const { currentUser, setIsAuthModalOpen, isCourseUnlocked } = useAuth();
+  const { addToCart, setIsCheckoutModalOpen } = useCart();
   const [activeModuleIndex, setActiveModuleIndex] = useState<number>(0);
   const [isPlayingTeaser, setIsPlayingTeaser] = useState<boolean>(false);
-  const [isProcessingEnroll, setIsProcessingEnroll] = useState<boolean>(false);
-  const [showSuccessBanner, setShowSuccessBanner] = useState<boolean>(false);
   const [selectedLectureForStream, setSelectedLectureForStream] = useState<CourseLecture | null>(null);
 
   const isUnlocked = isCourseUnlocked(course.id);
@@ -50,78 +44,18 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
       return;
     }
 
-    // 2. Process demo enrollment & unlock
-    setIsProcessingEnroll(true);
-    setTimeout(() => {
-      unlockCourse(course.id);
+    // 2. Add course to Cart and trigger real Razorpay Checkout
+    addToCart({
+      id: course.id,
+      type: 'course',
+      title: course.title,
+      price: course.price,
+      image: course.thumbnail,
+      mediumOrCategory: course.category,
+      subtitle: `${course.durationMonths} by Artist Kuldeep Singh`
+    }, 1);
 
-      // Register student in academy database
-      addStudent({
-        id: 'stu-' + Date.now(),
-        name: currentUser.name || 'Scholar Student',
-        email: currentUser.email || 'student@kuldeepsingh.art',
-        courseId: course.id,
-        courseTitle: course.title,
-        batchSchedule: course.schedule || 'Live Atelier Batch',
-        enrolledDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        feesPaid: course.price,
-        paymentStatus: 'Paid',
-        progressPercent: 0
-      });
-
-      // Record in customer Order History
-      addOrder({
-        id: 'KS-2026-' + Math.floor(10000 + Math.random() * 90000),
-        customerName: currentUser.name,
-        customerEmail: currentUser.email,
-        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-        items: [
-          {
-            id: course.id,
-            type: 'course',
-            title: course.title,
-            subtitle: `${course.durationMonths} by Artist Kuldeep Singh`,
-            price: course.price,
-            image: course.thumbnail,
-            quantity: 1,
-            mediumOrCategory: course.category,
-          }
-        ],
-        subtotal: course.price,
-        discount: 0,
-        shipping: 0,
-        totalAmount: course.price,
-        paymentMethod: 'Demo Razorpay / UPI Express',
-        paymentStatus: 'Paid',
-        orderStatus: 'Course Active & Unlocked',
-      });
-
-      setIsProcessingEnroll(false);
-      setShowSuccessBanner(true);
-
-      // Trigger celebration confetti
-      try {
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#E63946', '#D97706', '#2563EB', '#C5A059']
-        });
-      } catch {
-        // ignore
-      }
-
-      setTimeout(() => {
-        try {
-          localStorage.setItem('ks_student_selected_course', course.id);
-        } catch (e) {
-          console.warn(e);
-        }
-        if (onGoToPortal) {
-          onGoToPortal(course.id);
-        }
-      }, 1000);
-    }, 1200);
+    setIsCheckoutModalOpen(true);
   };
 
   return (
@@ -442,14 +376,6 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
                 </div>
               )}
 
-              {/* Success Notification if just enrolled */}
-              {showSuccessBanner && (
-                <div className="p-3.5 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs flex items-center gap-2 animate-in fade-in">
-                  <Check className="w-4 h-4 text-emerald-600" />
-                  <span>Success! Masterclass unlocked in your account.</span>
-                </div>
-              )}
-
               {/* Action Button: Enroll or Access */}
               <div>
                 {isUnlocked ? (
@@ -475,21 +401,11 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
                 ) : (
                   <MagneticButton
                     onClick={handleEnrollClick}
-                    disabled={isProcessingEnroll}
                     variant="primary"
                     className="w-full py-4 text-sm font-bold flex items-center justify-center gap-2 shadow-xl"
                   >
-                    {isProcessingEnroll ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        <span>Processing Enrollment Demo...</span>
-                      </div>
-                    ) : (
-                      <>
-                        <Lock className="w-4 h-4 text-artisan-gold" />
-                        <span>Enroll in Masterclass (${course.price})</span>
-                      </>
-                    )}
+                    <Lock className="w-4 h-4 text-artisan-gold" />
+                    <span>Enroll in Masterclass (₹{course.price.toLocaleString()})</span>
                   </MagneticButton>
                 )}
               </div>

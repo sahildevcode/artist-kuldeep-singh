@@ -12,7 +12,7 @@ interface CheckoutModalProps {
 
 export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, onSuccessCourseEnroll }) => {
   const { cart, subtotal, discount, shipping, finalTotal, performCheckout, isCheckingOut } = useCart();
-  const { currentUser, setIsAuthModalOpen } = useAuth();
+  const { currentUser, setIsAuthModalOpen, unlockCourse } = useAuth();
 
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
@@ -102,6 +102,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
     });
 
     if (courseItem) {
+      if (unlockCourse) {
+        unlockCourse(courseItem.id);
+      }
       try {
         localStorage.setItem('ks_student_selected_course', courseItem.id);
       } catch (e) {
@@ -440,11 +443,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-stone-900">Online Payment</span>
                     <span className="text-[10px] font-semibold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">
-                      Razorpay Demo
+                      Razorpay Live
                     </span>
                   </div>
                   <p className="text-[11px] text-stone-500 mt-0.5">
-                    UPI, Google Pay, NetBanking & Cards (Razorpay gateway simulation)
+                    UPI, Google Pay, PhonePe, NetBanking & Cards (100% Secure)
                   </p>
                 </div>
               </label>
@@ -483,7 +486,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
               {/* Acquisition Order Summary */}
               <div className="p-4 bg-white rounded-2xl border border-stone-200 space-y-2.5">
                 <div className="font-bold text-stone-800 text-xs border-b border-stone-100 pb-1.5 flex justify-between">
-                  <span>Artwork Summary</span>
+                  <span>Order Summary</span>
                   <span>{cart.length} {cart.length === 1 ? 'Item' : 'Items'}</span>
                 </div>
 
@@ -491,7 +494,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
                   {cart.map((item) => (
                     <div key={item.id} className="flex items-center justify-between text-[11px]">
                       <span className="truncate max-w-[160px] text-stone-700">{item.title}</span>
-                      <span className="font-semibold text-stone-900">${item.price.toLocaleString()}</span>
+                      <span className="font-semibold text-stone-900">₹{item.price.toLocaleString()}</span>
                     </div>
                   ))}
                 </div>
@@ -499,22 +502,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
                 <div className="pt-2 border-t border-stone-100 space-y-1 text-[11px] text-stone-600">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span>${subtotal.toLocaleString()}</span>
+                    <span>₹{subtotal.toLocaleString()}</span>
                   </div>
                   {discount > 0 && (
                     <div className="flex justify-between text-emerald-600">
                       <span>Discount</span>
-                      <span>-${discount.toLocaleString()}</span>
+                      <span>-₹{discount.toLocaleString()}</span>
                     </div>
                   )}
                   <div className="flex justify-between">
                     <span>Insured Wooden Crating</span>
-                    <span>{shipping === 0 ? 'Complimentary' : `$${shipping}`}</span>
+                    <span>{shipping === 0 ? 'Complimentary' : `₹${shipping}`}</span>
                   </div>
                   <div className="pt-2 border-t border-stone-200 flex justify-between text-sm font-bold text-stone-900">
                     <span>Total Payable</span>
                     <span className="text-base text-artisan-crimson font-serif font-bold">
-                      ${finalTotal.toLocaleString()}
+                      ₹{finalTotal.toLocaleString()}
                     </span>
                   </div>
                 </div>
