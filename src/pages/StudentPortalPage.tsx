@@ -16,6 +16,7 @@ import {
   Sparkles,
   Radio,
   Calendar,
+  Images,
   LogOut
 } from 'lucide-react';
 import { useStudioData } from '../context/StudioDataContext';
@@ -626,6 +627,44 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
               </div>
             </div>
           </div>
+
+          {/* C. BATCH REFERENCE GALLERY (MULTIPLE PHOTOS) */}
+          {activeCourse.images && activeCourse.images.length > 0 && (
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200 shadow-sm space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-serif font-bold text-lg text-stone-900 flex items-center gap-2">
+                  <Images className="w-5 h-5 text-artisan-crimson" />
+                  <span>Batch Artwork Reference & Studio Photos ({activeCourse.images.length})</span>
+                </h3>
+                <span className="text-xs text-stone-500">Official reference material uploaded by Kuldeep Singh</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {activeCourse.images.map((imgUrl, imgIdx) => (
+                  <a
+                    key={imgIdx}
+                    href={imgUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative rounded-2xl overflow-hidden aspect-video border border-stone-200 group block shadow-xs hover:shadow-md transition-all"
+                  >
+                    <img
+                      src={imgUrl}
+                      alt={`Batch reference photo ${imgIdx + 1}`}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=600&auto=format&fit=crop';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-semibold gap-1">
+                      <span>View High-Res</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* B. VIDEO LECTURES LMS (FULL WIDTH, CLEAN & ORGANIZED) */}
           <div className="space-y-4">

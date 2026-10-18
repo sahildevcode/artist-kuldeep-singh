@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   ArrowLeft,
   Calendar,
@@ -15,6 +15,9 @@ import {
   MessageSquare,
   Radio,
   ExternalLink,
+  ChevronLeft,
+  ChevronRight,
+  Images,
   X
 } from 'lucide-react';
 import type { Course, CourseLecture } from '../types';
@@ -34,6 +37,15 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
   const [activeModuleIndex, setActiveModuleIndex] = useState<number>(0);
   const [isPlayingTeaser, setIsPlayingTeaser] = useState<boolean>(false);
   const [selectedLectureForStream, setSelectedLectureForStream] = useState<CourseLecture | null>(null);
+
+  const galleryImages = useMemo(() => {
+    if (Array.isArray(course.images) && course.images.length > 0) {
+      return course.images;
+    }
+    return course.thumbnail ? [course.thumbnail] : [];
+  }, [course]);
+
+  const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
 
   const isUnlocked = isCourseUnlocked(course.id);
 
@@ -158,52 +170,115 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
               </div>
             )}
 
-            {/* Video Teaser Player or Thumbnail Showcase */}
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl aspect-video bg-stone-900 border border-stone-800 group">
-              {isPlayingTeaser ? (
-                <div className="w-full h-full relative bg-stone-950 flex flex-col items-center justify-center text-white p-6 text-center space-y-3">
-                  <div className="w-16 h-16 rounded-full border-4 border-artisan-crimson border-t-transparent animate-spin" />
-                  <p className="font-serif italic text-lg sm:text-xl">
-                    Streaming 4K Masterclass Orientation with Kuldeep Singh...
-                  </p>
-                  <p className="text-xs text-stone-400">
-                    "Lesson 1: Pigment Chemistry, Solvent Safety & Tonal Harmony"
-                  </p>
-                  <button
-                    onClick={() => setIsPlayingTeaser(false)}
-                    className="text-xs text-stone-400 underline hover:text-white pt-2"
-                  >
-                    Close Video Teaser
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <img
-                    src={course.thumbnail}
-                    alt={course.title}
-                    className="w-full h-full object-cover opacity-75 group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/30 to-transparent" />
-
-                  {/* Big Play Button */}
-                  <button
-                    onClick={() => setIsPlayingTeaser(true)}
-                    className="absolute inset-0 m-auto w-20 h-20 rounded-full bg-white/95 hover:bg-white text-artisan-crimson flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110"
-                    aria-label="Play Course Teaser"
-                  >
-                    <Play className="w-8 h-8 fill-artisan-crimson ml-1" />
-                  </button>
-
-                  <div className="absolute bottom-5 left-6 right-6 flex items-center justify-between text-white text-xs">
-                    <span className="font-medium bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5">
-                      <Video className="w-3.5 h-3.5 text-artisan-gold" />
-                      4K Studio Demonstration Preview
-                    </span>
-                    <span className="bg-artisan-crimson text-white px-3 py-1.5 rounded-full font-bold">
-                      {course.durationHours} Total Hours
-                    </span>
+            {/* Multiple Images Carousel & Video Teaser Player */}
+            <div className="space-y-3">
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl aspect-video bg-stone-900 border border-stone-800 group">
+                {isPlayingTeaser ? (
+                  <div className="w-full h-full relative bg-stone-950 flex flex-col items-center justify-center text-white p-6 text-center space-y-3">
+                    <div className="w-16 h-16 rounded-full border-4 border-artisan-crimson border-t-transparent animate-spin" />
+                    <p className="font-serif italic text-lg sm:text-xl">
+                      Streaming 4K Masterclass Orientation with Kuldeep Singh...
+                    </p>
+                    <p className="text-xs text-stone-400">
+                      "Lesson 1: Pigment Chemistry, Solvent Safety & Tonal Harmony"
+                    </p>
+                    <button
+                      onClick={() => setIsPlayingTeaser(false)}
+                      className="text-xs text-stone-400 underline hover:text-white pt-2 cursor-pointer"
+                    >
+                      Close Video Teaser
+                    </button>
                   </div>
-                </>
+                ) : (
+                  <>
+                    <img
+                      src={galleryImages[activeImageIndex] || course.thumbnail}
+                      alt={`${course.title} - Preview ${activeImageIndex + 1}`}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-stone-950/30" />
+
+                    {/* Left / Right Carousel Controls */}
+                    {galleryImages.length > 1 && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveImageIndex((prev) => (prev > 0 ? prev - 1 : galleryImages.length - 1));
+                          }}
+                          className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md transition-transform hover:scale-110 shadow-lg cursor-pointer z-10"
+                          title="Previous image"
+                        >
+                          <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveImageIndex((prev) => (prev < galleryImages.length - 1 ? prev + 1 : 0));
+                          }}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md transition-transform hover:scale-110 shadow-lg cursor-pointer z-10"
+                          title="Next image"
+                        >
+                          <ChevronRight className="w-5 h-5" />
+                        </button>
+                      </>
+                    )}
+
+                    {/* Big Play Button */}
+                    <button
+                      onClick={() => setIsPlayingTeaser(true)}
+                      className="absolute inset-0 m-auto w-20 h-20 rounded-full bg-white/95 hover:bg-white text-artisan-crimson flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 cursor-pointer"
+                      aria-label="Play Course Teaser"
+                    >
+                      <Play className="w-8 h-8 fill-artisan-crimson ml-1" />
+                    </button>
+
+                    {/* Top Overlay Badge for Multi-Image Counter */}
+                    {galleryImages.length > 1 && (
+                      <div className="absolute top-4 right-4 z-10">
+                        <span className="bg-black/70 backdrop-blur-md text-white text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-md">
+                          <Images className="w-3.5 h-3.5 text-artisan-gold" />
+                          <span>Photo {activeImageIndex + 1} of {galleryImages.length}</span>
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="absolute bottom-5 left-6 right-6 flex items-center justify-between text-white text-xs">
+                      <span className="font-medium bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                        <Video className="w-3.5 h-3.5 text-artisan-gold" />
+                        4K Studio Demonstration Preview
+                      </span>
+                      <span className="bg-artisan-crimson text-white px-3 py-1.5 rounded-full font-bold">
+                        {course.durationHours} Total Hours
+                      </span>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Thumbnails Strip for Multiple Images */}
+              {galleryImages.length > 1 && (
+                <div className="flex items-center gap-2.5 overflow-x-auto py-1 scrollbar-thin">
+                  {galleryImages.map((img, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setActiveImageIndex(idx);
+                        setIsPlayingTeaser(false);
+                      }}
+                      className={`relative w-20 sm:w-24 h-14 sm:h-16 rounded-2xl overflow-hidden border-2 shrink-0 transition-all cursor-pointer shadow-sm ${
+                        idx === activeImageIndex
+                          ? 'border-artisan-crimson ring-2 ring-artisan-crimson/40 scale-105'
+                          : 'border-stone-200 opacity-60 hover:opacity-100 hover:border-stone-400'
+                      }`}
+                    >
+                      <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
               )}
             </div>
 
@@ -336,6 +411,49 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
                 * Full video streaming access in 4K quality is enabled on your account immediately upon enrollment.
               </p>
             </div>
+
+            {/* Masterclass Artwork Gallery & Reference Photos */}
+            {galleryImages.length > 1 && (
+              <div className="p-6 sm:p-8 rounded-3xl bg-white border border-stone-200 shadow-soft-lux space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-display font-bold text-base text-stone-900 flex items-center gap-2">
+                    <Images className="w-5 h-5 text-artisan-crimson" />
+                    <span>Masterclass Artwork Gallery & Reference Photos ({galleryImages.length})</span>
+                  </h4>
+                  <span className="text-xs text-stone-500">Click photo to view in main banner</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {galleryImages.map((img, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => {
+                        setActiveImageIndex(idx);
+                        setIsPlayingTeaser(false);
+                        window.scrollTo({ top: 320, behavior: 'smooth' });
+                      }}
+                      className={`relative rounded-2xl overflow-hidden aspect-video border-2 group cursor-pointer transition-all ${
+                        idx === activeImageIndex
+                          ? 'border-artisan-crimson ring-2 ring-artisan-crimson/30 shadow-md'
+                          : 'border-stone-200 hover:border-stone-400 hover:shadow-md'
+                      }`}
+                    >
+                      <img
+                        src={img}
+                        alt={`Gallery ${idx + 1}`}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src =
+                            'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=600&auto=format&fit=crop';
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-semibold">
+                        View in Banner
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* ------------------------------------------------------------- */}

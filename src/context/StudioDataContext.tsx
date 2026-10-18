@@ -126,34 +126,20 @@ interface StudioDataContextType {
 
 const StudioDataContext = createContext<StudioDataContextType | undefined>(undefined);
 
+const DUMMY_COURSE_IDS = ['course-oil-mastery', 'course-realistic-sketching', 'course-watercolor-fluid', 'course-color-alchemy'];
+
 export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Helper to ensure all course modules have lecture objects
+  // Helper to ensure all course modules have lecture objects without auto-generating fake ones
   const normalizeCourses = (courseList: Course[]): Course[] => {
-    return courseList.map((c) => ({
+    return (courseList || []).map((c) => ({
       ...c,
-      modules: (c.modules || []).map((m, mIdx) => {
-        // If lectures is already an initialized array (even if empty []), NEVER auto-generate fake lectures
-        if (Array.isArray(m.lectures)) {
-          return {
-            ...m,
-            lectures: m.lectures,
-            lessonsCount: m.lectures.length
-          };
-        }
-        // Only if m.lectures is undefined (legacy unmigrated data)
-        const initialLecs: CourseLecture[] = (m.topics || []).map((top, tIdx) => ({
-          id: `lec-${c.id}-${m.id || mIdx}-${tIdx + 1}`,
-          title: top,
-          duration: '45 Mins',
-          videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-          summary: `Master practical demonstration by Artist Kuldeep Singh covering ${top}.`,
-          accessType: 'enrolled',
-          isFreePreview: false
-        }));
+      modules: (c.modules || []).map((m) => {
+        const lecs = Array.isArray(m.lectures) ? m.lectures : [];
         return {
           ...m,
-          lectures: initialLecs,
-          lessonsCount: initialLecs.length
+          lectures: lecs,
+          lessonsCount: lecs.length,
+          topics: lecs.map((l) => l.title)
         };
       })
     }));
@@ -173,10 +159,11 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [courses, setCourses] = useState<Course[]>(() => {
     try {
       const saved = localStorage.getItem('kuldeep_studio_courses');
-      const loaded: Course[] = saved ? JSON.parse(saved) : COURSES;
-      return normalizeCourses(loaded);
+      const loaded: Course[] = saved ? JSON.parse(saved) : [];
+      const clean = (Array.isArray(loaded) ? loaded : []).filter((c) => !DUMMY_COURSE_IDS.includes(c.id));
+      return normalizeCourses(clean);
     } catch {
-      return normalizeCourses(COURSES);
+      return [];
     }
   });
 
@@ -277,8 +264,9 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         if (courseRes.ok) {
           const cloudCourses: Course[] = await courseRes.json();
           if (Array.isArray(cloudCourses) && isMounted) {
-            loadedCourses = cloudCourses;
-            setCourses(normalizeCourses(cloudCourses));
+            const clean = cloudCourses.filter((c) => !DUMMY_COURSE_IDS.includes(c.id));
+            loadedCourses = clean;
+            setCourses(normalizeCourses(clean));
           }
         }
 
