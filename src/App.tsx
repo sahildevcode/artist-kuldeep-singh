@@ -11,7 +11,6 @@ import { Footer } from './components/layout/Footer';
 import { CartDrawer } from './components/modals/CartDrawer';
 import { AuthModal } from './components/modals/AuthModal';
 import { AtelierAudioPlayer } from './components/layout/AtelierAudioPlayer';
-import { ArtworkModal } from './components/modals/ArtworkModal';
 import { ContactWidget } from './components/layout/ContactWidget';
 import { OrderHistoryModal } from './components/modals/OrderHistoryModal';
 import { CheckoutModal } from './components/modals/CheckoutModal';
@@ -20,6 +19,7 @@ import { AboutPage } from './pages/AboutPage';
 import { CoursesPage } from './pages/CoursesPage';
 import { CourseDetailPage } from './pages/CourseDetailPage';
 import { StorePage } from './pages/StorePage';
+import { ArtworkDetailPage } from './pages/ArtworkDetailPage';
 import { StudentPortalPage } from './pages/StudentPortalPage';
 import { LegalPage, type LegalTab } from './pages/LegalPage';
 import { ErrorBoundary } from './components/layout/ErrorBoundary';
@@ -31,6 +31,7 @@ export type AppNavPage =
   | 'courses' 
   | 'store' 
   | 'course-detail' 
+  | 'artwork-detail'
   | 'student-portal' 
   | 'terms' 
   | 'privacy' 
@@ -51,6 +52,7 @@ const AppInner: React.FC = () => {
     if (path.includes('student-portal') || hash.includes('student-portal')) return 'student-portal';
     if (path.includes('about') || hash === 'about') return 'about';
     if (path.includes('courses') || hash === 'courses') return 'courses';
+    if (path.includes('artwork-detail') || hash.includes('artwork-detail') || hash.includes('artwork')) return 'artwork-detail';
     if (path.includes('store') || hash === 'store') return 'store';
     return 'home';
   };
@@ -84,6 +86,8 @@ const AppInner: React.FC = () => {
         setActivePage('about');
       } else if (path.includes('courses') || hash === 'courses') {
         setActivePage('courses');
+      } else if (path.includes('artwork-detail') || hash.includes('artwork-detail') || hash.includes('artwork')) {
+        setActivePage('artwork-detail');
       } else if (path.includes('store') || hash === 'store') {
         setActivePage('store');
       } else if (!hash || hash === 'home') {
@@ -111,9 +115,16 @@ const AppInner: React.FC = () => {
     handlePageChange('course-detail');
   };
 
+  const handleSelectArtwork = (art: Artwork) => {
+    setSelectedArtwork(art);
+    handlePageChange('artwork-detail');
+  };
+
   const navbarActivePage: 'home' | 'about' | 'courses' | 'store' | 'student-portal' = 
     activePage === 'course-detail'
       ? 'courses'
+      : activePage === 'artwork-detail'
+      ? 'store'
       : (['home', 'about', 'courses', 'store', 'student-portal'].includes(activePage)
           ? (activePage as 'home' | 'about' | 'courses' | 'store' | 'student-portal')
           : 'home');
@@ -138,7 +149,7 @@ const AppInner: React.FC = () => {
           {activePage === 'home' && (
             <HomePage
               setActivePage={handlePageChange}
-              onSelectArtwork={(art) => setSelectedArtwork(art)}
+              onSelectArtwork={handleSelectArtwork}
               onSelectCourse={handleSelectCourse}
             />
           )}
@@ -172,9 +183,16 @@ const AppInner: React.FC = () => {
               }}
             />
           )}
+          {activePage === 'artwork-detail' && (
+            <ArtworkDetailPage
+              artwork={selectedArtwork}
+              onBack={() => handlePageChange('store')}
+              onSelectArtwork={handleSelectArtwork}
+            />
+          )}
           {activePage === 'store' && (
             <StorePage
-              onSelectArtwork={(art) => setSelectedArtwork(art)}
+              onSelectArtwork={handleSelectArtwork}
             />
           )}
           {activePage === 'student-portal' && (
@@ -218,12 +236,6 @@ const AppInner: React.FC = () => {
           handlePageChange('student-portal');
         }}
       />
-      {/* Artwork Modal */}
-      <ArtworkModal
-        artwork={selectedArtwork}
-        onClose={() => setSelectedArtwork(null)}
-      />
-
       {/* Floating Multi-Channel Contact Atelier Widget (WhatsApp, Call, Insta, YouTube, Twitter) */}
       <ContactWidget />
     </div>
