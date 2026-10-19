@@ -109,6 +109,8 @@ export interface CollectorReview {
   comment: string;
   rating: number;
   verifiedPurchase: boolean;
+  category?: 'student' | 'collector' | 'upcoming';
+  isActive?: boolean;
 }
 
 export interface CartItem {
@@ -195,6 +197,8 @@ export interface ArtistProfile {
   studioVideoTitle?: string;
   studioVideoPoster?: string;
   studioReels?: StudioReel[];
+  testimonialSectionTitle?: string;
+  testimonialSectionSubtitle?: string;
 }
 
 export interface StudioReel {

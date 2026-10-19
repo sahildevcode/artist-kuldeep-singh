@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { Artwork, Course, CourseModule, CourseLecture, ArtistProfile, AchievementTimelineItem, Award, EnrolledStudent, LiveBroadcastStatus, UpcomingCourse } from '../types';
+import type { Artwork, Course, CourseModule, CourseLecture, ArtistProfile, AchievementTimelineItem, Award, EnrolledStudent, LiveBroadcastStatus, UpcomingCourse, CollectorReview } from '../types';
 import { ARTWORKS } from '../data/artworks';
 import { COURSES } from '../data/courses';
 import { TIMELINE, AWARDS } from '../data/achievements';
 import { INITIAL_UPCOMING_COURSES } from '../data/upcomingCourses';
+import { REVIEWS } from '../data/reviews';
 
 const DEFAULT_PROFILE: ArtistProfile = {
   name: 'Artist Kuldeep Singh',
@@ -103,6 +104,11 @@ interface StudioDataContextType {
   addUpcomingCourse: (course: UpcomingCourse) => void;
   updateUpcomingCourse: (id: string, updates: Partial<UpcomingCourse>) => void;
   deleteUpcomingCourse: (id: string) => void;
+  // Testimonials / Reviews CRUD
+  reviews: CollectorReview[];
+  addReview: (review: CollectorReview) => void;
+  updateReview: (id: string, updates: Partial<CollectorReview>) => void;
+  deleteReview: (id: string) => void;
   // Paintings CRUD
   addArtwork: (artwork: Artwork) => void;
   updateArtwork: (id: string, updates: Partial<Artwork>) => void;
@@ -271,6 +277,23 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   }, [upcomingCourses]);
 
+  // 9. Testimonials / Reviews State
+  const [reviews, setReviews] = useState<CollectorReview[]>(() => {
+    try {
+      const saved = localStorage.getItem('kuldeep_studio_testimonials');
+      return saved ? JSON.parse(saved) : REVIEWS;
+    } catch {
+      return REVIEWS;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('kuldeep_studio_testimonials', JSON.stringify(reviews));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [reviews]);
 
   // Real-Time 24/7 Cloud Backend Synchronization (Artworks, Courses, Lectures & Live Broadcast)
   useEffect(() => {
@@ -405,6 +428,16 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             setUpcomingCourses(list);
           }
         }
+
+        // 7. Testimonials / Reviews
+        const testRes = await fetch('https://kuldeep-singh-backend.onrender.com/api/testimonials').catch(() => null);
+        if (testRes && testRes.ok) {
+          const testData = await testRes.json();
+          const list = testData?.testimonials || (Array.isArray(testData) ? testData : null);
+          if (Array.isArray(list) && isMounted && list.length > 0) {
+            setReviews(list);
+          }
+        }
       } catch (err) {
         console.warn('Could not fetch data from cloud backend, using cached data:', err);
       }
@@ -436,6 +469,16 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           const parsed = JSON.parse(e.newValue);
           if (Array.isArray(parsed) && isMounted) {
             setUpcomingCourses(parsed);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }
+      if (e.key === 'kuldeep_studio_testimonials' && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed) && isMounted) {
+            setReviews(parsed);
           }
         } catch (err) {
           console.error(err);
@@ -905,6 +948,34 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }).catch((e) => console.warn('Cloud delete error for upcoming course:', e));
   };
 
+  // Testimonials / Reviews CRUD
+  const addReview = (review: CollectorReview) => {
+    setReviews((prev) => [review, ...prev]);
+    fetch('https://kuldeep-singh-backend.onrender.com/api/testimonials', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(review)
+    }).catch((e) => console.warn('Cloud sync error for testimonial:', e));
+  };
+
+  const updateReview = (id: string, updates: Partial<CollectorReview>) => {
+    setReviews((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, ...updates } : r))
+    );
+    fetch(`https://kuldeep-singh-backend.onrender.com/api/testimonials/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates)
+    }).catch((e) => console.warn('Cloud update error for testimonial:', e));
+  };
+
+  const deleteReview = (id: string) => {
+    setReviews((prev) => prev.filter((r) => r.id !== id));
+    fetch(`https://kuldeep-singh-backend.onrender.com/api/testimonials/${id}`, {
+      method: 'DELETE'
+    }).catch((e) => console.warn('Cloud delete error for testimonial:', e));
+  };
+
   // Factory Reset
   const resetToDefaults = () => {
     localStorage.removeItem('kuldeep_studio_artworks');
@@ -914,12 +985,14 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     localStorage.removeItem('kuldeep_studio_timeline');
     localStorage.removeItem('kuldeep_studio_awards');
     localStorage.removeItem('kuldeep_studio_upcoming_courses');
+    localStorage.removeItem('kuldeep_studio_testimonials');
     setArtworks(ARTWORKS);
     setCourses(COURSES);
     setStudents(INITIAL_STUDENTS);
     setArtistProfile(DEFAULT_PROFILE);
     setTimeline(TIMELINE);
     setUpcomingCourses(INITIAL_UPCOMING_COURSES);
+    setReviews(REVIEWS);
   };
 
   return (
@@ -936,6 +1009,10 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         addUpcomingCourse,
         updateUpcomingCourse,
         deleteUpcomingCourse,
+        reviews,
+        addReview,
+        updateReview,
+        deleteReview,
         addArtwork,
         updateArtwork,
         deleteArtwork,

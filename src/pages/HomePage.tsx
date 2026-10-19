@@ -1,5 +1,6 @@
-import { ArrowRight, Sparkles, Star, ShieldCheck, ArrowUpRight, Eye } from 'lucide-react';
-import { PRESS_LOGOS, REVIEWS } from '../data/reviews';
+import React, { useState } from 'react';
+import { ArrowRight, Sparkles, Star, ShieldCheck, ArrowUpRight, Eye, Quote } from 'lucide-react';
+import { PRESS_LOGOS } from '../data/reviews';
 import type { Artwork, Course } from '../types';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { useCart } from '../context/CartContext';
@@ -20,8 +21,9 @@ export const HomePage: React.FC<HomePageProps> = ({
   onSelectCourse,
 }) => {
   const { addToCart } = useCart();
-  const { artworks, courses, artistProfile } = useStudioData();
+  const { artworks, courses, artistProfile, reviews } = useStudioData();
   const { activeTheme3D, setIsSettingsModalOpen } = useAudio();
+  const [selectedReviewCategory, setSelectedReviewCategory] = useState<'all' | 'student' | 'upcoming' | 'collector'>('all');
   const featuredArtworks = artworks.filter((a) => a.featured).slice(0, 4);
   const featuredCourses = courses.slice(0, 3);
 
@@ -412,67 +414,140 @@ export const HomePage: React.FC<HomePageProps> = ({
       </section>
 
       {/* ------------------------------------------------------------- */}
-      {/* 5. PRESS & COLLECTOR REVIEWS */}
+      {/* 5. PRESS & COLLECTOR / STUDENT TESTIMONIALS */}
       {/* ------------------------------------------------------------- */}
       <section className="py-20 sm:py-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
+        <div className="text-center max-w-2xl mx-auto mb-10 space-y-3">
           <span className="text-xs font-bold uppercase tracking-[0.2em] text-artisan-crimson">
-            Acclaimed by Patrons
+            {artistProfile.testimonialSectionSubtitle || 'Acclaimed by Patrons & Academy Scholars'}
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-stone-900">
-            Collector & Student Testimonials
+          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-stone-900 tracking-tight">
+            {artistProfile.testimonialSectionTitle || 'Collector & Student Testimonials'}
           </h2>
+          <p className="text-xs sm:text-sm text-stone-500 max-w-lg mx-auto">
+            Honest reflections from fine art collectors, emerging painters, and scholars enrolled in our classical atelier batches.
+          </p>
         </div>
 
-        {/* Press Quotes Bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-          {PRESS_LOGOS.map((press, idx) => (
-            <div
-              key={idx}
-              className="p-5 rounded-2xl bg-white border border-stone-200/80 shadow-xs flex flex-col justify-between text-center"
+        {/* Category Filter Tabs */}
+        <div className="flex items-center justify-center gap-2 mb-12 overflow-x-auto pb-2">
+          {[
+            { id: 'all', label: 'All Reviews' },
+            { id: 'student', label: 'Student Testimonials' },
+            { id: 'upcoming', label: 'Upcoming Course Scholars' },
+            { id: 'collector', label: 'Art Collectors' }
+          ].map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedReviewCategory(cat.id as any)}
+              className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap shadow-xs ${
+                selectedReviewCategory === cat.id
+                  ? 'bg-stone-900 text-white shadow-md'
+                  : 'bg-white hover:bg-stone-100 text-stone-600 border border-stone-200'
+              }`}
             >
-              <h4 className="font-display font-bold text-xs tracking-widest text-stone-900">
-                {press.name}
-              </h4>
-              <p className="text-[11px] text-stone-500 italic mt-3">
-                "{press.quote}"
-              </p>
-            </div>
+              {cat.label}
+            </button>
           ))}
         </div>
 
         {/* Individual Testimonial Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {REVIEWS.map((rev) => (
-            <div
-              key={rev.id}
-              className="p-6 rounded-3xl bg-white/80 backdrop-blur-md border border-stone-200/80 shadow-sm flex flex-col justify-between space-y-4"
-            >
-              <div className="flex items-center gap-1 text-amber-500">
-                {[...Array(rev.rating)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-amber-500" />
-                ))}
+        {(() => {
+          const activeList = (reviews || []).filter((r) => r.isActive !== false);
+          const filteredList = activeList.filter((r) => {
+            if (selectedReviewCategory === 'all') return true;
+            if (selectedReviewCategory === 'student') return r.category === 'student' || (!r.category && r.courseTaken);
+            if (selectedReviewCategory === 'upcoming') return r.category === 'upcoming';
+            if (selectedReviewCategory === 'collector') return r.category === 'collector' || (!r.category && r.artworkAcquired);
+            return true;
+          });
+
+          if (filteredList.length === 0) {
+            return (
+              <div className="p-12 text-center rounded-3xl bg-white border border-stone-200 text-stone-500 mb-14">
+                <Quote className="w-8 h-8 mx-auto mb-2 text-stone-300" />
+                <p className="text-sm font-semibold">No reviews found in this category.</p>
               </div>
+            );
+          }
 
-              <p className="text-xs sm:text-sm text-stone-700 leading-relaxed italic">
-                "{rev.comment}"
-              </p>
+          return (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+              {filteredList.map((rev) => (
+                <div
+                  key={rev.id}
+                  className="p-6 rounded-3xl bg-white border border-stone-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-4 hover:-translate-y-1"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1 text-amber-500">
+                        {[...Array(rev.rating || 5)].map((_, i) => (
+                          <Star key={i} className="w-3.5 h-3.5 fill-amber-500" />
+                        ))}
+                      </div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-600 border border-stone-200">
+                        {rev.category === 'upcoming'
+                          ? 'Upcoming Batch'
+                          : rev.category === 'student' || rev.courseTaken
+                          ? 'Alumnus'
+                          : 'Collector'}
+                      </span>
+                    </div>
 
-              <div className="pt-4 border-t border-stone-100 flex items-center gap-3">
-                <img
-                  src={rev.avatar}
-                  alt={rev.name}
-                  className="w-10 h-10 rounded-full object-cover border border-stone-200"
-                />
-                <div>
-                  <h4 className="text-xs font-bold text-stone-900">{rev.name}</h4>
-                  <p className="text-[11px] text-stone-500">
-                    {rev.role} • {rev.location}
-                  </p>
+                    <p className="text-xs sm:text-sm text-stone-700 leading-relaxed italic">
+                      "{rev.comment}"
+                    </p>
+
+                    {(rev.courseTaken || rev.artworkAcquired) && (
+                      <div className="pt-2">
+                        <span className="inline-block text-[11px] font-medium text-artisan-crimson bg-artisan-crimson/5 px-2.5 py-1 rounded-lg border border-artisan-crimson/15">
+                          {rev.courseTaken ? `🎓 ${rev.courseTaken}` : `🎨 Acquired: ${rev.artworkAcquired}`}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-4 border-t border-stone-100 flex items-center gap-3">
+                    <img
+                      src={rev.avatar}
+                      alt={rev.name}
+                      className="w-10 h-10 rounded-full object-cover border border-stone-200"
+                    />
+                    <div>
+                      <h4 className="text-xs font-bold text-stone-900">{rev.name}</h4>
+                      <p className="text-[11px] text-stone-500">
+                        {rev.role} • {rev.location}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
+          );
+        })()}
+
+        {/* Press Quotes Bar */}
+        <div className="pt-8 border-t border-stone-200">
+          <div className="text-center mb-6">
+            <span className="text-[10px] uppercase font-bold tracking-widest text-stone-400">
+              Featured in International Art Publications & Press
+            </span>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {PRESS_LOGOS.map((press, idx) => (
+              <div
+                key={idx}
+                className="p-5 rounded-2xl bg-white border border-stone-200/80 shadow-xs flex flex-col justify-between text-center"
+              >
+                <h4 className="font-display font-bold text-xs tracking-widest text-stone-900">
+                  {press.name}
+                </h4>
+                <p className="text-[11px] text-stone-500 italic mt-3">
+                  "{press.quote}"
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </div>
