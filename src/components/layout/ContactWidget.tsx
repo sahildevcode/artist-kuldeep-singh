@@ -15,8 +15,8 @@ export const ContactWidget: React.FC<ContactWidgetProps> = () => {
       id: 'whatsapp',
       name: 'WhatsApp Atelier',
       subtitle: 'Direct chat with studio manager for acquisitions & admissions',
-      value: '+91 98100 88231',
-      href: 'https://wa.me/919810088231?text=Hello%20Artist%20Kuldeep%20Singh%2C%20I%20am%20reaching%20out%20from%20your%20website%20regarding%20artworks%20and%20masterclasses.',
+      value: '+91 8858060101',
+      href: 'https://wa.me/918858060101?text=Hello%20Artist%20Kuldeep%20Singh%2C%20I%20am%20reaching%20out%20from%20your%20website%20regarding%20artworks%20and%20masterclasses.',
       btnText: 'Open Chat',
       badge: 'Quickest Response',
       iconColor: 'bg-emerald-50 text-emerald-800 border border-emerald-200',
@@ -30,9 +30,9 @@ export const ContactWidget: React.FC<ContactWidgetProps> = () => {
     {
       id: 'phone',
       name: 'Direct Phone Call',
-      subtitle: '+91 98100 88231 (Mon - Sat • 10 AM - 7 PM IST)',
-      value: '+91 98100 88231',
-      href: 'tel:+919810088231',
+      subtitle: '+91 8858060101 (Mon - Sat • 10 AM - 7 PM IST)',
+      value: '+91 8858060101',
+      href: 'tel:+918858060101',
       btnText: 'Call Studio',
       badge: 'Voice Call',
       iconColor: 'bg-stone-100 text-stone-800 border border-stone-200',
@@ -41,9 +41,9 @@ export const ContactWidget: React.FC<ContactWidgetProps> = () => {
     {
       id: 'instagram',
       name: 'Instagram Gallery',
-      subtitle: '@artistkuldeepsingh • Studio WIP, reels & new releases',
-      value: '@artistkuldeepsingh',
-      href: 'https://instagram.com/artistkuldeepsingh',
+      subtitle: '@artist_kuldeep_singh • Studio WIP, reels & new releases',
+      value: '@artist_kuldeep_singh',
+      href: 'https://www.instagram.com/artist_kuldeep_singh?exln=dXA3Znl1bXcyeWw5',
       btnText: 'View Instagram',
       badge: 'Official',
       iconColor: 'bg-pink-50 text-pink-700 border border-pink-200',
@@ -58,7 +58,7 @@ export const ContactWidget: React.FC<ContactWidgetProps> = () => {
       name: 'YouTube Channel',
       subtitle: '@artistkuldeepsingh • Painting timelapses & lectures',
       value: '@artistkuldeepsingh',
-      href: 'https://youtube.com/@artistkuldeepsingh',
+      href: 'https://youtube.com/@artistkuldeepsingh?si=6Jt3uFkpQUsRKlum',
       btnText: 'Watch Videos',
       badge: 'Tutorials',
       iconColor: 'bg-red-50 text-red-700 border border-red-200',
@@ -182,8 +182,8 @@ export const ContactWidget: React.FC<ContactWidgetProps> = () => {
 
             {/* Studio Note / Location Footer */}
             <div className="bg-stone-100/80 border-t border-stone-200 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-stone-500 text-[11px]">
-              <span>📍 Atelier: Bheem Nagar, Erich, UP, India</span>
-              <span className="font-medium text-stone-700">support@kuldeepsingh.art</span>
+              <span>📍 Atelier & Studio: Delhi, India</span>
+              <span className="font-medium text-stone-700">artistkuldeepsingh26@gmail.com</span>
             </div>
           </div>
         </div>

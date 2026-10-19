@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, User, Menu, X, Sparkles, LogOut, BookOpen, Image as ImageIcon, Award, Compass, ShieldCheck } from 'lucide-react';
+import { ShoppingBag, User, Menu, X, Sparkles, LogOut, BookOpen, Image as ImageIcon, Award, Compass, ShieldCheck, MessageSquare } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useStudioData } from '../../context/StudioDataContext';
+import { InquiryModal } from '../modals/InquiryModal';
 
 interface NavbarProps {
   activePage: 'home' | 'about' | 'courses' | 'store' | 'student-portal';
@@ -16,6 +17,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isInquiryOpen, setIsInquiryOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -92,27 +94,41 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
 
         <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-300 ${isScrolled ? 'py-3' : 'py-3.5 sm:py-4'}`}>
           <div className="flex items-center justify-between">
-            {/* Logo */}
-            <button
-              onClick={() => {
-                setActivePage('home');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className="text-left group flex items-center gap-3 focus:outline-none"
-            >
-              <div className="w-10 h-10 rounded-full bg-[#1A1816] text-white flex items-center justify-center font-serif text-xl font-bold shadow-md group-hover:scale-105 transition-transform duration-300 relative overflow-hidden">
-                <span className="relative z-10">K</span>
-                <span className="absolute inset-0 bg-gradient-to-tr from-artisan-crimson/50 to-artisan-ochre/50 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-              <div>
-                <span className="font-display font-bold text-xl tracking-tight text-[#1A1816] block leading-none">
-                  KULDEEP <span className="font-light text-artisan-gold">SINGH</span>
-                </span>
-                <span className="text-[10px] tracking-[0.2em] uppercase text-stone-500 font-medium block mt-1">
-                  Artist • 12Y Fine Art Atelier
-                </span>
-              </div>
-            </button>
+            {/* Top Left: Logo & Quick Inquiry Button */}
+            <div className="flex items-center gap-2.5 sm:gap-4">
+              {/* Logo */}
+              <button
+                onClick={() => {
+                  setActivePage('home');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="text-left group flex items-center gap-2 sm:gap-3 focus:outline-none cursor-pointer"
+              >
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#1A1816] text-white flex items-center justify-center font-serif text-lg sm:text-xl font-bold shadow-md group-hover:scale-105 transition-transform duration-300 relative overflow-hidden">
+                  <span className="relative z-10">K</span>
+                  <span className="absolute inset-0 bg-gradient-to-tr from-artisan-crimson/50 to-artisan-ochre/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+                <div>
+                  <span className="font-display font-bold text-lg sm:text-xl tracking-tight text-[#1A1816] block leading-none">
+                    KULDEEP <span className="font-light text-artisan-gold">SINGH</span>
+                  </span>
+                  <span className="text-[9px] sm:text-[10px] tracking-[0.2em] uppercase text-stone-500 font-medium block mt-1">
+                    Artist • 12Y Fine Art Atelier
+                  </span>
+                </div>
+              </button>
+
+              {/* Quick Inquiry Button (Top Left) */}
+              <button
+                onClick={() => setIsInquiryOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full bg-artisan-gold/15 hover:bg-artisan-gold text-[#5C4010] hover:text-white border border-artisan-gold/40 font-serif text-[11px] sm:text-xs font-bold transition-all shadow-xs cursor-pointer group shrink-0 active:scale-95"
+                title="Send Studio Inquiry / पूछताछ करें"
+              >
+                <MessageSquare className="w-3.5 h-3.5 text-artisan-gold group-hover:text-white transition-colors" />
+                <span className="hidden xs:inline">Enquire / पूछताछ</span>
+                <span className="xs:hidden">Inquiry</span>
+              </button>
+            </div>
 
             {/* Desktop Navigation Links */}
             <nav className="hidden md:flex items-center gap-1 bg-stone-100/80 backdrop-blur-md p-1.5 rounded-full border border-stone-200/60 shadow-inner">
@@ -307,6 +323,12 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
           </div>
         )}
       </header>
+
+      {/* Direct Studio Inquiry Modal */}
+      <InquiryModal
+        isOpen={isInquiryOpen}
+        onClose={() => setIsInquiryOpen(false)}
+      />
     </>
   );
 };

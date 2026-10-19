@@ -49,18 +49,18 @@ export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
             <div className="space-y-2 text-xs text-stone-400">
               <div className="flex items-start gap-2">
                 <MapPin className="w-3.5 h-3.5 text-artisan-gold shrink-0 mt-0.5" />
-                <span>Atelier: 33, Bheem Nagar, Erich, Uttar Pradesh 284302, India</span>
+                <span>Atelier & Studio: Delhi, India</span>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span>Support: +91 98100 88231 • support@kuldeepsingh.art</span>
+                <span>Support: +91 8858060101 • artistkuldeepsingh26@gmail.com</span>
               </div>
             </div>
 
             {/* Direct Connect Channels (WhatsApp, Call, Instagram, YouTube, Twitter) */}
             <div className="pt-2 flex items-center gap-2">
               <a
-                href="https://wa.me/919810088231?text=Hello%20Artist%20Kuldeep%20Singh%2C%20I%20am%20reaching%20out%20from%20your%20website"
+                href="https://wa.me/918858060101?text=Hello%20Artist%20Kuldeep%20Singh%2C%20I%20am%20reaching%20out%20from%20your%20website"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="WhatsApp Atelier"
@@ -71,14 +71,14 @@ export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
                 </svg>
               </a>
               <a
-                href="tel:+919810088231"
+                href="tel:+918858060101"
                 title="Direct Phone Call"
                 className="w-8 h-8 rounded-full bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white flex items-center justify-center transition-all"
               >
                 <Phone className="w-3.5 h-3.5" />
               </a>
               <a
-                href="https://instagram.com/artistkuldeepsingh"
+                href="https://www.instagram.com/artist_kuldeep_singh?exln=dXA3Znl1bXcyeWw5"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Instagram Gallery"
@@ -89,7 +89,7 @@ export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
                 </svg>
               </a>
               <a
-                href="https://youtube.com/@artistkuldeepsingh"
+                href="https://youtube.com/@artistkuldeepsingh?si=6Jt3uFkpQUsRKlum"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="YouTube Art Channel"
@@ -100,15 +100,13 @@ export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
                 </svg>
               </a>
               <a
-                href="https://x.com/artistkuldeep"
+                href="https://wa.me/918858060101"
                 target="_blank"
                 rel="noopener noreferrer"
-                title="Twitter / X"
-                className="w-8 h-8 rounded-full bg-stone-800 hover:bg-stone-700 text-stone-300 hover:text-white flex items-center justify-center transition-all"
+                title="WhatsApp Direct"
+                className="w-8 h-8 rounded-full bg-emerald-700/20 hover:bg-emerald-700 text-emerald-400 hover:text-white flex items-center justify-center transition-all"
               >
-                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
+                <Phone className="w-3.5 h-3.5" />
               </a>
             </div>
           </div>
@@ -299,7 +297,7 @@ export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
 
         {/* Local SEO & Authenticity Guarantee */}
         <div className="pt-5 mt-5 border-t border-stone-800/50 text-[10px] sm:text-[11px] text-stone-500 flex flex-wrap items-center justify-between gap-2">
-          <span>Operating Entity: Kuldeep Singh Gautam (Artist Atelier & Academy) • UP, India</span>
+          <span>Operating Entity: Kuldeep Singh Gautam (Artist Atelier & Academy) • Delhi, India</span>
           <span className="text-stone-600">100% Insured Delivery • Certificate of Authenticity Included</span>
         </div>
       </div>
