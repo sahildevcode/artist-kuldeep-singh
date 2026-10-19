@@ -7,8 +7,6 @@ import {
   GraduationCap,
   Award,
   CheckCircle2,
-  Pause,
-  Play,
   Calendar,
   Layers,
   ArrowRight
@@ -321,16 +319,8 @@ export const TestimonialAutoSlider: React.FC<TestimonialAutoSliderProps> = ({
                   </p>
                 </div>
 
-                {/* Interactive Controls (Arrows + Play/Pause) */}
+                {/* Interactive Controls (Arrows) */}
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setIsPaused((prev) => !prev)}
-                    className="p-2.5 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 transition cursor-pointer active:scale-95"
-                    title={isPaused ? 'Resume Auto-Play' : 'Pause Auto-Play'}
-                    aria-label="Toggle auto-play"
-                  >
-                    {isPaused ? <Play className="w-4 h-4 fill-stone-700" /> : <Pause className="w-4 h-4" />}
-                  </button>
 
                   <button
                     onClick={handlePrev}
@@ -351,59 +341,6 @@ export const TestimonialAutoSlider: React.FC<TestimonialAutoSliderProps> = ({
                   </button>
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Bottom Thumbnails Navigation Strip (Allows instant jumping & shows all images) */}
-          <div className="bg-stone-50/90 border-t border-stone-200/70 p-4 sm:p-5">
-            <div className="flex items-center justify-between gap-3 mb-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-stone-500">
-                Click any scholar to preview their artwork & story:
-              </span>
-              <span className="text-[11px] text-stone-400 font-medium hidden sm:inline">
-                {filteredReviews.length} Verified Reviews • Slides auto-change every 4.5s
-              </span>
-            </div>
-
-            <div className="flex items-center gap-3 overflow-x-auto pb-1 scrollbar-none">
-              {filteredReviews.map((rev, idx) => {
-                const isActive = idx === currentIndex;
-                return (
-                  <button
-                    key={rev.id}
-                    onClick={() => {
-                      setCurrentIndex(idx);
-                      setIsPaused(true);
-                    }}
-                    className={`group relative flex items-center gap-2.5 p-2 rounded-2xl transition-all cursor-pointer text-left shrink-0 border ${
-                      isActive
-                        ? 'bg-white border-artisan-gold shadow-md ring-2 ring-artisan-gold/30'
-                        : 'bg-white/60 hover:bg-white border-stone-200/80 opacity-70 hover:opacity-100'
-                    }`}
-                  >
-                    <img
-                      src={rev.artworkImage || rev.avatar}
-                      alt={rev.name}
-                      className="w-10 h-10 rounded-xl object-cover shrink-0 border border-stone-200"
-                    />
-                    <div className="pr-2">
-                      <div className="flex items-center gap-1">
-                        <span className="text-xs font-bold text-stone-900 truncate max-w-[110px]">
-                          {rev.name}
-                        </span>
-                        {isActive && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-artisan-gold animate-ping" />
-                        )}
-                      </div>
-                      <span className="text-[10px] text-stone-400 block truncate max-w-[120px]">
-                        {rev.category === 'upcoming'
-                          ? 'Upcoming Batch'
-                          : rev.courseTaken || rev.artworkAcquired || rev.role}
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
             </div>
           </div>
         </div>
