@@ -223,27 +223,6 @@ export const TestimonialAutoSlider: React.FC<TestimonialAutoSliderProps> = ({
                     <span>{isPaused ? 'Paused on Hover' : 'Auto-Changing'}</span>
                   </span>
                 </div>
-
-                {/* Bottom Floating Visual Strip: Student Avatar & Associated Work */}
-                <div className="absolute bottom-4 left-4 right-4 z-10 bg-white/95 backdrop-blur-md rounded-2xl p-3.5 border border-white shadow-xl flex items-center gap-3">
-                  <img
-                    key={`avatar-${currentReview?.id}`}
-                    src={currentReview?.avatar}
-                    alt={currentReview?.name}
-                    className="w-12 h-12 rounded-full object-cover border-2 border-artisan-gold shadow-md shrink-0"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <h4 className="font-serif font-bold text-sm text-stone-900 truncate">
-                        {currentReview?.name}
-                      </h4>
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    </div>
-                    <p className="text-[11px] text-stone-500 truncate">
-                      {currentReview?.role}
-                    </p>
-                  </div>
-                </div>
               </div>
 
               {/* Decorative Corner Shadow/Glow */}
@@ -310,13 +289,24 @@ export const TestimonialAutoSlider: React.FC<TestimonialAutoSliderProps> = ({
 
               {/* Reviewer Details & Location */}
               <div className="pt-4 border-t border-stone-200/80 flex flex-wrap items-center justify-between gap-4">
-                <div>
-                  <h3 className="font-serif font-bold text-base sm:text-lg text-stone-900">
-                    {currentReview?.name}
-                  </h3>
-                  <p className="text-xs text-stone-500 mt-0.5">
-                    {currentReview?.role} • <span className="text-stone-700 font-medium">{currentReview?.location}</span>
-                  </p>
+                <div className="flex items-center gap-3">
+                  <img
+                    key={`avatar-${currentReview?.id}`}
+                    src={currentReview?.avatar}
+                    alt={currentReview?.name}
+                    className="w-12 h-12 rounded-full object-cover border-2 border-artisan-gold/40 shadow-xs shrink-0"
+                  />
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <h3 className="font-serif font-bold text-base sm:text-lg text-stone-900">
+                        {currentReview?.name}
+                      </h3>
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    </div>
+                    <p className="text-xs text-stone-500 mt-0.5">
+                      {currentReview?.role} • <span className="text-stone-700 font-medium">{currentReview?.location}</span>
+                    </p>
+                  </div>
                 </div>
 
                 {/* Interactive Controls (Arrows) */}
