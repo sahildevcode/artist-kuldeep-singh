@@ -152,7 +152,7 @@ export const CartDrawer: React.FC = () => {
                         {item.title}
                       </h4>
                       <p className="text-xs font-semibold text-artisan-crimson mt-0.5">
-                        ${item.price.toLocaleString()}
+                        ₹{item.price.toLocaleString('en-IN')}
                       </p>
 
                       {/* Quantity or Remove Controls */}
@@ -248,24 +248,24 @@ export const CartDrawer: React.FC = () => {
               <div className="space-y-1.5 text-xs text-stone-600">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="font-semibold text-stone-800">${subtotal.toLocaleString()}</span>
+                  <span className="font-semibold text-stone-800">₹{subtotal.toLocaleString('en-IN')}</span>
                 </div>
                 {discount > 0 && (
                   <div className="flex justify-between text-emerald-600">
                     <span>Discount</span>
-                    <span className="font-semibold">-${discount.toLocaleString()}</span>
+                    <span className="font-semibold">-₹{discount.toLocaleString('en-IN')}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
                   <span>Insured Fine Art Delivery</span>
                   <span className="font-semibold text-stone-800">
-                    {shipping === 0 ? 'Complimentary' : `$${shipping}`}
+                    {shipping === 0 ? 'Complimentary' : `₹${shipping}`}
                   </span>
                 </div>
                 <div className="pt-2 border-t border-stone-200 flex justify-between text-sm font-bold text-stone-900">
                   <span>Total Amount</span>
                   <span className="text-base text-artisan-crimson font-serif font-bold">
-                    ${finalTotal.toLocaleString()}
+                    ₹{finalTotal.toLocaleString('en-IN')}
                   </span>
                 </div>
               </div>

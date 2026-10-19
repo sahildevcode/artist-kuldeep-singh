@@ -125,7 +125,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     Featured Canvas
                   </div>
                   <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full text-xs font-serif font-bold text-artisan-crimson shadow-md">
-                    $4,850 USD
+                    ₹4,12,250
                   </div>
                 </div>
 
@@ -250,7 +250,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     <div>
                       <span className="text-[10px] text-stone-400 block uppercase font-semibold">Price</span>
                       <span className="font-serif font-bold text-lg text-stone-900">
-                        ${art.price.toLocaleString()}
+                        ₹{(art.price >= 10000 ? art.price : Math.round(art.price * 85)).toLocaleString('en-IN')}
                       </span>
                     </div>
 
@@ -261,7 +261,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                           type: 'artwork',
                           title: art.title,
                           subtitle: art.subtitle,
-                          price: art.price,
+                          price: art.price >= 10000 ? art.price : Math.round(art.price * 85),
                           image: art.image,
                           mediumOrCategory: art.medium,
                         })
@@ -351,11 +351,11 @@ export const HomePage: React.FC<HomePageProps> = ({
                     <div>
                       {course.originalPrice && (
                         <span className="text-xs text-stone-400 line-through mr-1.5">
-                          ${course.originalPrice}
+                          ₹{course.originalPrice.toLocaleString('en-IN')}
                         </span>
                       )}
                       <span className="font-serif font-bold text-2xl text-artisan-crimson">
-                        ${course.price}
+                        ₹{course.price.toLocaleString('en-IN')}
                       </span>
                     </div>
 

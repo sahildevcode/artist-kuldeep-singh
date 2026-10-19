@@ -146,7 +146,7 @@ export const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ onNavigate
                       Total Paid
                     </span>
                     <span className="font-serif font-bold text-sm text-artisan-crimson">
-                      ${order.totalAmount.toLocaleString()} USD
+                      ₹{order.totalAmount.toLocaleString('en-IN')}
                     </span>
                   </div>
 
@@ -194,7 +194,7 @@ export const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ onNavigate
                           {item.subtitle}
                         </p>
                         <span className="text-xs font-bold text-artisan-crimson block mt-1">
-                          ${item.price.toLocaleString()} × {item.quantity}
+                          ₹{item.price.toLocaleString('en-IN')} × {item.quantity}
                         </span>
                       </div>
 

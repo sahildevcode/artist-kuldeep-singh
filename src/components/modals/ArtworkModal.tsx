@@ -59,10 +59,10 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({ artwork: initialArtw
   if (!activeArtwork) return null;
 
   const currentImage = selectedImage || activeArtwork.image;
-  const inrPrice = Math.round(activeArtwork.price * 85);
+  const inrPrice = activeArtwork.price >= 10000 ? activeArtwork.price : Math.round(activeArtwork.price * 85);
 
   // Commission message URL for WhatsApp
-  const commissionWhatsAppUrl = `https://wa.me/919810088231?text=${encodeURIComponent(
+  const commissionWhatsAppUrl = `https://wa.me/918858060101?text=${encodeURIComponent(
     `Hello Artist Kuldeep Singh, I saw your artwork "${activeArtwork.title}" (${activeArtwork.medium}, ${activeArtwork.dimensions}) on your studio website.\n\nSince this piece is ${activeArtwork.status.toUpperCase()}, I would love to enquire about commissioning a similar bespoke canvas for my collection. Could you please share the timeframe, pricing, and process?`
   )}`;
 
@@ -476,10 +476,7 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({ artwork: initialArtw
                       </span>
                       <div className="flex items-baseline gap-2">
                         <span className="font-serif font-bold text-2xl text-artisan-crimson">
-                          ₹{inrPrice.toLocaleString()}
-                        </span>
-                        <span className="text-xs text-stone-500">
-                          (${activeArtwork.price.toLocaleString()} USD)
+                          ₹{inrPrice.toLocaleString('en-IN')}
                         </span>
                       </div>
                     </div>

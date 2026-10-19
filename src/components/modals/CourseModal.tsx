@@ -116,11 +116,11 @@ export const CourseModal: React.FC<CourseModalProps> = ({ course, onClose }) => 
               <div className="flex items-baseline justify-end gap-2">
                 {course.originalPrice && (
                   <span className="text-xs text-stone-400 line-through">
-                    ${course.originalPrice}
+                    ₹{course.originalPrice.toLocaleString('en-IN')}
                   </span>
                 )}
                 <span className="font-serif font-bold text-2xl text-artisan-crimson">
-                  ${course.price}
+                  ₹{course.price.toLocaleString('en-IN')}
                 </span>
               </div>
               <span className="text-[10px] text-stone-500 block">Lifetime Atelier Access</span>
