@@ -29,7 +29,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
 
   const navLinks: { id: 'home' | 'about' | 'courses' | 'store' | 'student-portal'; label: string; icon: React.ReactNode }[] = [
     { id: 'home', label: 'Home', icon: <Compass className="w-3.5 h-3.5" /> },
-    { id: 'about', label: 'About & 12Y Legacy', icon: <Award className="w-3.5 h-3.5" /> },
+    { id: 'about', label: 'About & Legacy', icon: <Award className="w-3.5 h-3.5" /> },
     { id: 'courses', label: 'Masterclasses', icon: <BookOpen className="w-3.5 h-3.5" /> },
     { id: 'store', label: 'Gallery Store', icon: <ImageIcon className="w-3.5 h-3.5" /> },
     { id: 'student-portal', label: 'Student Portal', icon: <Sparkles className="w-3.5 h-3.5 text-artisan-gold" /> }
@@ -93,10 +93,9 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
         )}
 
         <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-300 ${isScrolled ? 'py-3' : 'py-3.5 sm:py-4'}`}>
-          <div className="flex items-center justify-between">
-            {/* Top Left: Logo & Quick Inquiry Button */}
-            <div className="flex items-center gap-2.5 sm:gap-4">
-              {/* Logo */}
+          <div className="flex items-center justify-between gap-2">
+            {/* Top Left: Logo */}
+            <div className="flex items-center shrink-0">
               <button
                 onClick={() => {
                   setActivePage('home');
@@ -117,21 +116,10 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                   </span>
                 </div>
               </button>
-
-              {/* Quick Inquiry Button (Top Left) */}
-              <button
-                onClick={() => setIsInquiryOpen(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full bg-artisan-gold/15 hover:bg-artisan-gold text-[#5C4010] hover:text-white border border-artisan-gold/40 font-serif text-[11px] sm:text-xs font-bold transition-all shadow-xs cursor-pointer group shrink-0 active:scale-95"
-                title="Send Studio Inquiry / पूछताछ करें"
-              >
-                <MessageSquare className="w-3.5 h-3.5 text-artisan-gold group-hover:text-white transition-colors" />
-                <span className="hidden xs:inline">Enquire / पूछताछ</span>
-                <span className="xs:hidden">Inquiry</span>
-              </button>
             </div>
 
-            {/* Desktop Navigation Links */}
-            <nav className="hidden md:flex items-center gap-1 bg-stone-100/80 backdrop-blur-md p-1.5 rounded-full border border-stone-200/60 shadow-inner">
+            {/* Desktop Navigation Links (Compact, Single-Line, Elegant) */}
+            <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 bg-stone-100/80 backdrop-blur-md p-1 rounded-full border border-stone-200/60 shadow-inner">
               {navLinks.map((link) => {
                 const isActive = activePage === link.id;
                 return (
@@ -141,39 +129,39 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                       setActivePage(link.id);
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
-                    className={`relative px-5 py-2 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 flex items-center gap-2 select-none ${
+                    className={`relative px-2.5 py-1.5 lg:px-3.5 lg:py-1.5 rounded-full text-[11px] lg:text-xs font-semibold tracking-normal transition-all duration-300 flex items-center gap-1.5 select-none whitespace-nowrap shrink-0 cursor-pointer ${
                       isActive
                         ? 'text-white bg-[#1A1816] shadow-md shadow-black/10'
                         : 'text-stone-600 hover:text-stone-900 hover:bg-white/60'
                     }`}
                   >
-                    {link.icon}
-                    {link.label}
+                    <span className="shrink-0">{link.icon}</span>
+                    <span className="whitespace-nowrap">{link.label}</span>
                     {link.id === 'student-portal' && isUserEnrolledInLiveCourse && (
-                      <span className="flex items-center gap-1 bg-red-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse shadow-sm">
+                      <span className="flex items-center gap-1 bg-red-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse shadow-sm whitespace-nowrap shrink-0">
                         <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
                         LIVE
                       </span>
                     )}
                     {isActive && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-artisan-crimson animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-artisan-crimson animate-pulse shrink-0" />
                     )}
                   </button>
                 );
               })}
             </nav>
 
-            {/* Right Actions: Cart & Auth */}
-            <div className="flex items-center gap-2.5 sm:gap-3">
+            {/* Right Actions: Cart, User/Auth & Studio Inquiry */}
+            <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
               {/* Cart Button */}
               <button
                 onClick={() => setIsCartOpen(true)}
-                className="relative p-2.5 rounded-full bg-stone-100 hover:bg-stone-200 text-[#1A1816] transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none"
+                className="relative p-2 sm:p-2.5 rounded-full bg-stone-100 hover:bg-stone-200 text-[#1A1816] transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none cursor-pointer shrink-0"
                 aria-label="Open Cart"
               >
-                <ShoppingBag className="w-5 h-5 text-stone-800" />
+                <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-stone-800" />
                 {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-artisan-crimson text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-md animate-bounce">
+                  <span className="absolute -top-1 -right-1 bg-artisan-crimson text-white text-[10px] sm:text-[11px] font-bold w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center shadow-md animate-bounce">
                     {totalItems}
                   </span>
                 )}
@@ -184,14 +172,14 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                 <div className="relative">
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-2 p-1.5 pr-3 rounded-full bg-stone-100 hover:bg-stone-200 transition-colors border border-stone-200"
+                    className="flex items-center gap-1.5 sm:gap-2 p-1 sm:p-1.5 pr-2.5 sm:pr-3 rounded-full bg-stone-100 hover:bg-stone-200 transition-colors border border-stone-200 cursor-pointer whitespace-nowrap"
                   >
                     <img
                       src={currentUser.avatar}
                       alt={currentUser.name}
-                      className="w-7 h-7 rounded-full object-cover border border-white"
+                      className="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover border border-white shrink-0"
                     />
-                    <span className="text-xs font-semibold text-stone-800 max-w-[90px] truncate hidden sm:inline">
+                    <span className="text-[11px] sm:text-xs font-semibold text-stone-800 max-w-[80px] sm:max-w-[90px] truncate hidden sm:inline">
                       {currentUser.name.split(' ')[0]}
                     </span>
                   </button>
@@ -212,7 +200,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                             setIsOrderHistoryOpen(true);
                             setIsUserMenuOpen(false);
                           }}
-                          className="w-full text-left px-3 py-2 text-xs font-semibold text-artisan-crimson hover:bg-stone-100 rounded-lg flex items-center justify-between"
+                          className="w-full text-left px-3 py-2 text-xs font-semibold text-artisan-crimson hover:bg-stone-100 rounded-lg flex items-center justify-between cursor-pointer"
                         >
                           <span>📦 My Order History</span>
                           <span className="text-[10px] bg-artisan-crimson/10 text-artisan-crimson font-bold px-2 py-0.5 rounded-full">
@@ -232,7 +220,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                             setIsUserMenuOpen(false);
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                           }}
-                          className="w-full text-left px-3 py-2 text-xs font-medium text-stone-700 hover:bg-stone-100 rounded-lg flex items-center justify-between"
+                          className="w-full text-left px-3 py-2 text-xs font-medium text-stone-700 hover:bg-stone-100 rounded-lg flex items-center justify-between cursor-pointer"
                         >
                           Enrolled Courses
                           <span className="text-[10px] bg-stone-200 px-1.5 py-0.5 rounded-full">
@@ -246,7 +234,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                             logout();
                             setIsUserMenuOpen(false);
                           }}
-                          className="w-full text-left px-3 py-2 text-xs text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2"
+                          className="w-full text-left px-3 py-2 text-xs text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2 cursor-pointer"
                         >
                           <LogOut className="w-3.5 h-3.5" /> Sign Out
                         </button>
@@ -257,20 +245,30 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
               ) : (
                 <button
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="px-4 py-2 text-xs font-semibold tracking-wide text-white bg-[#1A1816] hover:bg-black rounded-full transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-1.5 active:scale-95"
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-semibold tracking-wide text-white bg-[#1A1816] hover:bg-black rounded-full transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-1.5 active:scale-95 whitespace-nowrap cursor-pointer shrink-0"
                 >
-                  <User className="w-3.5 h-3.5" />
-                  <span>Sign In</span>
+                  <User className="w-3.5 h-3.5 shrink-0" />
+                  <span className="whitespace-nowrap">Sign In</span>
                 </button>
               )}
+
+              {/* Studio Inquiry Button (Right side, AFTER Sign In - Sab Se Last) */}
+              <button
+                onClick={() => setIsInquiryOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full bg-artisan-gold/15 hover:bg-artisan-gold text-[#5C4010] hover:text-white border border-artisan-gold/40 text-[11px] sm:text-xs font-bold transition-all shadow-xs cursor-pointer group shrink-0 active:scale-95 whitespace-nowrap"
+                title="Send Studio Inquiry / पूछताछ करें"
+              >
+                <MessageSquare className="w-3.5 h-3.5 text-artisan-gold group-hover:text-white transition-colors shrink-0" />
+                <span className="whitespace-nowrap">Inquiry</span>
+              </button>
 
               {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2 text-stone-700 hover:text-black focus:outline-none"
+                className="md:hidden p-1.5 sm:p-2 text-stone-700 hover:text-black focus:outline-none cursor-pointer shrink-0"
                 aria-label="Toggle menu"
               >
-                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                {isMobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
               </button>
             </div>
           </div>
@@ -304,6 +302,18 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                   )}
                 </button>
               ))}
+
+              {/* Inquiry Button in Mobile Dropdown */}
+              <button
+                onClick={() => {
+                  setIsInquiryOpen(true);
+                  setIsMobileMenuOpen(false);
+                }}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-[#5C4010] bg-artisan-gold/15 hover:bg-artisan-gold/25 border border-artisan-gold/30 transition-all text-left cursor-pointer"
+              >
+                <MessageSquare className="w-4 h-4 text-artisan-gold shrink-0" />
+                <span>Enquire / पूछताछ (Direct Inquiry)</span>
+              </button>
 
               <div className="pt-2 mt-1 border-t border-stone-200/60">
                 <button

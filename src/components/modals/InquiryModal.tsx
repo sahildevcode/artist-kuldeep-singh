@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Send, Sparkles, CheckCircle2, Phone, MapPin, MessageSquare } from 'lucide-react';
 
 const getBackendUrls = (): string[] => {
@@ -25,6 +25,12 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({ isOpen, onClose, def
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  useEffect(() => {
+    if (defaultSubject) {
+      setSubject(defaultSubject);
+    }
+  }, [defaultSubject, isOpen]);
 
   if (!isOpen) return null;
 

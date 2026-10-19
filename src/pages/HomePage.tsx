@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext';
 import { useStudioData } from '../context/StudioDataContext';
 import { useAudio } from '../context/AudioContext';
 import { StudioVideoReels } from '../components/home/StudioVideoReels';
+import { UpcomingCoursesSection } from '../components/home/UpcomingCoursesSection';
 
 interface HomePageProps {
   setActivePage: (page: 'home' | 'about' | 'courses' | 'store') => void;
@@ -372,6 +373,11 @@ export const HomePage: React.FC<HomePageProps> = ({
           ))}
         </div>
       </section>
+
+      {/* ------------------------------------------------------------- */}
+      {/* 3.5 UPCOMING COURSES & TESTIMONIALS SHOWCASE                  */}
+      {/* ------------------------------------------------------------- */}
+      <UpcomingCoursesSection />
 
       {/* ------------------------------------------------------------- */}
       {/* 4. 12 YEARS JOURNEY TEASER BANNER */}
