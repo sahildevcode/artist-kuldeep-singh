@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-  Star,
   Quote,
   ChevronLeft,
   ChevronRight,
@@ -255,14 +254,12 @@ export const TestimonialAutoSlider: React.FC<TestimonialAutoSliderProps> = ({
 
             {/* Right Column: AUTO-CHANGING TESTIMONIAL CONTENT & QUOTE */}
             <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
-              {/* Star Rating & Category Indicator */}
+              {/* Header Strip with Verified Badge & Slide Counter */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1 text-amber-500">
-                    {[...Array(currentReview?.rating || 5)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 fill-amber-500 drop-shadow-xs" />
-                    ))}
-                    <span className="ml-2 text-xs font-bold text-stone-700">5.0 / 5.0</span>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-artisan-gold/10 border border-artisan-gold/25 text-[11px] font-bold text-[#64440c] uppercase tracking-wider">
+                    <Sparkles className="w-3.5 h-3.5 text-artisan-gold" />
+                    <span>Verified Atelier Story</span>
                   </div>
 
                   {/* Slide Counter */}
