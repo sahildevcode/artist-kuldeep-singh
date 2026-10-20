@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import Lenis from 'lenis';
+import 'lenis/dist/lenis.css';
 import { CartProvider, useCart } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { StudioDataProvider, useStudioData } from './context/StudioDataContext';
@@ -65,6 +67,35 @@ const AppInner: React.FC = () => {
   const { courses } = useStudioData();
   const { isCheckoutModalOpen, setIsCheckoutModalOpen } = useCart();
 
+  // Initialize Lenis Silky Momentum Smooth Scroll
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.15,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.5,
+      infinite: false,
+    });
+
+    (window as any).__lenis = lenis;
+
+    let rafId: number;
+    function raf(time: number) {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    }
+    rafId = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      lenis.destroy();
+      delete (window as any).__lenis;
+    };
+  }, []);
+
   useEffect(() => {
     const handleNavigation = () => {
       const path = window.location.pathname.toLowerCase();
@@ -107,7 +138,11 @@ const AppInner: React.FC = () => {
   const handlePageChange = (page: AppNavPage) => {
     setActivePage(page);
     window.location.hash = page === 'home' ? '' : page;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if ((window as any).__lenis) {
+      (window as any).__lenis.scrollTo(0, { immediate: true });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const handleSelectCourse = (course: Course) => {
