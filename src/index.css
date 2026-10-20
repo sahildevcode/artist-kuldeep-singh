@@ -7,10 +7,24 @@
     border-color: rgba(26, 24, 22, 0.08);
   }
   
+  html {
+    /* Natural hardware-accelerated smooth scrolling without wheel stutter */
+    scroll-behavior: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   body {
     background-color: #FDFBF7;
     color: #1A1816;
     overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Optimize off-screen section rendering */
+  .cv-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 700px;
   }
 
   /* Custom subtle scrollbar */
@@ -77,8 +91,17 @@
   width: 100vw;
   height: 100vh;
   z-index: 1;
-  transform: translateZ(0);
+  transform: translate3d(0, 0, 0);
+  contain: strict;
+  backface-visibility: hidden;
+}
+
+/* Hardware accelerated ambient blur layers */
+.gpu-blur-ambient {
+  transform: translate3d(0, 0, 0);
+  contain: paint;
   will-change: transform;
+  backface-visibility: hidden;
 }
 
 #paint-trail-container {

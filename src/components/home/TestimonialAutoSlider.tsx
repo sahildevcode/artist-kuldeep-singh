@@ -95,10 +95,10 @@ export const TestimonialAutoSlider: React.FC<TestimonialAutoSliderProps> = ({
   const sectionSubtitle = artistProfile.testimonialSectionSubtitle || 'Student Reviews & Atelier Experiences';
 
   return (
-    <section className="py-20 sm:py-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <section className="py-20 sm:py-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative overflow-hidden cv-auto">
       {/* Ambient background glows */}
-      <div className="absolute top-1/3 left-10 w-96 h-96 bg-amber-200/25 rounded-full blur-[120px] pointer-events-none -z-10" />
-      <div className="absolute bottom-10 right-10 w-96 h-96 bg-artisan-crimson/15 rounded-full blur-[140px] pointer-events-none -z-10" />
+      <div className="absolute top-1/3 left-10 w-96 h-96 bg-amber-200/25 rounded-full blur-[80px] pointer-events-none -z-10 gpu-blur-ambient" />
+      <div className="absolute bottom-10 right-10 w-96 h-96 bg-artisan-crimson/15 rounded-full blur-[90px] pointer-events-none -z-10 gpu-blur-ambient" />
 
       {/* Header section */}
       <div className="text-center max-w-3xl mx-auto mb-10 space-y-3">

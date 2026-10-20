@@ -31,18 +31,30 @@ export const ScrollSignatureBackground: React.FC = () => {
 
   // Hardware-accelerated smooth scroll tracker
   useEffect(() => {
+    let scrollTicking = false;
+    let lastRenderedP1 = -1;
+    let lastRenderedP2 = -1;
+    let lastRenderedP3 = -1;
+
     const handleScroll = () => {
       if (activeTheme3D !== 'kuldeep') return;
-      const currentScrollY = window.scrollY;
+      
+      if (!scrollTicking) {
+        requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
 
-      // Reveal signature smoothly across 1800px of page scroll
-      const maxScroll = 1800;
-      targetProgressRef.current = Math.min(1, Math.max(0, currentScrollY / maxScroll));
+          // Reveal signature smoothly across 1800px of page scroll
+          const maxScroll = 1800;
+          targetProgressRef.current = Math.min(1, Math.max(0, currentScrollY / maxScroll));
 
-      // Start animation loop if idle
-      if (!isRunningRef.current) {
-        isRunningRef.current = true;
-        requestAnimationFrame(tickAnimation);
+          // Start animation loop if idle
+          if (!isRunningRef.current) {
+            isRunningRef.current = true;
+            requestAnimationFrame(tickAnimation);
+          }
+          scrollTicking = false;
+        });
+        scrollTicking = true;
       }
     };
 
@@ -52,8 +64,8 @@ export const ScrollSignatureBackground: React.FC = () => {
       const diff = target - current;
 
       // Silky smooth, instantaneous fluid response (zero lag)
-      if (Math.abs(diff) > 0.0005) {
-        currentProgressRef.current += diff * 0.28;
+      if (Math.abs(diff) > 0.001) {
+        currentProgressRef.current += diff * 0.25;
       } else {
         currentProgressRef.current = target;
       }
@@ -62,10 +74,11 @@ export const ScrollSignatureBackground: React.FC = () => {
 
       // -------------------------------------------------------------
       // STAGE 1: Reveal "Artist" (Progress 0.00 -> 0.35)
-      // GPU accelerated CSS clipPath inset - Zero CPU layout invalidation
+      // GPU accelerated CSS clipPath inset - Throttled sub-pixel threshold
       // -------------------------------------------------------------
       const p1 = Math.min(1, Math.max(0, p / 0.35));
-      if (line1Ref.current) {
+      if (line1Ref.current && Math.abs(p1 - lastRenderedP1) > 0.002) {
+        lastRenderedP1 = p1;
         const hideRightPercent = Math.max(0, (1 - p1) * 100);
         line1Ref.current.style.clipPath = `inset(0 ${hideRightPercent.toFixed(1)}% 0 0)`;
       }
@@ -75,7 +88,8 @@ export const ScrollSignatureBackground: React.FC = () => {
       // GPU accelerated CSS clipPath inset
       // -------------------------------------------------------------
       const p2 = Math.min(1, Math.max(0, (p - 0.35) / 0.47));
-      if (line2Ref.current) {
+      if (line2Ref.current && Math.abs(p2 - lastRenderedP2) > 0.002) {
+        lastRenderedP2 = p2;
         const hideRightPercent = Math.max(0, (1 - p2) * 100);
         line2Ref.current.style.clipPath = `inset(0 ${hideRightPercent.toFixed(1)}% 0 0)`;
       }
@@ -85,7 +99,8 @@ export const ScrollSignatureBackground: React.FC = () => {
       // Native SVG stroke-dashoffset
       // -------------------------------------------------------------
       const p3 = Math.min(1, Math.max(0, (p - 0.82) / 0.18));
-      if (flourishRef.current) {
+      if (flourishRef.current && Math.abs(p3 - lastRenderedP3) > 0.002) {
+        lastRenderedP3 = p3;
         const fLen = flourishLengthRef.current;
         flourishRef.current.style.strokeDashoffset = `${(fLen * (1 - p3)).toFixed(1)}`;
       }
@@ -125,7 +140,7 @@ export const ScrollSignatureBackground: React.FC = () => {
       }
 
       // Continue animation loop while moving, stop when idle to save 100% CPU
-      if (Math.abs(targetProgressRef.current - currentProgressRef.current) > 0.0005) {
+      if (Math.abs(targetProgressRef.current - currentProgressRef.current) > 0.001) {
         requestAnimationFrame(tickAnimation);
       } else {
         isRunningRef.current = false;
@@ -171,8 +186,8 @@ export const ScrollSignatureBackground: React.FC = () => {
         <svg
           viewBox="0 0 1440 740"
           preserveAspectRatio="xMidYMid meet"
-          className="w-full h-auto overflow-visible relative z-1"
-          style={{ willChange: 'contents', transform: 'translate3d(0, 0, 0)' }}
+          className="w-full h-auto overflow-visible relative z-1 pointer-events-none"
+          style={{ transform: 'translate3d(0, 0, 0)', backfaceVisibility: 'hidden' }}
         >
           <defs>
             {/* Rich Venetian Crimson & Imperial Gilded Gold Oil Gradient */}

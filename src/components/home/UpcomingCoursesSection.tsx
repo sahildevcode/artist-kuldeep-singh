@@ -18,9 +18,9 @@ export const UpcomingCoursesSection: React.FC = () => {
   };
 
   return (
-    <section className="py-20 sm:py-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+    <section className="py-20 sm:py-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative cv-auto">
       {/* Background ambient gold/rose glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-5xl h-96 bg-gradient-to-tr from-amber-100/40 via-artisan-gold/10 to-rose-100/30 blur-3xl pointer-events-none -z-10 rounded-full" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-5xl h-96 bg-gradient-to-tr from-amber-100/40 via-artisan-gold/10 to-rose-100/30 blur-2xl pointer-events-none -z-10 rounded-full gpu-blur-ambient" />
 
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-14">

@@ -20,10 +20,24 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
   const [isInquiryOpen, setIsInquiryOpen] = useState(false);
 
   useEffect(() => {
+    let ticking = false;
+    let lastScrolled = typeof window !== 'undefined' ? window.scrollY > 20 : false;
+    setIsScrolled(lastScrolled);
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const current = window.scrollY > 20;
+          if (current !== lastScrolled) {
+            lastScrolled = current;
+            setIsScrolled(current);
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 

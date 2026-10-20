@@ -20,7 +20,7 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({ isOpen, onClose, def
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [city, setCity] = useState('');
-  const [subject, setSubject] = useState(defaultSubject || 'Original Artwork Acquisition');
+  const [subject, setSubject] = useState(defaultSubject || 'Studio Inquiry');
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -202,24 +202,6 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({ isOpen, onClose, def
                   {errorMsg}
                 </div>
               )}
-
-              {/* Subject Selection */}
-              <div>
-                <label className="block text-xs font-bold text-stone-800 mb-1.5">
-                  I am inquiring about / विषय:
-                </label>
-                <select
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2.5 text-xs text-stone-800 focus:outline-none focus:border-artisan-gold font-medium"
-                >
-                  <option value="Original Artwork Acquisition">🎨 Original Oil Painting Acquisition (Gallery Store)</option>
-                  <option value="Live Masterclass Mentorship Admission">🎓 Live Masterclass Mentorship Admission</option>
-                  <option value="Custom Bespoke Commission Artwork">🖌️ Custom Bespoke Commission Artwork</option>
-                  <option value="Exhibition & Private Gallery Advisory">🏛️ Exhibition & Private Gallery Advisory</option>
-                  <option value="General Studio Question">💬 General Studio Question / Other</option>
-                </select>
-              </div>
 
               {/* Full Name & Phone */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">

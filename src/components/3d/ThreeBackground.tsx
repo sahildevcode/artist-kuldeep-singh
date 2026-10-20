@@ -30,11 +30,14 @@ export const ThreeBackground: React.FC = () => {
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: true,
+      antialias: (window.devicePixelRatio || 1) < 1.5,
       powerPreference: 'high-performance',
+      precision: 'mediump',
+      stencil: false,
+      depth: true,
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.2));
     renderer.shadowMap.enabled = false;
     container.appendChild(renderer.domElement);
 
@@ -328,15 +331,22 @@ export const ThreeBackground: React.FC = () => {
     // -------------------------------------------------------------
     // Mouse & Scroll Interaction Listeners
     // -------------------------------------------------------------
-    let targetScrollY = 0;
-    let currentScrollY = 0;
+    let targetScrollY = typeof window !== 'undefined' ? window.scrollY : 0;
+    let currentScrollY = targetScrollY;
     let targetMouseX = 0;
     let targetMouseY = 0;
     let currentMouseX = 0;
     let currentMouseY = 0;
+    let scrollTicking = false;
 
     const onScroll = () => {
-      targetScrollY = window.scrollY;
+      if (!scrollTicking) {
+        requestAnimationFrame(() => {
+          targetScrollY = window.scrollY;
+          scrollTicking = false;
+        });
+        scrollTicking = true;
+      }
     };
 
     const onMouseMove = (e: MouseEvent) => {
@@ -359,12 +369,20 @@ export const ThreeBackground: React.FC = () => {
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
+      if (typeof document !== 'undefined' && document.hidden) return;
+
       const elapsedTime = clock.getElapsedTime();
 
-      // Snappy, instant response to user scroll & mouse motion (zero lag)
-      currentScrollY += (targetScrollY - currentScrollY) * 0.28;
-      currentMouseX += (targetMouseX - currentMouseX) * 0.22;
-      currentMouseY += (targetMouseY - currentMouseY) * 0.22;
+      // Fluid, butter-smooth response to user scroll & mouse motion
+      const scrollDiff = targetScrollY - currentScrollY;
+      if (Math.abs(scrollDiff) > 0.5) {
+        currentScrollY += scrollDiff * 0.22;
+      } else {
+        currentScrollY = targetScrollY;
+      }
+
+      currentMouseX += (targetMouseX - currentMouseX) * 0.18;
+      currentMouseY += (targetMouseY - currentMouseY) * 0.18;
 
       const scrollFactor = currentScrollY * 0.0015;
 

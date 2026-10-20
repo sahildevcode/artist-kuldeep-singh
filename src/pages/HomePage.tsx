@@ -243,7 +243,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* ------------------------------------------------------------- */}
       {/* 2. SELECTED MASTERWORKS SHOWCASE */}
       {/* ------------------------------------------------------------- */}
-      <section className="py-20 sm:py-28 bg-stone-100/50 border-y border-stone-200/60 relative">
+      <section className="py-20 sm:py-28 bg-stone-100/50 border-y border-stone-200/60 relative cv-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
             <div>
@@ -337,7 +337,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* ------------------------------------------------------------- */}
       {/* 3. FEATURED MASTERCLASSES */}
       {/* ------------------------------------------------------------- */}
-      <section className="py-20 sm:py-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 sm:py-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 cv-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
           <div>
             <span className="text-xs font-bold uppercase tracking-[0.2em] text-artisan-gold block mb-2">
@@ -437,8 +437,8 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* ------------------------------------------------------------- */}
       {/* 4. 12 YEARS JOURNEY TEASER BANNER */}
       {/* ------------------------------------------------------------- */}
-      <section className="py-20 bg-[#1A1816] text-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-artisan-crimson/20 rounded-full blur-[120px] pointer-events-none" />
+      <section className="py-20 bg-[#1A1816] text-white relative overflow-hidden cv-auto">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-artisan-crimson/20 rounded-full blur-[80px] pointer-events-none gpu-blur-ambient" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             <div className="lg:col-span-8 space-y-5">
