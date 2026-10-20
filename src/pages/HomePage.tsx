@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Sparkles, Star, ShieldCheck, ArrowUpRight, Eye } from 'lucide-react';
+import { ArrowRight, Sparkles, Star, ShieldCheck, ArrowUpRight, Eye, Play } from 'lucide-react';
 import { PRESS_LOGOS } from '../data/reviews';
 import type { Artwork, Course } from '../types';
 import { MagneticButton } from '../components/ui/MagneticButton';
@@ -117,45 +117,98 @@ export const HomePage: React.FC<HomePageProps> = ({
               {/* Decorative behind glow */}
               <div className="absolute -inset-1 bg-gradient-to-r from-artisan-crimson via-artisan-ochre to-artisan-ultramarine rounded-3xl blur-xl opacity-20 group-hover:opacity-30 transition duration-1000 animate-pulse-glow" />
 
-              <div className="relative glass-panel rounded-3xl p-5 border border-white shadow-2xl space-y-4">
-                <div className="relative h-64 rounded-2xl overflow-hidden shadow-inner group">
-                  <img
-                    src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=800&auto=format&fit=crop"
-                    alt="Hero Artwork"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-bold text-white uppercase tracking-wider">
-                    Featured Canvas
-                  </div>
-                  <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full text-xs font-serif font-bold text-artisan-crimson shadow-md">
-                    ₹4,12,250
-                  </div>
-                </div>
+              {(() => {
+                const isHeroVideo = artistProfile.heroShowcaseType === 'video';
+                const heroBadge = artistProfile.heroShowcaseBadge || (isHeroVideo ? 'Featured Atelier Video' : 'Featured Canvas');
+                const heroTitle = artistProfile.heroShowcaseTitle || (isHeroVideo ? 'Behind the Canvas Demonstration' : 'Symphony of the Solitary Tide');
+                const heroSubtitle = artistProfile.heroShowcaseSubtitle || (isHeroVideo ? 'Original Masterclass Demonstration' : 'Original Oil on Belgian Linen (40 x 54 in)');
+                const heroPrice = artistProfile.heroShowcasePrice !== undefined ? artistProfile.heroShowcasePrice : (isHeroVideo ? '' : '₹4,12,250');
+                const heroImage = artistProfile.heroShowcaseImage || 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=800&auto=format&fit=crop';
+                const heroVideoUrl = artistProfile.heroShowcaseVideoUrl || artistProfile.studioVideoUrl || 'https://vjs.zencdn.net/v/oceans.mp4';
+                const heroCert = artistProfile.heroShowcaseCertificateText || (isHeroVideo ? 'Atelier Studio Archive' : 'Archival Certificate');
+                const isIframe = heroVideoUrl.includes('iframe') || heroVideoUrl.includes('embed') || heroVideoUrl.includes('youtube.com') || heroVideoUrl.includes('youtu.be') || heroVideoUrl.includes('vimeo.com') || heroVideoUrl.includes('mediadelivery.net');
 
-                <div>
-                  <h3 className="font-serif font-bold text-lg text-stone-900">
-                    Symphony of the Solitary Tide
-                  </h3>
-                  <p className="text-xs text-stone-500 mt-0.5">
-                    Original Oil on Belgian Linen (40 x 54 in)
-                  </p>
-                </div>
+                return (
+                  <div className="relative glass-panel rounded-3xl p-5 border border-white shadow-2xl space-y-4">
+                    <div className="relative h-64 rounded-2xl overflow-hidden shadow-inner group bg-black/90">
+                      {isHeroVideo ? (
+                        isIframe ? (
+                          <iframe
+                            src={heroVideoUrl}
+                            title={heroTitle}
+                            className="w-full h-full border-0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        ) : (
+                          <video
+                            src={heroVideoUrl}
+                            poster={heroImage}
+                            controls
+                            playsInline
+                            className="w-full h-full object-cover"
+                          />
+                        )
+                      ) : (
+                        <img
+                          src={heroImage}
+                          alt={heroTitle}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                      )}
 
-                <div className="pt-2 border-t border-stone-200/60 flex items-center justify-between">
-                  <div className="flex items-center gap-1 text-xs text-stone-600">
-                    <ShieldCheck className="w-4 h-4 text-artisan-gold" />
-                    <span>Archival Certificate</span>
+                      <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5 shadow-md pointer-events-none">
+                        {isHeroVideo && <Play className="w-3 h-3 text-red-500 fill-red-500" />}
+                        {heroBadge}
+                      </div>
+
+                      {heroPrice ? (
+                        <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full text-xs font-serif font-bold text-artisan-crimson shadow-md pointer-events-none">
+                          {heroPrice}
+                        </div>
+                      ) : isHeroVideo ? (
+                        <div className="absolute bottom-3 right-3 bg-black/75 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[10px] font-mono text-emerald-400 font-semibold shadow pointer-events-none border border-emerald-500/30">
+                          HD Atelier 4K
+                        </div>
+                      ) : null}
+                    </div>
+
+                    <div>
+                      <h3 className="font-serif font-bold text-lg text-stone-900 line-clamp-1">
+                        {heroTitle}
+                      </h3>
+                      <p className="text-xs text-stone-500 mt-0.5 line-clamp-2">
+                        {heroSubtitle}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 border-t border-stone-200/60 flex items-center justify-between">
+                      <div className="flex items-center gap-1 text-xs text-stone-600">
+                        <ShieldCheck className="w-4 h-4 text-artisan-gold" />
+                        <span>{heroCert}</span>
+                      </div>
+                      {isHeroVideo ? (
+                        <a
+                          href="#studio-reels"
+                          className="text-xs font-bold text-artisan-crimson hover:underline flex items-center gap-1"
+                        >
+                          Watch Studio Reel <ArrowUpRight className="w-3.5 h-3.5" />
+                        </a>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            const matched = (artistProfile.heroShowcaseArtworkId && artworks.find((a) => a.id === artistProfile.heroShowcaseArtworkId)) || artworks[0];
+                            if (matched) onSelectArtwork(matched);
+                          }}
+                          className="text-xs font-bold text-artisan-crimson hover:underline flex items-center gap-1 cursor-pointer"
+                        >
+                          Quick View <ArrowUpRight className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  <button
-                    onClick={() => {
-                      if (artworks[0]) onSelectArtwork(artworks[0]);
-                    }}
-                    className="text-xs font-bold text-artisan-crimson hover:underline flex items-center gap-1"
-                  >
-                    Quick View <ArrowUpRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
+                );
+              })()}
             </div>
           </div>
         </div>

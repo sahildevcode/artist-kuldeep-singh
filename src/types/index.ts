@@ -200,6 +200,16 @@ export interface ArtistProfile {
   studioReels?: StudioReel[];
   testimonialSectionTitle?: string;
   testimonialSectionSubtitle?: string;
+  // Hero Section Featured Showcase (Canvas / Video)
+  heroShowcaseType?: 'painting' | 'video';
+  heroShowcaseBadge?: string;
+  heroShowcaseTitle?: string;
+  heroShowcaseSubtitle?: string;
+  heroShowcasePrice?: string;
+  heroShowcaseImage?: string;
+  heroShowcaseVideoUrl?: string;
+  heroShowcaseCertificateText?: string;
+  heroShowcaseArtworkId?: string;
 }
 
 export interface StudioReel {
