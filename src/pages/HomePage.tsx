@@ -43,13 +43,13 @@ export const HomePage: React.FC<HomePageProps> = ({
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-8 space-y-8">
             {/* Top Pill */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-stone-100/90 border border-stone-200/80 backdrop-blur-md text-xs font-semibold text-stone-800 shadow-sm">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-stone-100/90 dark:bg-stone-900/90 border border-stone-200/80 dark:border-stone-800 backdrop-blur-md text-xs font-semibold text-stone-800 dark:text-stone-200 shadow-sm">
               <span className="w-2 h-2 rounded-full bg-artisan-crimson animate-pulse" />
               <span>Artist Kuldeep Singh • Official Fine Art Gallery & Masterclasses</span>
             </div>
 
             {/* Main Headline */}
-            <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[#1A1816] leading-[1.08]">
+            <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[#1A1816] dark:text-[#FDFBF7] leading-[1.08]">
               Transforming Raw{' '}
               <span className="text-gradient-pigment italic font-normal">
                 Pigment & Soul
@@ -58,7 +58,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             </h1>
 
             {/* Subtitle */}
-            <p className="text-base sm:text-xl text-stone-600 max-w-2xl font-normal leading-relaxed">
+            <p className="text-base sm:text-xl text-stone-600 dark:text-stone-300 max-w-2xl font-normal leading-relaxed">
               Explore the fine art paintings, original artwork, art collections and creative work of Artist Kuldeep Singh. Discover the gallery and browse available artworks online.
             </p>
 
@@ -89,18 +89,18 @@ export const HomePage: React.FC<HomePageProps> = ({
               <button
                 type="button"
                 onClick={() => setIsSettingsModalOpen(true)}
-                className="group inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-white/95 hover:bg-white text-stone-800 border border-stone-200/90 shadow-xs hover:shadow-md transition-all duration-200 text-xs font-serif cursor-pointer hover:border-artisan-ochre/60"
+                className="group inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-white/95 dark:bg-stone-900/95 hover:bg-white dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 border border-stone-200/90 dark:border-stone-800 shadow-xs hover:shadow-md transition-all duration-200 text-xs font-serif cursor-pointer hover:border-artisan-ochre/60"
               >
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="font-bold text-stone-900">
+                <span className="font-bold text-stone-900 dark:text-stone-100">
                   {activeTheme3D === 'brush'
                     ? '🎨 3D Brush & Palette'
                     : activeTheme3D === 'kuldeep'
                     ? '🏛️ Artist Kuldeep Signature 3D'
                     : '🌌 Celestial Easel 3D'}
                 </span>
-                <span className="text-stone-300">|</span>
-                <span className="px-2.5 py-0.5 rounded-full bg-stone-100 group-hover:bg-artisan-ochre group-hover:text-white transition text-[11px] font-sans font-semibold text-stone-600">
+                <span className="text-stone-300 dark:text-stone-600">|</span>
+                <span className="px-2.5 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 group-hover:bg-artisan-ochre group-hover:text-white transition text-[11px] font-sans font-semibold text-stone-600 dark:text-stone-300">
                   Theme Change 🎨
                 </span>
               </button>
@@ -220,15 +220,15 @@ export const HomePage: React.FC<HomePageProps> = ({
           {dynamicStats.map((stat, idx) => (
             <div
               key={idx}
-              className="p-6 rounded-3xl bg-white/70 backdrop-blur-md border border-stone-200/80 shadow-soft-lux hover:shadow-card-lux transition-all duration-300 group hover:-translate-y-1"
+              className="p-6 rounded-3xl bg-white/70 dark:bg-stone-900/80 backdrop-blur-md border border-stone-200/80 dark:border-stone-800 shadow-soft-lux hover:shadow-card-lux transition-all duration-300 group hover:-translate-y-1"
             >
-              <span className="font-serif font-bold text-3xl sm:text-4xl text-artisan-charcoal block group-hover:text-artisan-crimson transition-colors">
+              <span className="font-serif font-bold text-3xl sm:text-4xl text-artisan-charcoal dark:text-stone-100 block group-hover:text-artisan-crimson transition-colors">
                 {stat.value}
               </span>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-stone-800 mt-1">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-stone-800 dark:text-stone-300 mt-1">
                 {stat.label}
               </h4>
-              <p className="text-[11px] text-stone-500 mt-0.5">{stat.subtext}</p>
+              <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">{stat.subtext}</p>
             </div>
           ))}
         </div>
@@ -243,14 +243,14 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* ------------------------------------------------------------- */}
       {/* 2. SELECTED MASTERWORKS SHOWCASE */}
       {/* ------------------------------------------------------------- */}
-      <section className="py-20 sm:py-28 bg-stone-100/50 border-y border-stone-200/60 relative">
+      <section className="py-20 sm:py-28 bg-stone-100/50 dark:bg-stone-950/60 border-y border-stone-200/60 dark:border-stone-800/60 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
             <div>
               <span className="text-xs font-bold uppercase tracking-[0.2em] text-artisan-crimson block mb-2">
                 Curated Collection
               </span>
-              <h2 className="font-serif text-3xl sm:text-5xl font-bold text-stone-900 tracking-tight">
+              <h2 className="font-serif text-3xl sm:text-5xl font-bold text-stone-900 dark:text-stone-100 tracking-tight">
                 Original Canvases & Drawings
               </h2>
             </div>
@@ -270,9 +270,9 @@ export const HomePage: React.FC<HomePageProps> = ({
             {featuredArtworks.map((art) => (
               <div
                 key={art.id}
-                className="group bg-white rounded-3xl overflow-hidden border border-stone-200/80 shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between hover:-translate-y-2"
+                className="group bg-white dark:bg-stone-900 rounded-3xl overflow-hidden border border-stone-200/80 dark:border-stone-800 shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between hover:-translate-y-2"
               >
-                <div className="relative aspect-[4/5] overflow-hidden bg-stone-100">
+                <div className="relative aspect-[4/5] overflow-hidden bg-stone-100 dark:bg-stone-800">
                   <img
                     src={art.image}
                     alt={art.title}
@@ -281,31 +281,31 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                     <button
                       onClick={() => onSelectArtwork(art)}
-                      className="w-full py-2.5 bg-white/95 backdrop-blur-md rounded-xl text-xs font-bold text-stone-900 shadow-md flex items-center justify-center gap-1.5 hover:bg-white"
+                      className="w-full py-2.5 bg-white/95 dark:bg-stone-800/95 backdrop-blur-md rounded-xl text-xs font-bold text-stone-900 dark:text-stone-100 shadow-md flex items-center justify-center gap-1.5 hover:bg-white dark:hover:bg-stone-700"
                     >
                       <Eye className="w-3.5 h-3.5 text-artisan-crimson" />
                       Quick View & Wall Preview
                     </button>
                   </div>
-                  <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold text-stone-800 uppercase tracking-wider">
+                  <div className="absolute top-3 left-3 bg-white/90 dark:bg-stone-900/90 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold text-stone-800 dark:text-stone-200 uppercase tracking-wider">
                     {art.medium}
                   </div>
                 </div>
 
                 <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                   <div>
-                    <h3 className="font-serif font-bold text-base text-stone-900 group-hover:text-artisan-crimson transition-colors line-clamp-1">
+                    <h3 className="font-serif font-bold text-base text-stone-900 dark:text-stone-100 group-hover:text-artisan-crimson transition-colors line-clamp-1">
                       {art.title}
                     </h3>
-                    <p className="text-xs text-stone-500 mt-1 line-clamp-1">
+                    <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 line-clamp-1">
                       {art.dimensions} • {art.year}
                     </p>
                   </div>
 
-                  <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
+                  <div className="pt-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
                     <div>
                       <span className="text-[10px] text-stone-400 block uppercase font-semibold">Price</span>
-                      <span className="font-serif font-bold text-lg text-stone-900">
+                      <span className="font-serif font-bold text-lg text-stone-900 dark:text-amber-300">
                         ₹{(art.price >= 10000 ? art.price : Math.round(art.price * 85)).toLocaleString('en-IN')}
                       </span>
                     </div>
@@ -322,7 +322,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                           mediumOrCategory: art.medium,
                         })
                       }
-                      className="px-3.5 py-2 bg-stone-900 hover:bg-artisan-crimson text-white rounded-xl text-xs font-bold tracking-wide transition-colors shadow-xs"
+                      className="px-3.5 py-2 bg-stone-900 hover:bg-artisan-crimson dark:bg-stone-100 dark:hover:bg-artisan-crimson text-white dark:text-stone-900 dark:hover:text-white rounded-xl text-xs font-bold tracking-wide transition-colors shadow-xs"
                     >
                       Acquire
                     </button>
@@ -343,10 +343,10 @@ export const HomePage: React.FC<HomePageProps> = ({
             <span className="text-xs font-bold uppercase tracking-[0.2em] text-artisan-gold block mb-2">
               The Digital Atelier
             </span>
-            <h2 className="font-serif text-3xl sm:text-5xl font-bold text-stone-900 tracking-tight">
+            <h2 className="font-serif text-3xl sm:text-5xl font-bold text-stone-900 dark:text-stone-100 tracking-tight">
               Master the Craft: Online Académie
             </h2>
-            <p className="text-sm text-stone-600 mt-2 max-w-xl">
+            <p className="text-sm text-stone-600 dark:text-stone-300 mt-2 max-w-xl">
               12 years of specialized knowledge distilled into crystal-clear video masterclasses covering Oil Painting, Realistic Sketching, and Color Theory.
             </p>
           </div>
@@ -365,7 +365,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           {featuredCourses.map((course) => (
             <div
               key={course.id}
-              className="bg-white rounded-3xl overflow-hidden border border-stone-200/80 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1.5"
+              className="bg-white dark:bg-stone-900 rounded-3xl overflow-hidden border border-stone-200/80 dark:border-stone-800 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1.5"
             >
               <div className="relative h-52 overflow-hidden bg-stone-900">
                 <img
@@ -389,18 +389,18 @@ export const HomePage: React.FC<HomePageProps> = ({
 
               <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                 <div>
-                  <h3 className="font-serif font-bold text-lg text-stone-900 group-hover:text-artisan-crimson transition-colors">
+                  <h3 className="font-serif font-bold text-lg text-stone-900 dark:text-stone-100 group-hover:text-artisan-crimson transition-colors">
                     {course.title}
                   </h3>
-                  <p className="text-xs text-stone-500 mt-2 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-stone-500 dark:text-stone-400 mt-2 line-clamp-2 leading-relaxed">
                     {course.summary}
                   </p>
                 </div>
 
-                <div className="space-y-3 pt-4 border-t border-stone-100">
-                  <div className="flex items-center justify-between text-xs text-stone-500">
+                <div className="space-y-3 pt-4 border-t border-stone-100 dark:border-stone-800">
+                  <div className="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400">
                     <span>{course.durationHours} Hours • {course.totalLessons} Lessons</span>
-                    <span className="font-bold text-stone-800">{course.level}</span>
+                    <span className="font-bold text-stone-800 dark:text-stone-200">{course.level}</span>
                   </div>
 
                   <div className="flex items-center justify-between">
@@ -410,14 +410,14 @@ export const HomePage: React.FC<HomePageProps> = ({
                           ₹{course.originalPrice.toLocaleString('en-IN')}
                         </span>
                       )}
-                      <span className="font-serif font-bold text-2xl text-artisan-crimson">
+                      <span className="font-serif font-bold text-2xl text-artisan-crimson dark:text-red-400">
                         ₹{course.price.toLocaleString('en-IN')}
                       </span>
                     </div>
 
                     <button
                       onClick={() => onSelectCourse(course)}
-                      className="px-4 py-2 bg-stone-100 hover:bg-stone-900 hover:text-white rounded-xl text-xs font-bold tracking-wide transition-all"
+                      className="px-4 py-2 bg-stone-100 dark:bg-stone-800 hover:bg-stone-900 hover:text-white dark:hover:bg-stone-100 dark:hover:text-stone-900 dark:text-stone-200 rounded-xl text-xs font-bold tracking-wide transition-all"
                     >
                       Syllabus & Enroll
                     </button>
@@ -476,9 +476,9 @@ export const HomePage: React.FC<HomePageProps> = ({
 
       {/* Press Quotes Bar */}
       <section className="pb-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="pt-8 border-t border-stone-200">
+        <div className="pt-8 border-t border-stone-200 dark:border-stone-800">
           <div className="text-center mb-6">
-            <span className="text-[10px] uppercase font-bold tracking-widest text-stone-400">
+            <span className="text-[10px] uppercase font-bold tracking-widest text-stone-400 dark:text-stone-500">
               Featured in International Art Publications & Press
             </span>
           </div>
@@ -486,12 +486,12 @@ export const HomePage: React.FC<HomePageProps> = ({
             {PRESS_LOGOS.map((press, idx) => (
               <div
                 key={idx}
-                className="p-5 rounded-2xl bg-white border border-stone-200/80 shadow-xs flex flex-col justify-between text-center"
+                className="p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 shadow-xs flex flex-col justify-between text-center"
               >
-                <h4 className="font-display font-bold text-xs tracking-widest text-stone-900">
+                <h4 className="font-display font-bold text-xs tracking-widest text-stone-900 dark:text-stone-100">
                   {press.name}
                 </h4>
-                <p className="text-[11px] text-stone-500 italic mt-3">
+                <p className="text-[11px] text-stone-500 dark:text-stone-400 italic mt-3">
                   "{press.quote}"
                 </p>
               </div>

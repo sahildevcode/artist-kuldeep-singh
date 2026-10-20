@@ -3,6 +3,7 @@ import { CartProvider, useCart } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { StudioDataProvider, useStudioData } from './context/StudioDataContext';
 import { AudioProvider } from './context/AudioContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { ThreeBackground } from './components/3d/ThreeBackground';
 import { ScrollSignatureBackground } from './components/3d/ScrollSignatureBackground';
 import { IntroSplash } from './components/layout/IntroSplash';
@@ -130,7 +131,7 @@ const AppInner: React.FC = () => {
           : 'home');
 
   return (
-    <div className="relative min-h-screen bg-[#FDFBF7] text-[#1A1816] selection:bg-artisan-crimson selection:text-white">
+    <div className="relative min-h-screen bg-[#FDFBF7] dark:bg-[#0E0C0A] text-[#1A1816] dark:text-[#F5F2EB] transition-colors duration-300 selection:bg-artisan-crimson selection:text-white">
       {/* Cinematic Intro Splash Animation for 'Artist Kuldeep Singh' */}
       {showSplash && <IntroSplash onFinish={() => setShowSplash(false)} />}
 
@@ -244,15 +245,17 @@ const AppInner: React.FC = () => {
 
 export const App: React.FC = () => {
   return (
-    <StudioDataProvider>
-      <AuthProvider>
-        <CartProvider>
-          <AudioProvider>
-            <AppInner />
-          </AudioProvider>
-        </CartProvider>
-      </AuthProvider>
-    </StudioDataProvider>
+    <ThemeProvider>
+      <StudioDataProvider>
+        <AuthProvider>
+          <CartProvider>
+            <AudioProvider>
+              <AppInner />
+            </AudioProvider>
+          </CartProvider>
+        </AuthProvider>
+      </StudioDataProvider>
+    </ThemeProvider>
   );
 };
 

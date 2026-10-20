@@ -35,6 +35,21 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #C5A059;
   }
+
+  /* Dark mode root & scrollbar */
+  .dark body {
+    background-color: #0E0C0A;
+    color: #F5F2EB;
+  }
+  .dark ::-webkit-scrollbar-track {
+    background: #0E0C0A;
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background: #2E2721;
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: #C5A059;
+  }
 }
 
 /* Glassmorphic utilities */
@@ -49,6 +64,13 @@
   border: 1px solid rgba(255, 255, 255, 0.85);
 }
 
+.dark .glass-panel {
+  background: rgba(24, 21, 19, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .glass-panel-subtle {
   background: rgba(253, 251, 247, 0.65);
   backdrop-filter: blur(12px);
@@ -56,11 +78,26 @@
   border: 1px solid rgba(26, 24, 22, 0.06);
 }
 
+.dark .glass-panel-subtle {
+  background: rgba(20, 18, 16, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
 .glass-dropdown {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08), 0 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.dark .glass-dropdown {
+  background: rgba(24, 21, 19, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6), 0 0 1px 1px rgba(255, 255, 255, 0.05);
 }
 
 /* Animated gradient text */

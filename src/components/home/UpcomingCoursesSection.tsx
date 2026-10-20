@@ -29,10 +29,10 @@ export const UpcomingCoursesSection: React.FC = () => {
             <Sparkles className="w-3.5 h-3.5 text-artisan-gold" />
             <span>Next-Generation Atelier Batches & Testimonials</span>
           </div>
-          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-stone-900 tracking-tight">
+          <h2 className="font-serif text-3xl sm:text-5xl font-bold text-stone-900 dark:text-stone-100 tracking-tight">
             Upcoming Courses
           </h2>
-          <p className="text-sm text-stone-600 mt-2.5 max-w-2xl leading-relaxed">
+          <p className="text-sm text-stone-600 dark:text-stone-300 mt-2.5 max-w-2xl leading-relaxed">
             Reserve early-bird seats before public admissions open. Discover what our master painters and alumni say about forthcoming atelier diplomas.
           </p>
         </div>
@@ -69,7 +69,7 @@ export const UpcomingCoursesSection: React.FC = () => {
           {activeUpcoming.map((course) => (
             <div
               key={course.id}
-              className="group bg-white/95 backdrop-blur-md rounded-3xl overflow-hidden border border-stone-200/90 shadow-soft-lux hover:shadow-2xl transition-all duration-500 flex flex-col justify-between hover:-translate-y-2 relative"
+              className="group bg-white/95 dark:bg-stone-900/95 backdrop-blur-md rounded-3xl overflow-hidden border border-stone-200/90 dark:border-stone-800 shadow-soft-lux hover:shadow-2xl transition-all duration-500 flex flex-col justify-between hover:-translate-y-2 relative"
             >
               {/* Top Image & Badges */}
               <div className="relative h-56 overflow-hidden bg-stone-900">
@@ -93,7 +93,7 @@ export const UpcomingCoursesSection: React.FC = () => {
 
                 {/* Seats indicator badge */}
                 {course.seatsLeft !== undefined && (
-                  <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold text-stone-900 shadow-sm flex items-center gap-1">
+                  <div className="absolute bottom-3 left-3 bg-white/95 dark:bg-stone-900/95 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold text-stone-900 dark:text-stone-100 shadow-sm flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                     <span>Only {course.seatsLeft} Seats Remaining</span>
                   </div>
@@ -108,12 +108,12 @@ export const UpcomingCoursesSection: React.FC = () => {
               {/* Main Info */}
               <div className="p-6 flex-1 flex flex-col justify-between space-y-5">
                 <div>
-                  <h3 className="font-serif font-bold text-xl text-stone-900 group-hover:text-artisan-crimson transition-colors leading-snug">
+                  <h3 className="font-serif font-bold text-xl text-stone-900 dark:text-stone-100 group-hover:text-artisan-crimson transition-colors leading-snug">
                     {course.title}
                   </h3>
 
                   {/* Schedule Strip */}
-                  <div className="mt-3 flex flex-wrap items-center gap-y-1.5 gap-x-4 text-xs text-stone-500 font-medium">
+                  <div className="mt-3 flex flex-wrap items-center gap-y-1.5 gap-x-4 text-xs text-stone-500 dark:text-stone-400 font-medium">
                     <span className="flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5 text-artisan-gold shrink-0" />
                       <span>{course.startDate}</span>
@@ -124,14 +124,14 @@ export const UpcomingCoursesSection: React.FC = () => {
                     </span>
                   </div>
 
-                  <p className="text-xs text-stone-600 mt-3 line-clamp-3 leading-relaxed">
+                  <p className="text-xs text-stone-600 dark:text-stone-300 mt-3 line-clamp-3 leading-relaxed">
                     {course.description}
                   </p>
                 </div>
 
                 {/* Testimonial / Scholar Anticipation Block (Specifically highlighting user requirement) */}
                 {course.studentTestimonial && (
-                  <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200/80 shadow-xs relative">
+                  <div className="p-3.5 rounded-2xl bg-stone-50 dark:bg-stone-800/60 border border-stone-200/80 dark:border-stone-700/60 shadow-xs relative">
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-1 text-amber-500">
                         {[...Array(course.studentTestimonial.rating || 5)].map((_, i) => (
@@ -144,17 +144,17 @@ export const UpcomingCoursesSection: React.FC = () => {
                       </span>
                     </div>
 
-                    <p className="text-[11px] text-stone-700 italic leading-relaxed">
+                    <p className="text-[11px] text-stone-700 dark:text-stone-300 italic leading-relaxed">
                       "{course.studentTestimonial.quote}"
                     </p>
 
-                    <div className="flex items-center gap-2 mt-2 pt-2 border-t border-stone-200/50">
+                    <div className="flex items-center gap-2 mt-2 pt-2 border-t border-stone-200/50 dark:border-stone-700/50">
                       <img
                         src={course.studentTestimonial.avatar}
                         alt={course.studentTestimonial.name}
                         className="w-5 h-5 rounded-full object-cover border border-white shadow-xs"
                       />
-                      <span className="text-[10px] font-bold text-stone-900">
+                      <span className="text-[10px] font-bold text-stone-900 dark:text-stone-100">
                         {course.studentTestimonial.name}
                       </span>
                       <span className="text-[9px] text-stone-400 truncate max-w-[140px]">
@@ -166,14 +166,14 @@ export const UpcomingCoursesSection: React.FC = () => {
 
                 {/* Instructor Note */}
                 {course.instructorQuote && !course.studentTestimonial && (
-                  <div className="p-3 rounded-xl bg-amber-50/70 border border-amber-200/50 text-[11px] text-stone-700 italic">
-                    <span className="font-bold text-[#5C4010] not-italic block mb-0.5">🎨 Atelier Master Note:</span>
+                  <div className="p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/40 border border-amber-200/50 dark:border-amber-800/40 text-[11px] text-stone-700 dark:text-stone-300 italic">
+                    <span className="font-bold text-[#5C4010] dark:text-amber-300 not-italic block mb-0.5">🎨 Atelier Master Note:</span>
                     "{course.instructorQuote}"
                   </div>
                 )}
 
                 {/* Pricing & Pre-Register CTA Button */}
-                <div className="pt-4 border-t border-stone-100 flex items-center justify-between gap-3">
+                <div className="pt-4 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between gap-3">
                   <div>
                     <span className="text-[10px] text-stone-400 block font-semibold uppercase tracking-wider">
                       Pre-Booking Fee
@@ -184,7 +184,7 @@ export const UpcomingCoursesSection: React.FC = () => {
                           ₹{course.originalPrice.toLocaleString('en-IN')}
                         </span>
                       )}
-                      <span className="font-serif font-bold text-2xl text-stone-900">
+                      <span className="font-serif font-bold text-2xl text-stone-900 dark:text-amber-300">
                         ₹{course.price.toLocaleString('en-IN')}
                       </span>
                     </div>

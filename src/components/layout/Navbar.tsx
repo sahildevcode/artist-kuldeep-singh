@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, User, Menu, X, Sparkles, LogOut, BookOpen, Image as ImageIcon, Award, Compass, ShieldCheck, MessageSquare } from 'lucide-react';
+import { ShoppingBag, User, Menu, X, Sparkles, LogOut, BookOpen, Image as ImageIcon, Award, Compass, ShieldCheck, MessageSquare, Sun, Moon } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useStudioData } from '../../context/StudioDataContext';
+import { useTheme } from '../../context/ThemeContext';
 import { InquiryModal } from '../modals/InquiryModal';
 
 interface NavbarProps {
@@ -14,6 +15,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
   const { totalItems, setIsCartOpen, orders, setIsOrderHistoryOpen } = useCart();
   const { currentUser, setIsAuthModalOpen, logout } = useAuth();
   const { liveStatus } = useStudioData();
+  const { theme, toggleTheme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -63,8 +65,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
       <header
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
           isScrolled
-            ? 'bg-white/90 backdrop-blur-xl border-b border-black/[0.06] shadow-sm'
-            : 'bg-white/60 backdrop-blur-md border-b border-black/[0.03]'
+            ? 'bg-white/90 dark:bg-[#12100E]/90 backdrop-blur-xl border-b border-black/[0.06] dark:border-white/[0.08] shadow-sm'
+            : 'bg-white/60 dark:bg-[#12100E]/60 backdrop-blur-md border-b border-black/[0.03] dark:border-white/[0.04]'
         }`}
       >
         {/* Real-Time Global Broadcast Alert Banner (ONLY for Enrolled Students of this course) */}
@@ -122,10 +124,10 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                   <span className="absolute inset-0 bg-gradient-to-tr from-artisan-crimson/50 to-artisan-ochre/50 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
                 <div>
-                  <span className="font-display font-bold text-lg sm:text-xl tracking-tight text-[#1A1816] block leading-none">
+                  <span className="font-display font-bold text-lg sm:text-xl tracking-tight text-[#1A1816] dark:text-[#FDFBF7] block leading-none">
                     KULDEEP <span className="font-light text-artisan-gold">SINGH</span>
                   </span>
-                  <span className="text-[9px] sm:text-[10px] tracking-[0.2em] uppercase text-stone-500 font-medium block mt-1">
+                  <span className="text-[9px] sm:text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-stone-400 font-medium block mt-1">
                     Artist • 12Y Fine Art Atelier
                   </span>
                 </div>
@@ -133,7 +135,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
             </div>
 
             {/* Desktop Navigation Links (Compact, Single-Line, Elegant) */}
-            <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 bg-stone-100/80 backdrop-blur-md p-1 rounded-full border border-stone-200/60 shadow-inner">
+            <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 bg-stone-100/80 dark:bg-stone-900/80 backdrop-blur-md p-1 rounded-full border border-stone-200/60 dark:border-stone-800 shadow-inner">
               {navLinks.map((link) => {
                 const isActive = activePage === link.id;
                 return (
@@ -145,8 +147,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                     }}
                     className={`relative px-2.5 py-1.5 lg:px-3.5 lg:py-1.5 rounded-full text-[11px] lg:text-xs font-semibold tracking-normal transition-all duration-300 flex items-center gap-1.5 select-none whitespace-nowrap shrink-0 cursor-pointer ${
                       isActive
-                        ? 'text-white bg-[#1A1816] shadow-md shadow-black/10'
-                        : 'text-stone-600 hover:text-stone-900 hover:bg-white/60'
+                        ? 'text-white bg-[#1A1816] dark:bg-stone-100 dark:text-stone-900 shadow-md shadow-black/10'
+                        : 'text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-stone-800/60'
                     }`}
                   >
                     <span className="shrink-0">{link.icon}</span>
@@ -165,15 +167,30 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
               })}
             </nav>
 
-            {/* Right Actions: Cart, User/Auth & Studio Inquiry */}
-            <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+            {/* Right Actions: Cart, Theme Toggle, User/Auth & Studio Inquiry */}
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              {/* Dark / Light Theme Toggle Button */}
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="relative p-2 sm:p-2.5 rounded-full bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-amber-400 transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none cursor-pointer shrink-0 border border-stone-200/60 dark:border-stone-700"
+                aria-label={theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+                title={theme === 'dark' ? 'Light Theme ☀️ (दिन का मोड)' : 'Dark Theme 🌙 (रात का मोड)'}
+              >
+                {theme === 'dark' ? (
+                  <Sun className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-amber-400" />
+                ) : (
+                  <Moon className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-stone-700" />
+                )}
+              </button>
+
               {/* Cart Button */}
               <button
                 onClick={() => setIsCartOpen(true)}
-                className="relative p-2 sm:p-2.5 rounded-full bg-stone-100 hover:bg-stone-200 text-[#1A1816] transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none cursor-pointer shrink-0"
+                className="relative p-2 sm:p-2.5 rounded-full bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-[#1A1816] dark:text-[#FDFBF7] transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none cursor-pointer shrink-0 border border-stone-200/60 dark:border-stone-700"
                 aria-label="Open Cart"
               >
-                <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-stone-800" />
+                <ShoppingBag className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-stone-800 dark:text-stone-200" />
                 {totalItems > 0 && (
                   <span className="absolute -top-1 -right-1 bg-artisan-crimson text-white text-[10px] sm:text-[11px] font-bold w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center shadow-md animate-bounce">
                     {totalItems}
@@ -186,24 +203,24 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                 <div className="relative">
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-1.5 sm:gap-2 p-1 sm:p-1.5 pr-2.5 sm:pr-3 rounded-full bg-stone-100 hover:bg-stone-200 transition-colors border border-stone-200 cursor-pointer whitespace-nowrap"
+                    className="flex items-center gap-1.5 sm:gap-2 p-1 sm:p-1.5 pr-2.5 sm:pr-3 rounded-full bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 transition-colors border border-stone-200 dark:border-stone-700 cursor-pointer whitespace-nowrap"
                   >
                     <img
                       src={currentUser.avatar}
                       alt={currentUser.name}
                       className="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover border border-white shrink-0"
                     />
-                    <span className="text-[11px] sm:text-xs font-semibold text-stone-800 max-w-[80px] sm:max-w-[90px] truncate hidden sm:inline">
+                    <span className="text-[11px] sm:text-xs font-semibold text-stone-800 dark:text-stone-200 max-w-[80px] sm:max-w-[90px] truncate hidden sm:inline">
                       {currentUser.name.split(' ')[0]}
                     </span>
                   </button>
 
                   {/* Dropdown Menu */}
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-stone-200/80 p-2 z-50 animate-in fade-in slide-in-from-top-2">
-                      <div className="p-2 border-b border-stone-100">
-                        <p className="text-xs font-bold text-stone-900">{currentUser.name}</p>
-                        <p className="text-[11px] text-stone-500 capitalize flex items-center gap-1 mt-0.5">
+                    <div className="absolute right-0 mt-2 w-56 bg-white/95 dark:bg-[#1A1715]/95 backdrop-blur-md rounded-2xl shadow-xl border border-stone-200/80 dark:border-stone-800 p-2 z-50 animate-in fade-in slide-in-from-top-2">
+                      <div className="p-2 border-b border-stone-100 dark:border-stone-800">
+                        <p className="text-xs font-bold text-stone-900 dark:text-stone-100">{currentUser.name}</p>
+                        <p className="text-[11px] text-stone-500 dark:text-stone-400 capitalize flex items-center gap-1 mt-0.5">
                           <Sparkles className="w-3 h-3 text-artisan-gold" />
                           {currentUser.role} Account
                         </p>
@@ -214,7 +231,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                             setIsOrderHistoryOpen(true);
                             setIsUserMenuOpen(false);
                           }}
-                          className="w-full text-left px-3 py-2 text-xs font-semibold text-artisan-crimson hover:bg-stone-100 rounded-lg flex items-center justify-between cursor-pointer"
+                          className="w-full text-left px-3 py-2 text-xs font-semibold text-artisan-crimson hover:bg-stone-100 dark:hover:bg-stone-800 rounded-lg flex items-center justify-between cursor-pointer"
                         >
                           <span>📦 My Order History</span>
                           <span className="text-[10px] bg-artisan-crimson/10 text-artisan-crimson font-bold px-2 py-0.5 rounded-full">
@@ -234,21 +251,21 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                             setIsUserMenuOpen(false);
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                           }}
-                          className="w-full text-left px-3 py-2 text-xs font-medium text-stone-700 hover:bg-stone-100 rounded-lg flex items-center justify-between cursor-pointer"
+                          className="w-full text-left px-3 py-2 text-xs font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-lg flex items-center justify-between cursor-pointer"
                         >
                           Enrolled Courses
-                          <span className="text-[10px] bg-stone-200 px-1.5 py-0.5 rounded-full">
+                          <span className="text-[10px] bg-stone-200 dark:bg-stone-700 px-1.5 py-0.5 rounded-full">
                             {currentUser.enrolledCoursesCount || 0}
                           </span>
                         </button>
                       </div>
-                      <div className="pt-1 border-t border-stone-100">
+                      <div className="pt-1 border-t border-stone-100 dark:border-stone-800">
                         <button
                           onClick={() => {
                             logout();
                             setIsUserMenuOpen(false);
                           }}
-                          className="w-full text-left px-3 py-2 text-xs text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2 cursor-pointer"
+                          className="w-full text-left px-3 py-2 text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg flex items-center gap-2 cursor-pointer"
                         >
                           <LogOut className="w-3.5 h-3.5" /> Sign Out
                         </button>
@@ -259,17 +276,17 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
               ) : (
                 <button
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-semibold tracking-wide text-white bg-[#1A1816] hover:bg-black rounded-full transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-1.5 active:scale-95 whitespace-nowrap cursor-pointer shrink-0"
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-semibold tracking-wide text-white bg-[#1A1816] hover:bg-black dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white rounded-full transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-1.5 active:scale-95 whitespace-nowrap cursor-pointer shrink-0"
                 >
                   <User className="w-3.5 h-3.5 shrink-0" />
                   <span className="whitespace-nowrap">Sign In</span>
                 </button>
               )}
 
-              {/* Studio Inquiry Button (Right side, AFTER Sign In - Sab Se Last) */}
+              {/* Studio Inquiry Button */}
               <button
                 onClick={() => setIsInquiryOpen(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full bg-artisan-gold/15 hover:bg-artisan-gold text-[#5C4010] hover:text-white border border-artisan-gold/40 text-[11px] sm:text-xs font-bold transition-all shadow-xs cursor-pointer group shrink-0 active:scale-95 whitespace-nowrap"
+                className="flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full bg-artisan-gold/15 hover:bg-artisan-gold text-[#5C4010] dark:text-amber-300 hover:text-white border border-artisan-gold/40 text-[11px] sm:text-xs font-bold transition-all shadow-xs cursor-pointer group shrink-0 active:scale-95 whitespace-nowrap"
                 title="Send Studio Inquiry / पूछताछ करें"
               >
                 <MessageSquare className="w-3.5 h-3.5 text-artisan-gold group-hover:text-white transition-colors shrink-0" />
@@ -279,7 +296,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
               {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-1.5 sm:p-2 text-stone-700 hover:text-black focus:outline-none cursor-pointer shrink-0"
+                className="md:hidden p-1.5 sm:p-2 text-stone-700 dark:text-stone-300 hover:text-black dark:hover:text-white focus:outline-none cursor-pointer shrink-0"
                 aria-label="Toggle menu"
               >
                 {isMobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
@@ -316,6 +333,27 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                   )}
                 </button>
               ))}
+
+              {/* Dark / Light Theme Button in Mobile Dropdown */}
+              <button
+                type="button"
+                onClick={() => {
+                  toggleTheme();
+                }}
+                className="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  {theme === 'dark' ? (
+                    <Sun className="w-4 h-4 text-amber-400" />
+                  ) : (
+                    <Moon className="w-4 h-4 text-stone-600" />
+                  )}
+                  <span>{theme === 'dark' ? 'Light Theme (लाइट थीम)' : 'Dark Theme (डार्क थीम)'}</span>
+                </div>
+                <span className="text-xs px-2.5 py-1 rounded-full font-bold bg-white dark:bg-stone-700 shadow-xs border border-stone-200/50 dark:border-stone-600">
+                  {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
+                </span>
+              </button>
 
               {/* Inquiry Button in Mobile Dropdown */}
               <button

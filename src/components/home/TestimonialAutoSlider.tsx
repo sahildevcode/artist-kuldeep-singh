@@ -107,11 +107,11 @@ export const TestimonialAutoSlider: React.FC<TestimonialAutoSliderProps> = ({
           <span>{sectionSubtitle}</span>
         </div>
 
-        <h2 className="font-serif text-3xl sm:text-5xl font-bold text-stone-900 tracking-tight">
+        <h2 className="font-serif text-3xl sm:text-5xl font-bold text-stone-900 dark:text-stone-100 tracking-tight">
           {sectionTitle}
         </h2>
 
-        <p className="text-sm text-stone-600 max-w-xl mx-auto leading-relaxed">
+        <p className="text-sm text-stone-600 dark:text-stone-300 max-w-xl mx-auto leading-relaxed">
           Authentic reflections from fine art collectors, emerging painters, and scholars enrolled in our classical atelier batches and upcoming diplomas.
         </p>
       </div>
@@ -132,8 +132,8 @@ export const TestimonialAutoSlider: React.FC<TestimonialAutoSliderProps> = ({
               onClick={() => setSelectedCategory(tab.id as any)}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap shadow-xs active:scale-95 ${
                 isSelected
-                  ? 'bg-stone-900 text-white shadow-md'
-                  : 'bg-white hover:bg-stone-100 text-stone-600 border border-stone-200/90'
+                  ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 shadow-md'
+                  : 'bg-white dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-600 dark:text-stone-300 border border-stone-200/90 dark:border-stone-700'
               }`}
             >
               <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-artisan-gold' : 'text-stone-400'}`} />
@@ -145,17 +145,17 @@ export const TestimonialAutoSlider: React.FC<TestimonialAutoSliderProps> = ({
 
       {/* Empty State */}
       {filteredReviews.length === 0 ? (
-        <div className="p-16 text-center rounded-3xl bg-white/80 border border-stone-200 shadow-sm max-w-lg mx-auto">
-          <Quote className="w-10 h-10 mx-auto mb-3 text-stone-300" />
-          <h3 className="font-serif text-lg font-bold text-stone-800">No Reviews Found</h3>
-          <p className="text-xs text-stone-500 mt-1">
+        <div className="p-16 text-center rounded-3xl bg-white/80 dark:bg-stone-900/80 border border-stone-200 dark:border-stone-800 shadow-sm max-w-lg mx-auto">
+          <Quote className="w-10 h-10 mx-auto mb-3 text-stone-300 dark:text-stone-600" />
+          <h3 className="font-serif text-lg font-bold text-stone-800 dark:text-stone-200">No Reviews Found</h3>
+          <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
             There are currently no reviews in this category. You can add new reviews directly from the Admin Panel.
           </p>
         </div>
       ) : (
         /* The Auto-Changing Image & Review Showcase Card */
         <div
-          className="relative bg-white/90 backdrop-blur-xl rounded-3xl sm:rounded-[2.5rem] border border-stone-200/90 shadow-soft-lux overflow-hidden transition-all duration-300"
+          className="relative bg-white/90 dark:bg-stone-900/90 backdrop-blur-xl rounded-3xl sm:rounded-[2.5rem] border border-stone-200/90 dark:border-stone-800 shadow-soft-lux overflow-hidden transition-all duration-300"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
           onTouchStart={handleTouchStart}
@@ -240,8 +240,8 @@ export const TestimonialAutoSlider: React.FC<TestimonialAutoSliderProps> = ({
                   </div>
 
                   {/* Slide Counter */}
-                  <div className="text-xs font-mono font-bold text-stone-400 bg-stone-100 px-3 py-1 rounded-full border border-stone-200">
-                    <span className="text-stone-900">
+                  <div className="text-xs font-mono font-bold text-stone-400 dark:text-stone-500 bg-stone-100 dark:bg-stone-800 px-3 py-1 rounded-full border border-stone-200 dark:border-stone-700">
+                    <span className="text-stone-900 dark:text-stone-100">
                       {String(currentIndex + 1).padStart(2, '0')}
                     </span>
                     <span className="mx-1">/</span>
@@ -254,7 +254,7 @@ export const TestimonialAutoSlider: React.FC<TestimonialAutoSliderProps> = ({
                   <Quote className="w-12 h-12 text-artisan-gold/30 -mb-4 -ml-1 select-none pointer-events-none" />
                   <p
                     key={`comment-${currentReview?.id}`}
-                    className="font-serif italic text-lg sm:text-2xl text-stone-900 leading-relaxed animate-fade-in"
+                    className="font-serif italic text-lg sm:text-2xl text-stone-900 dark:text-stone-100 leading-relaxed animate-fade-in"
                   >
                     "{currentReview?.comment}"
                   </p>
@@ -278,7 +278,7 @@ export const TestimonialAutoSlider: React.FC<TestimonialAutoSliderProps> = ({
                   <button
                     type="button"
                     onClick={() => onExploreStore?.()}
-                    className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-artisan-gold/15 hover:bg-artisan-gold/25 border border-artisan-gold/30 text-xs font-bold text-[#64440c] cursor-pointer transition-all active:scale-95"
+                    className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-artisan-gold/15 hover:bg-artisan-gold/25 border border-artisan-gold/30 text-xs font-bold text-[#64440c] dark:text-amber-300 cursor-pointer transition-all active:scale-95"
                   >
                     <Sparkles className="w-4 h-4 text-artisan-gold" />
                     <span>Acquired Original Masterpiece: {currentReview.artworkAcquired}</span>
@@ -288,20 +288,20 @@ export const TestimonialAutoSlider: React.FC<TestimonialAutoSliderProps> = ({
               </div>
 
               {/* Reviewer Details & Location */}
-              <div className="pt-4 border-t border-stone-200/80 flex flex-wrap items-center justify-between gap-4">
+              <div className="pt-4 border-t border-stone-200/80 dark:border-stone-800 flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-full bg-stone-900 border-2 border-artisan-gold/60 flex items-center justify-center text-artisan-gold font-serif font-bold text-sm shadow-sm shrink-0">
+                  <div className="w-11 h-11 rounded-full bg-stone-900 dark:bg-stone-800 border-2 border-artisan-gold/60 flex items-center justify-center text-artisan-gold font-serif font-bold text-sm shadow-sm shrink-0">
                     {currentReview?.name ? currentReview.name.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase() : '★'}
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <h3 className="font-serif font-bold text-base sm:text-lg text-stone-900">
+                      <h3 className="font-serif font-bold text-base sm:text-lg text-stone-900 dark:text-stone-100">
                         {currentReview?.name}
                       </h3>
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                     </div>
-                    <p className="text-xs text-stone-500 mt-0.5">
-                      {currentReview?.role} • <span className="text-stone-700 font-medium">{currentReview?.location}</span>
+                    <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+                      {currentReview?.role} • <span className="text-stone-700 dark:text-stone-300 font-medium">{currentReview?.location}</span>
                     </p>
                   </div>
                 </div>
@@ -311,7 +311,7 @@ export const TestimonialAutoSlider: React.FC<TestimonialAutoSliderProps> = ({
 
                   <button
                     onClick={handlePrev}
-                    className="p-2.5 rounded-full bg-stone-100 hover:bg-stone-900 hover:text-white text-stone-700 transition cursor-pointer active:scale-95 border border-stone-200/80"
+                    className="p-2.5 rounded-full bg-stone-100 dark:bg-stone-800 hover:bg-stone-900 hover:text-white dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 transition cursor-pointer active:scale-95 border border-stone-200/80 dark:border-stone-700"
                     title="Previous Testimonial"
                     aria-label="Previous slide"
                   >
@@ -320,7 +320,7 @@ export const TestimonialAutoSlider: React.FC<TestimonialAutoSliderProps> = ({
 
                   <button
                     onClick={handleNext}
-                    className="p-2.5 rounded-full bg-stone-900 hover:bg-artisan-crimson text-white transition cursor-pointer active:scale-95 shadow-sm"
+                    className="p-2.5 rounded-full bg-stone-900 dark:bg-stone-100 hover:bg-artisan-crimson dark:hover:bg-artisan-crimson text-white dark:text-stone-900 dark:hover:text-white transition cursor-pointer active:scale-95 shadow-sm"
                     title="Next Testimonial"
                     aria-label="Next slide"
                   >
