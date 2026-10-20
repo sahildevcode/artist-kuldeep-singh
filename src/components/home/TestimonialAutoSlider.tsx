@@ -182,7 +182,7 @@ export const TestimonialAutoSlider: React.FC<TestimonialAutoSliderProps> = ({
               <div className="relative aspect-[4/5] sm:aspect-[4/4.8] rounded-2xl sm:rounded-3xl overflow-hidden bg-stone-900 border-2 border-stone-200/80 shadow-2xl group">
                 {/* Main Changing Artwork / Course Image */}
                 <img
-                  key={currentReview?.artworkImage || currentReview?.avatar}
+                  key={currentReview?.artworkImage || currentReview?.id}
                   src={
                     currentReview?.artworkImage ||
                     'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=900&auto=format&fit=crop'
@@ -290,12 +290,9 @@ export const TestimonialAutoSlider: React.FC<TestimonialAutoSliderProps> = ({
               {/* Reviewer Details & Location */}
               <div className="pt-4 border-t border-stone-200/80 flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <img
-                    key={`avatar-${currentReview?.id}`}
-                    src={currentReview?.avatar}
-                    alt={currentReview?.name}
-                    className="w-12 h-12 rounded-full object-cover border-2 border-artisan-gold/40 shadow-xs shrink-0"
-                  />
+                  <div className="w-11 h-11 rounded-full bg-stone-900 border-2 border-artisan-gold/60 flex items-center justify-center text-artisan-gold font-serif font-bold text-sm shadow-sm shrink-0">
+                    {currentReview?.name ? currentReview.name.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase() : '★'}
+                  </div>
                   <div>
                     <div className="flex items-center gap-1.5">
                       <h3 className="font-serif font-bold text-base sm:text-lg text-stone-900">
