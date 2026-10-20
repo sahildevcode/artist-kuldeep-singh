@@ -40,64 +40,7 @@ const DEFAULT_PROFILE: ArtistProfile = {
   heroShowcaseCertificateText: 'Archival Certificate'
 };
 
-const INITIAL_STUDENTS: EnrolledStudent[] = [
-  {
-    id: 'stu-101',
-    name: 'Aarav Sharma',
-    email: 'aarav.sharma@gmail.com',
-    phone: '+91 98201 45892',
-    courseId: 'course-oil-mastery',
-    courseTitle: 'The Master Oil Painting Diploma',
-    batchSchedule: 'Saturday & Sunday • 6:00 PM – 8:00 PM IST',
-    enrolledDate: 'Sep 1, 2026',
-    feesPaid: 349,
-    paymentStatus: 'Paid',
-    progressPercent: 68,
-    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=150&auto=format&fit=crop'
-  },
-  {
-    id: 'stu-102',
-    name: 'Elena Rostova',
-    email: 'elena.rostova@artacademy.eu',
-    phone: '+44 7700 900077',
-    courseId: 'course-realistic-sketching',
-    courseTitle: 'Foundations of Realistic Sketching & Human Anatomy',
-    batchSchedule: 'Tuesday & Thursday • 7:00 PM – 9:00 PM IST',
-    enrolledDate: 'Sep 3, 2026',
-    feesPaid: 249,
-    paymentStatus: 'Paid',
-    progressPercent: 42,
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop'
-  },
-  {
-    id: 'stu-103',
-    name: 'Dev Patel',
-    email: 'dev.patel.design@outlook.com',
-    phone: '+91 98112 33455',
-    courseId: 'course-watercolor-alchemy',
-    courseTitle: 'Expressive Watercolor & Fluid Pigment Painting',
-    batchSchedule: 'Wednesday & Friday • 6:30 PM – 8:30 PM IST',
-    enrolledDate: 'Aug 28, 2026',
-    feesPaid: 219,
-    paymentStatus: 'Paid',
-    progressPercent: 85,
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop'
-  },
-  {
-    id: 'stu-104',
-    name: 'Sophia Laurent',
-    email: 'sophia.l@parisart.fr',
-    phone: '+33 6 12 34 56 78',
-    courseId: 'course-oil-mastery',
-    courseTitle: 'The Master Oil Painting Diploma',
-    batchSchedule: 'Saturday & Sunday • 6:00 PM – 8:00 PM IST',
-    enrolledDate: 'Sep 5, 2026',
-    feesPaid: 349,
-    paymentStatus: 'Paid',
-    progressPercent: 20,
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop'
-  }
-];
+const INITIAL_STUDENTS: EnrolledStudent[] = [];
 
 interface StudioDataContextType {
   artworks: Artwork[];
@@ -322,14 +265,12 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
 
         // 2. Courses, Lectures & Live Status
-        let loadedCourses: Course[] = courses;
         const courseRes = await fetch('https://kuldeep-singh-backend.onrender.com/api/courses');
         if (courseRes.ok) {
           const cloudCourses: Course[] = await courseRes.json();
           if (Array.isArray(cloudCourses) && isMounted) {
             const clean = cloudCourses.filter((c) => !DUMMY_COURSE_IDS.includes(c.id));
             const normalized = normalizeCourses(clean);
-            loadedCourses = normalized;
             setCourses(normalized);
             try {
               localStorage.setItem('kuldeep_studio_courses', JSON.stringify(normalized));
@@ -337,70 +278,15 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           }
         }
 
-        // 3. Students & Auto-Sync Local Enrollments
+        // 3. Students (Cloud is absolute source of truth)
         const stuRes = await fetch('https://kuldeep-singh-backend.onrender.com/api/students');
         if (stuRes.ok) {
           const cloudStudents: EnrolledStudent[] = await stuRes.json();
           if (Array.isArray(cloudStudents) && isMounted) {
-            let pendingUploads: EnrolledStudent[] = [];
-
-            // Check if current user has unlocked courses in localStorage that need syncing
+            setStudents(cloudStudents);
             try {
-              const userStr = localStorage.getItem('kuldeep_art_user');
-              if (userStr) {
-                const u = JSON.parse(userStr);
-                if (u && u.email && Array.isArray(u.enrolledCourseIds) && u.enrolledCourseIds.length > 0) {
-                  const availableCourses = (Array.isArray(loadedCourses) && loadedCourses.length > 0) ? loadedCourses : courses;
-                  u.enrolledCourseIds.forEach((cId: string) => {
-                    const existsOnCloud = cloudStudents.some(
-                      (cs) => cs.courseId === cId && cs.email.toLowerCase() === u.email.toLowerCase()
-                    );
-                    if (!existsOnCloud) {
-                      const matchedCourse = availableCourses.find((c: Course) => c.id === cId);
-                      if (matchedCourse) {
-                        pendingUploads.push({
-                          id: 'stu-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-                          name: u.name || 'Scholar Student',
-                          email: u.email.toLowerCase(),
-                          phone: '',
-                          courseId: cId,
-                          courseTitle: matchedCourse.title,
-                          batchSchedule: matchedCourse.schedule || 'Live Atelier Batch',
-                          enrolledDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-                          feesPaid: matchedCourse.price,
-                          paymentStatus: 'Paid',
-                          progressPercent: 0,
-                          avatar: u.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop'
-                        });
-                      }
-                    }
-                  });
-                }
-              }
-            } catch (err) {
-              console.warn('Error reading local user for student sync:', err);
-            }
-
-            if (pendingUploads.length > 0) {
-              for (const pStudent of pendingUploads) {
-                try {
-                  await fetch('https://kuldeep-singh-backend.onrender.com/api/students', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(pStudent)
-                  });
-                } catch (pErr) {
-                  console.warn('Failed to upload pending student enrollment:', pErr);
-                }
-              }
-              const refreshedRes = await fetch('https://kuldeep-singh-backend.onrender.com/api/students');
-              if (refreshedRes.ok) {
-                const refreshed = await refreshedRes.json();
-                if (isMounted) setStudents(refreshed);
-              }
-            } else {
-              setStudents(cloudStudents);
-            }
+              localStorage.setItem('kuldeep_studio_students', JSON.stringify(cloudStudents));
+            } catch {}
           }
         }
 
