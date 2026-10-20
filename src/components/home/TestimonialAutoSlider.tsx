@@ -289,21 +289,16 @@ export const TestimonialAutoSlider: React.FC<TestimonialAutoSliderProps> = ({
 
               {/* Reviewer Details & Location */}
               <div className="pt-4 border-t border-stone-200/80 dark:border-stone-800 flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-full bg-stone-900 dark:bg-stone-800 border-2 border-artisan-gold/60 flex items-center justify-center text-artisan-gold font-serif font-bold text-sm shadow-sm shrink-0">
-                    {currentReview?.name ? currentReview.name.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase() : '★'}
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="font-serif font-bold text-base sm:text-lg text-stone-900 dark:text-stone-100">
+                      {currentReview?.name}
+                    </h3>
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                   </div>
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <h3 className="font-serif font-bold text-base sm:text-lg text-stone-900 dark:text-stone-100">
-                        {currentReview?.name}
-                      </h3>
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    </div>
-                    <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
-                      {currentReview?.role} • <span className="text-stone-700 dark:text-stone-300 font-medium">{currentReview?.location}</span>
-                    </p>
-                  </div>
+                  <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+                    {currentReview?.role} • <span className="text-stone-700 dark:text-stone-300 font-medium">{currentReview?.location}</span>
+                  </p>
                 </div>
 
                 {/* Interactive Controls (Arrows) */}

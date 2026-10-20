@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, Star, Sparkles, MessageSquare, Flame, Bell, Quote } from 'lucide-react';
+import { Calendar, Clock, Sparkles, MessageSquare, Flame, Bell, Quote } from 'lucide-react';
 import { useStudioData } from '../../context/StudioDataContext';
 import { InquiryModal } from '../modals/InquiryModal';
 import type { UpcomingCourse } from '../../types';
@@ -133,11 +133,6 @@ export const UpcomingCoursesSection: React.FC = () => {
                 {course.studentTestimonial && (
                   <div className="p-3.5 rounded-2xl bg-stone-50 dark:bg-stone-800/60 border border-stone-200/80 dark:border-stone-700/60 shadow-xs relative">
                     <div className="flex items-center justify-between mb-1.5">
-                      <div className="flex items-center gap-1 text-amber-500">
-                        {[...Array(course.studentTestimonial.rating || 5)].map((_, i) => (
-                          <Star key={i} className="w-3 h-3 fill-amber-500" />
-                        ))}
-                      </div>
                       <span className="text-[10px] uppercase tracking-wider font-extrabold text-artisan-gold flex items-center gap-1">
                         <Quote className="w-2.5 h-2.5" />
                         Scholar Review
@@ -149,11 +144,6 @@ export const UpcomingCoursesSection: React.FC = () => {
                     </p>
 
                     <div className="flex items-center gap-2 mt-2 pt-2 border-t border-stone-200/50 dark:border-stone-700/50">
-                      <img
-                        src={course.studentTestimonial.avatar}
-                        alt={course.studentTestimonial.name}
-                        className="w-5 h-5 rounded-full object-cover border border-white shadow-xs"
-                      />
                       <span className="text-[10px] font-bold text-stone-900 dark:text-stone-100">
                         {course.studentTestimonial.name}
                       </span>

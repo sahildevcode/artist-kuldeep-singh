@@ -253,7 +253,6 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
   // Student Profile Data
   const studentName = currentUser?.name || 'Guest Scholar';
   const studentEmail = currentUser?.email || 'Not Signed In';
-  const studentAvatar = currentUser?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=150&auto=format&fit=crop';
 
   // Google Meet link for live studio: ONLY live if THIS specific course is broadcasting
   const isClassLive = Boolean(
@@ -345,11 +344,9 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex items-center gap-4 sm:gap-5">
             <div className="relative">
-              <img
-                src={studentAvatar}
-                alt={studentName}
-                className="w-16 h-16 rounded-2xl object-cover ring-2 ring-artisan-gold shadow-lg"
-              />
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-stone-900 border-2 border-artisan-gold/70 flex items-center justify-center text-artisan-gold shadow-lg shrink-0">
+                <User className="w-7 h-7 sm:w-8 sm:h-8 text-artisan-gold" />
+              </div>
               <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-[#1A1816] rounded-full" title="Active Student" />
             </div>
 
