@@ -425,10 +425,11 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         if (profileRes && profileRes.ok) {
           const cloudProfile = await profileRes.json();
           if (cloudProfile && isMounted) {
-            setArtistProfile((prev) => ({
-              ...prev,
-              ...cloudProfile,
-            }));
+            setArtistProfile((prev) => {
+              const merged = { ...prev, ...cloudProfile };
+              if (JSON.stringify(prev) === JSON.stringify(merged)) return prev;
+              return merged;
+            });
           }
         }
 
