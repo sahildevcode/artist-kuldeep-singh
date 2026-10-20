@@ -65,13 +65,21 @@ export const StudioVideoReels: React.FC = () => {
   // Build exactly 4 reels in the frame (prioritizing custom studioReels from Admin)
   const customReels = artistProfile?.studioReels && Array.isArray(artistProfile.studioReels) ? artistProfile.studioReels : [];
   const reelsList: StudioReel[] = [0, 1, 2, 3].map((idx) => {
-    if (customReels[idx]?.videoUrl) {
-      return customReels[idx];
+    const custom = customReels[idx];
+    if (custom && (custom.title || custom.videoUrl || custom.thumbnail)) {
+      return {
+        id: custom.id || DEFAULT_REELS[idx].id,
+        title: custom.title || DEFAULT_REELS[idx].title,
+        category: custom.category || DEFAULT_REELS[idx].category,
+        duration: custom.duration || DEFAULT_REELS[idx].duration,
+        videoUrl: custom.videoUrl || DEFAULT_REELS[idx].videoUrl,
+        thumbnail: custom.thumbnail || DEFAULT_REELS[idx].thumbnail,
+      };
     }
     if (idx === 0 && customVideoUrl) {
       return {
         id: 'custom-admin-reel',
-        title: artistProfile?.studioVideoTitle || 'Artist Kuldeep Singh • Atelier Demonstration',
+        title: artistProfile?.studioVideoTitle || DEFAULT_REELS[0].title,
         category: 'Featured Reel',
         duration: '0:55',
         videoUrl: customVideoUrl,
@@ -156,11 +164,18 @@ export const StudioVideoReels: React.FC = () => {
       url.includes('mediadelivery.net') ||
       url.includes('youtube.com') ||
       url.includes('youtu.be') ||
-      url.includes('vimeo.com')
+      url.includes('vimeo.com') ||
+      url.includes('instagram.com')
     );
   };
 
   const getEmbedUrl = (url: string) => {
+    if (url.includes('instagram.com/reel/') || url.includes('instagram.com/p/')) {
+      const match = url.match(/instagram\.com\/(?:reel|p)\/([^/?#&]+)/i);
+      if (match && match[1]) {
+        return `https://www.instagram.com/reel/${match[1]}/embed`;
+      }
+    }
     if (url.includes('mediadelivery.net') || url.includes('vimeo.com')) {
       return url;
     }
