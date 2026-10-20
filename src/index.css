@@ -21,12 +21,6 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Optimize off-screen section rendering */
-  .cv-auto {
-    content-visibility: auto;
-    contain-intrinsic-size: 1px 700px;
-  }
-
   /* Custom subtle scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
