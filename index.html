@@ -8,6 +8,10 @@
     <meta http-equiv="Expires" content="0" />
     <script>
       (function() {
+        if (window.location.hostname === 'artist-kuldeep-singh.vercel.app') {
+          window.location.replace('https://artistkuldeepsingh.com' + window.location.pathname + window.location.search);
+          return;
+        }
         function enforceMobileViewport() {
           var v = document.querySelector('meta[name="viewport"]');
           if (!v) {

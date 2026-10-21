@@ -1,4 +1,17 @@
 {
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "artist-kuldeep-singh.vercel.app"
+        }
+      ],
+      "destination": "https://artistkuldeepsingh.com/$1",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/index.html",
