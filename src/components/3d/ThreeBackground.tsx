@@ -401,12 +401,6 @@ export const ThreeBackground: React.FC = () => {
       animationFrameId = requestAnimationFrame(animate);
       if (typeof document !== 'undefined' && document.hidden) return;
 
-      // Smart GPU optimization: If user has scrolled down past the hero into page content,
-      // skip 3D rendering so the rest of the page scrolls with 100% GPU power at pure 120 FPS!
-      if (typeof window !== 'undefined' && window.scrollY > window.innerHeight * 1.5) {
-        return;
-      }
-
       const delta = Math.min(clock.getDelta(), 0.05); // Capped to 50ms to prevent any frame drops or spikes
       const elapsedTime = clock.getElapsedTime();
 
