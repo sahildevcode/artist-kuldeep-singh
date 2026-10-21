@@ -20,6 +20,17 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isInquiryOpen, setIsInquiryOpen] = useState(false);
+  // Lock background scroll when mobile drawer is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
 
   useEffect(() => {
     let ticking = false;
@@ -176,13 +187,13 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
               })}
             </nav>
 
-            {/* Right Actions: Cart, Theme Toggle, User/Auth & Studio Inquiry */}
+            {/* Right Actions: Clean Desktop Actions & Mobile Menu Trigger */}
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-              {/* Dark / Light Theme Toggle Button */}
+              {/* Desktop Only: Theme Toggle */}
               <button
                 type="button"
                 onClick={toggleTheme}
-                className="relative p-2 sm:p-2.5 rounded-full bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-amber-400 transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none cursor-pointer shrink-0 border border-stone-200/60 dark:border-stone-700"
+                className="hidden md:flex relative p-2 sm:p-2.5 rounded-full bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-amber-400 transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none cursor-pointer shrink-0 border border-stone-200/60 dark:border-stone-700"
                 aria-label={theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
                 title={theme === 'dark' ? 'Light Theme ☀️ (दिन का मोड)' : 'Dark Theme 🌙 (रात का मोड)'}
               >
@@ -193,7 +204,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                 )}
               </button>
 
-              {/* Cart Button */}
+              {/* Cart Button: Visible on both Desktop and Mobile */}
               <button
                 onClick={() => setIsCartOpen(true)}
                 className="relative p-2 sm:p-2.5 rounded-full bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-[#1A1816] dark:text-[#FDFBF7] transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none cursor-pointer shrink-0 border border-stone-200/60 dark:border-stone-700"
@@ -207,9 +218,9 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                 )}
               </button>
 
-              {/* User Account / Login Button */}
+              {/* Desktop Only: User Account / Login Button */}
               {currentUser ? (
-                <div className="relative">
+                <div className="hidden md:block relative">
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                     className="flex items-center gap-1.5 sm:gap-2 p-1 sm:p-1.5 pr-2.5 sm:pr-3 rounded-full bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 transition-colors border border-stone-200 dark:border-stone-700 cursor-pointer whitespace-nowrap"
@@ -219,7 +230,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                       alt={currentUser.name}
                       className="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover border border-white shrink-0"
                     />
-                    <span className="text-[11px] sm:text-xs font-semibold text-stone-800 dark:text-stone-200 max-w-[80px] sm:max-w-[90px] truncate hidden sm:inline">
+                    <span className="text-[11px] sm:text-xs font-semibold text-stone-800 dark:text-stone-200 max-w-[80px] sm:max-w-[90px] truncate">
                       {currentUser.name.split(' ')[0]}
                     </span>
                   </button>
@@ -285,40 +296,151 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
               ) : (
                 <button
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-semibold tracking-wide text-stone-900 bg-white hover:bg-stone-100 rounded-full transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-1.5 active:scale-95 whitespace-nowrap cursor-pointer shrink-0"
+                  className="hidden md:flex px-3.5 py-2 text-xs font-semibold tracking-wide text-stone-900 bg-white hover:bg-stone-100 rounded-full transition-all duration-200 shadow-sm hover:shadow-md items-center gap-1.5 active:scale-95 whitespace-nowrap cursor-pointer shrink-0"
                 >
                   <User className="w-3.5 h-3.5 shrink-0" />
                   <span className="whitespace-nowrap">Sign In</span>
                 </button>
               )}
 
-              {/* Studio Inquiry Button */}
+              {/* Desktop Only: Studio Inquiry Button */}
               <button
                 onClick={() => setIsInquiryOpen(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full bg-artisan-gold/20 hover:bg-artisan-gold text-[#EADBBE] hover:text-stone-950 border border-artisan-gold/50 text-[11px] sm:text-xs font-bold transition-all shadow-xs cursor-pointer group shrink-0 active:scale-95 whitespace-nowrap"
+                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full bg-artisan-gold/20 hover:bg-artisan-gold text-[#EADBBE] hover:text-stone-950 border border-artisan-gold/50 text-[11px] sm:text-xs font-bold transition-all shadow-xs cursor-pointer group shrink-0 active:scale-95 whitespace-nowrap"
                 title="Send Studio Inquiry / पूछताछ करें"
               >
                 <MessageSquare className="w-3.5 h-3.5 text-artisan-gold group-hover:text-stone-950 transition-colors shrink-0" />
                 <span className="whitespace-nowrap">Inquiry</span>
               </button>
 
-              {/* Mobile Menu Toggle */}
+              {/* Mobile Menu Toggle Button: Sleek Luxury Trigger */}
               <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-1.5 sm:p-2 text-white hover:text-stone-300 focus:outline-none cursor-pointer shrink-0"
-                aria-label="Toggle menu"
+                type="button"
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="md:hidden p-2 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all duration-200 active:scale-95 cursor-pointer shrink-0 flex items-center justify-center"
+                aria-label="Open side navigation menu"
               >
-                {isMobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
+                <Menu className="w-5 h-5 text-white" />
               </button>
             </div>
           </div>
         </div>
+      </header>
 
-        {/* Mobile Navigation Dropdown */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden mt-3 px-4 pb-4 pt-2 bg-[#0E0C0A]/98 backdrop-blur-xl border-b border-white/10 shadow-2xl">
-            <div className="flex flex-col gap-1.5">
-              {navLinks.map((link) => (
+      {/* ============================================================== */}
+      {/* LUXURY MOBILE SIDE NAVBAR (SLIDE-IN DRAWER WITH SMOOTH ANIMATION) */}
+      {/* ============================================================== */}
+      {/* 1. Backdrop Overlay */}
+      <div
+        className={`fixed inset-0 z-50 bg-black/75 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
+          isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={() => setIsMobileMenuOpen(false)}
+        aria-hidden="true"
+      />
+
+      {/* 2. Slide-in Drawer Panel */}
+      <aside
+        className={`fixed top-0 right-0 bottom-0 z-50 w-[84%] max-w-[340px] bg-[#0E0C0A] text-white border-l border-white/15 shadow-2xl flex flex-col justify-between transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] md:hidden ${
+          isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+        aria-label="Mobile Navigation Drawer"
+      >
+        {/* Top Header of Drawer: Monogram + Title + Close Button */}
+        <div className="p-5 border-b border-white/10 flex items-center justify-between bg-black/40">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-stone-900 border border-artisan-gold/40 text-artisan-gold flex items-center justify-center font-serif text-base font-bold shadow-md">
+              K
+            </div>
+            <div>
+              <div className="font-display font-bold text-base tracking-tight text-white leading-tight">
+                KULDEEP <span className="text-artisan-gold font-light">SINGH</span>
+              </div>
+              <div className="text-[9px] uppercase tracking-[0.2em] text-stone-400 font-medium">
+                Atelier & Academy
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-stone-300 hover:text-white transition-all active:scale-90 cursor-pointer"
+            aria-label="Close menu"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Scrollable Navigation Body */}
+        <div className="flex-1 overflow-y-auto px-4 py-5 space-y-5">
+          {/* User Profile Card (if logged in) or Sign In Button */}
+          {currentUser ? (
+            <div className="p-3.5 rounded-2xl bg-white/[0.06] border border-white/10 space-y-3">
+              <div className="flex items-center gap-3">
+                <img
+                  src={currentUser.avatar}
+                  alt={currentUser.name}
+                  className="w-10 h-10 rounded-full object-cover border border-artisan-gold/50 shrink-0"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-bold text-white truncate">{currentUser.name}</p>
+                  <p className="text-[10px] text-artisan-gold capitalize flex items-center gap-1">
+                    <Sparkles className="w-2.5 h-2.5" />
+                    {currentUser.role} Account
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsOrderHistoryOpen(true);
+                  }}
+                  className="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-[11px] font-semibold text-white flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <span>📦 Orders ({orders.length})</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    logout();
+                  }}
+                  className="px-2.5 py-1.5 rounded-xl bg-red-950/40 hover:bg-red-900/60 text-red-300 text-[11px] font-semibold flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <LogOut className="w-3 h-3" />
+                  <span>Logout</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                setIsAuthModalOpen(true);
+              }}
+              className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-stone-800 to-stone-900 border border-white/15 hover:border-artisan-gold/50 text-white text-xs font-bold flex items-center justify-between shadow-md cursor-pointer group active:scale-[0.98]"
+            >
+              <div className="flex items-center gap-2.5">
+                <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-artisan-gold">
+                  <User className="w-3.5 h-3.5" />
+                </div>
+                <span>Student / Collector Sign In</span>
+              </div>
+              <span className="text-[11px] text-artisan-gold font-semibold">Login →</span>
+            </button>
+          )}
+
+          {/* Primary Navigation Links */}
+          <div className="space-y-1">
+            <div className="px-2 pb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-500">
+              Navigation
+            </div>
+            {navLinks.map((link) => {
+              const isActive = activePage === link.id;
+              return (
                 <button
                   key={link.id}
                   onClick={() => {
@@ -326,73 +448,86 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                     setIsMobileMenuOpen(false);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
-                    activePage === link.id
-                      ? 'bg-white text-stone-900 font-bold'
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                    isActive
+                      ? 'bg-white text-stone-950 font-bold shadow-md'
                       : 'text-stone-300 hover:bg-white/10 hover:text-white'
                   }`}
                 >
-                  {link.icon}
-                  <span>{link.label}</span>
+                  <div className="flex items-center gap-3">
+                    <span className={isActive ? 'text-artisan-crimson' : 'text-stone-400'}>
+                      {link.icon}
+                    </span>
+                    <span>{link.label}</span>
+                  </div>
                   {link.id === 'student-portal' && isUserEnrolledInLiveCourse && (
-                    <span className="ml-auto flex items-center gap-1 bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full uppercase animate-pulse">
+                    <span className="flex items-center gap-1 bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse shadow-sm">
                       <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
-                      LIVE NOW
+                      LIVE
                     </span>
                   )}
-                </button>
-              ))}
-
-              {/* Dark / Light Theme Button in Mobile Dropdown */}
-              <button
-                type="button"
-                onClick={() => {
-                  toggleTheme();
-                }}
-                className="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all bg-white/10 hover:bg-white/15 text-stone-200 cursor-pointer border border-white/10"
-              >
-                <div className="flex items-center gap-3">
-                  {theme === 'dark' ? (
-                    <Sun className="w-4 h-4 text-amber-400" />
-                  ) : (
-                    <Moon className="w-4 h-4 text-stone-300" />
+                  {isActive && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-artisan-crimson shadow-[0_0_8px_#E63946]" />
                   )}
-                  <span>{theme === 'dark' ? 'Light Theme (लाइट थीम)' : 'Dark Theme (डार्क थीम)'}</span>
-                </div>
-                <span className="text-xs px-2.5 py-1 rounded-full font-bold bg-white/20 text-white shadow-xs border border-white/20">
-                  {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
-                </span>
-              </button>
-
-              {/* Inquiry Button in Mobile Dropdown */}
-              <button
-                onClick={() => {
-                  setIsInquiryOpen(true);
-                  setIsMobileMenuOpen(false);
-                }}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-amber-200 bg-artisan-gold/20 hover:bg-artisan-gold/30 border border-artisan-gold/40 transition-all text-left cursor-pointer"
-              >
-                <MessageSquare className="w-4 h-4 text-artisan-gold shrink-0" />
-                <span>Enquire / पूछताछ (Direct Inquiry)</span>
-              </button>
-
-              <div className="pt-2 mt-1 border-t border-white/10">
-                <button
-                  onClick={() => {
-                    setActivePage('terms');
-                    setIsMobileMenuOpen(false);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold text-stone-400 hover:text-white hover:bg-white/10 transition-all text-left"
-                >
-                  <ShieldCheck className="w-4 h-4 text-artisan-gold" />
-                  <span>Terms & Legal Compliance (Razorpay)</span>
                 </button>
-              </div>
-            </div>
+              );
+            })}
           </div>
-        )}
-      </header>
+
+          {/* Studio Inquiry Button */}
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                setIsInquiryOpen(true);
+              }}
+              className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-artisan-gold/25 via-artisan-gold/20 to-artisan-ochre/25 hover:from-artisan-gold/35 hover:to-artisan-ochre/35 border border-artisan-gold/50 text-[#F5E6CC] text-xs font-bold flex items-center justify-center gap-2 shadow-md transition-all active:scale-[0.98] cursor-pointer"
+            >
+              <MessageSquare className="w-4 h-4 text-artisan-gold shrink-0" />
+              <span>Studio Inquiry / पूछताछ करें</span>
+            </button>
+          </div>
+
+          {/* Day / Night Theme Toggle */}
+          <button
+            type="button"
+            onClick={() => toggleTheme()}
+            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium bg-white/[0.05] hover:bg-white/10 text-stone-300 border border-white/10 transition-all cursor-pointer"
+          >
+            <div className="flex items-center gap-2.5">
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4 text-amber-400" />
+              ) : (
+                <Moon className="w-4 h-4 text-stone-300" />
+              )}
+              <span>{theme === 'dark' ? 'Light Theme (दिन का मोड)' : 'Dark Theme (रात का मोड)'}</span>
+            </div>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-stone-200">
+              {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
+            </span>
+          </button>
+        </div>
+
+        {/* Footer of Drawer */}
+        <div className="p-4 border-t border-white/10 bg-black/30 space-y-2">
+          <button
+            type="button"
+            onClick={() => {
+              setActivePage('terms');
+              setIsMobileMenuOpen(false);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="w-full flex items-center gap-2 text-[11px] text-stone-400 hover:text-white transition-colors cursor-pointer"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-artisan-gold" />
+            <span>Terms, Privacy & Razorpay Verified</span>
+          </button>
+          <div className="text-[10px] text-stone-500 tracking-wider">
+            © Artist Kuldeep Singh Atelier • All Rights Reserved
+          </div>
+        </div>
+      </aside>
 
       {/* Direct Studio Inquiry Modal */}
       <InquiryModal
