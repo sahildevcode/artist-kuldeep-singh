@@ -172,7 +172,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoTo
                     } catch (err) {
                       console.warn(err);
                     }
-                    window.location.hash = 'student-portal';
+                    window.history.pushState({}, '', '/student-portal'); window.dispatchEvent(new PopStateEvent('popstate'));
                   }
                 } else {
                   onSelectCourse(course);
@@ -317,7 +317,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoTo
                                   } catch (err) {
                                     console.warn(err);
                                   }
-                                  window.location.hash = 'student-portal';
+                                  window.history.pushState({}, '', '/student-portal'); window.dispatchEvent(new PopStateEvent('popstate'));
                                 }
                               }}
                               className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"

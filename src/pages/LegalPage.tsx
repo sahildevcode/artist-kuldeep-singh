@@ -21,7 +21,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({ initialTab = 'terms', setA
 
   const handleTabChange = (tab: LegalTab) => {
     setActiveTab(tab);
-    window.location.hash = tab;
+    window.history.pushState({}, '', `/${tab}`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -97,7 +97,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({ initialTab = 'terms', setA
                   <button
                     onClick={() => {
                       setActivePage('gallery');
-                      window.location.hash = '';
+                      window.history.pushState({}, '', '/');
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                     className="w-full py-2 px-3 text-xs font-bold text-stone-600 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-xl transition-colors text-center"

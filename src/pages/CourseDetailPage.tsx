@@ -326,7 +326,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
                       if (onGoToPortal) {
                         onGoToPortal(course.id);
                       } else {
-                        window.location.hash = 'student-portal';
+                        window.history.pushState({}, '', '/student-portal'); window.dispatchEvent(new PopStateEvent('popstate'));
                       }
                     }}
                     variant="primary"

@@ -97,9 +97,9 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
 
   const getShareUrl = () => {
     if (typeof window !== 'undefined') {
-      return `${window.location.origin}${window.location.pathname}#artwork-detail`;
+      return `${window.location.origin}/artwork-detail`;
     }
-    return 'https://kuldeepsingh.art/#store';
+    return 'https://artistkuldeepsingh.com/store';
   };
 
   const handleCopyLink = () => {

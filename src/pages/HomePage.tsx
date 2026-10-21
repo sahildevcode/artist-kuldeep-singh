@@ -1,5 +1,5 @@
-import React from 'react';
-import { ArrowRight, Eye } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { ArrowRight, Eye, Play, Pause, Volume2, VolumeX, Maximize2 } from 'lucide-react';
 import { PRESS_LOGOS } from '../data/reviews';
 import type { Artwork, Course } from '../types';
 import { MagneticButton } from '../components/ui/MagneticButton';
@@ -24,6 +24,36 @@ export const HomePage: React.FC<HomePageProps> = ({
   const featuredArtworks = artworks.filter((a) => a.featured).slice(0, 4);
   const featuredCourses = courses.slice(0, 3);
 
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+
+  const togglePlay = () => {
+    if (!videoRef.current) return;
+    if (videoRef.current.paused) {
+      videoRef.current.play();
+      setIsPlaying(true);
+    } else {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const toggleMute = () => {
+    if (!videoRef.current) return;
+    videoRef.current.muted = !isMuted;
+    setIsMuted(!isMuted);
+  };
+
+  const toggleFullscreen = () => {
+    if (!videoRef.current) return;
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    } else {
+      videoRef.current.requestFullscreen().catch(() => {});
+    }
+  };
+
   const dynamicStats = [
     { label: 'Years of Devoted Mastery', value: artistProfile.yearsExperience, subtext: 'Continuous studio practice' },
     { label: 'Original Works Collected', value: artistProfile.artworksCount, subtext: 'In 32 countries across the globe' },
@@ -32,61 +62,123 @@ export const HomePage: React.FC<HomePageProps> = ({
   ];
 
   return (
-    <div className="relative z-10 pt-28 sm:pt-36">
+    <div className="relative z-10 w-full">
       {/* ------------------------------------------------------------- */}
-      {/* 1. HERO SECTION - MAIN FULL-WIDTH CINEMATIC VIDEO */}
+      {/* 1. HERO SECTION - FULL-SCREEN CINEMATIC VIDEO (ART BY SEHGAL STYLE) */}
       {/* ------------------------------------------------------------- */}
-      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 sm:pb-24">
-        {/* Full-width Cinema Video Container */}
-        <div className="relative w-full rounded-3xl overflow-hidden shadow-2xl border border-stone-200/90 dark:border-stone-800 bg-black aspect-[16/9] sm:aspect-[21/9] lg:aspect-[16/8] group">
-          {(() => {
-            const heroVideoUrl =
-              artistProfile.heroShowcaseVideoUrl ||
-              artistProfile.studioVideoUrl ||
-              'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
-            const heroImage =
-              artistProfile.heroShowcaseImage ||
-              artistProfile.studioVideoPoster ||
-              'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1600&auto=format&fit=crop';
-            const isIframe =
-              heroVideoUrl.includes('iframe') ||
-              heroVideoUrl.includes('embed') ||
-              heroVideoUrl.includes('youtube.com') ||
-              heroVideoUrl.includes('youtu.be') ||
-              heroVideoUrl.includes('vimeo.com') ||
-              heroVideoUrl.includes('mediadelivery.net');
+      <section className="relative w-full h-[88vh] sm:h-screen min-h-[580px] max-h-[1080px] overflow-hidden bg-black select-none">
+        {(() => {
+          const heroVideoUrl =
+            artistProfile.heroShowcaseVideoUrl ||
+            artistProfile.studioVideoUrl ||
+            '/videos/hero-cinematic.mp4';
+          const heroImage =
+            artistProfile.heroShowcaseImage ||
+            artistProfile.studioVideoPoster ||
+            'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1600&auto=format&fit=crop';
+          const isIframe =
+            heroVideoUrl.includes('iframe') ||
+            heroVideoUrl.includes('embed') ||
+            heroVideoUrl.includes('youtube.com') ||
+            heroVideoUrl.includes('youtu.be') ||
+            heroVideoUrl.includes('vimeo.com') ||
+            heroVideoUrl.includes('mediadelivery.net');
 
-            if (isIframe) {
-              return (
+          const heroHeadline =
+            (artistProfile.heroShowcaseTitle || 'Art That Transforms Spaces Into Stories').toUpperCase();
+
+          return (
+            <div className="relative w-full h-full">
+              {/* Background Video Player */}
+              {isIframe ? (
                 <iframe
                   src={heroVideoUrl}
                   title="Artist Kuldeep Singh - Hero Video"
-                  className="w-full h-full border-0"
+                  className="w-full h-full border-0 object-cover"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 />
-              );
-            }
+              ) : (
+                <video
+                  ref={videoRef}
+                  src={heroVideoUrl}
+                  poster={heroImage}
+                  autoPlay
+                  muted={isMuted}
+                  loop
+                  playsInline
+                  preload="auto"
+                  className="w-full h-full object-cover"
+                />
+              )}
 
-            return (
-              <video
-                src={heroVideoUrl}
-                poster={heroImage}
-                controls
-                autoPlay
-                muted
-                loop
-                playsInline
-                className="w-full h-full object-cover"
-              />
-            );
-          })()}
-        </div>
+              {/* Dark Cinematic Vignette & Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/25 to-black/60 pointer-events-none" />
 
-        {/* ------------------------------------------------------------- */}
-        {/* STATS COUNTER STRIP */}
-        {/* ------------------------------------------------------------- */}
-        <div className="mt-14 sm:mt-20 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {/* Top Floating Controls Pill (Sound / Play / Fullscreen like reference) */}
+              {!isIframe && (
+                <div className="absolute top-24 sm:top-28 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-black/60 hover:bg-black/80 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/25 shadow-2xl transition-all">
+                  <button
+                    type="button"
+                    onClick={togglePlay}
+                    className="p-1.5 text-white/80 hover:text-white transition-colors cursor-pointer"
+                    title={isPlaying ? 'Pause Video' : 'Play Video'}
+                    aria-label="Play or Pause"
+                  >
+                    {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 fill-white" />}
+                  </button>
+                  <div className="w-px h-3.5 bg-white/20" />
+                  <button
+                    type="button"
+                    onClick={toggleMute}
+                    className="p-1.5 text-white/80 hover:text-white transition-colors cursor-pointer"
+                    title={isMuted ? 'Unmute Sound' : 'Mute Sound'}
+                    aria-label="Mute or Unmute"
+                  >
+                    {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5 text-emerald-400" />}
+                  </button>
+                  <div className="w-px h-3.5 bg-white/20" />
+                  <button
+                    type="button"
+                    onClick={toggleFullscreen}
+                    className="p-1.5 text-white/80 hover:text-white transition-colors cursor-pointer"
+                    title="Fullscreen"
+                    aria-label="Toggle Fullscreen"
+                  >
+                    <Maximize2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+
+              {/* Centered Overlay: Headline & Discover Button (Identical to ART BY SEHGAL reference) */}
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-4 sm:px-8 pt-16 sm:pt-20 pointer-events-none">
+                <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-normal text-white uppercase tracking-[0.08em] sm:tracking-[0.14em] max-w-5xl leading-[1.18] drop-shadow-2xl">
+                  {heroHeadline}
+                </h1>
+
+                <div className="mt-8 sm:mt-12 pointer-events-auto">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActivePage('about');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className="px-8 sm:px-12 py-3.5 sm:py-4 bg-black/85 hover:bg-black text-white hover:text-white border border-white/50 hover:border-white font-sans text-xs sm:text-sm font-semibold uppercase tracking-[0.22em] transition-all duration-300 shadow-2xl backdrop-blur-sm cursor-pointer hover:scale-[1.03] active:scale-[0.98]"
+                  >
+                    <span>Discover The Artist</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+      </section>
+
+      {/* ------------------------------------------------------------- */}
+      {/* STATS COUNTER STRIP */}
+      {/* ------------------------------------------------------------- */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {dynamicStats.map((stat, idx) => (
             <div
               key={idx}

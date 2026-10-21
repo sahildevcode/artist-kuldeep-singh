@@ -19,7 +19,6 @@ export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
 
   const navigateTo = (page: string) => {
     setActivePage(page);
-    window.location.hash = page;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 

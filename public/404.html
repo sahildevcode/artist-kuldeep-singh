@@ -5,16 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ARTIST KULDEEP SINGH | Loading Studio...</title>
     <script>
-      var path = window.location.pathname.replace(/^\//, '');
-      if (path) {
-        window.location.replace('/#' + path);
-      } else {
-        window.location.replace('/');
-      }
+      // Single Page App HTML5 routing fallback
+      var p = window.location.pathname;
+      sessionStorage.setItem('spa_redirect', p);
+      window.location.replace('/');
     </script>
   </head>
   <body style="background-color: #FDFBF7; color: #1A1816; font-family: sans-serif; text-align: center; padding-top: 20vh;">
     <h2 style="font-family: serif; font-size: 28px; color: #1A1816;">Entering Artist Kuldeep Singh Atelier...</h2>
-    <p style="color: #666; font-size: 14px;">Redirecting to requested studio section...</p>
+    <p style="color: #666; font-size: 14px;">Redirecting...</p>
   </body>
 </html>

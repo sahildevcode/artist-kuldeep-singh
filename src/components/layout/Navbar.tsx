@@ -387,7 +387,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                   onClick={() => {
                     setActivePage('terms');
                     setIsMobileMenuOpen(false);
-                    window.location.hash = 'terms';
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold text-stone-500 hover:text-stone-900 hover:bg-stone-100 transition-all text-left"

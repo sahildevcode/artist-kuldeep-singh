@@ -28,6 +28,7 @@ import type { Artwork, Course } from './types';
 
 export type AppNavPage = 
   | 'home' 
+  | 'portraits'
   | 'about' 
   | 'courses' 
   | 'store' 
@@ -40,22 +41,48 @@ export type AppNavPage =
   | 'shipping' 
   | 'contact';
 
+export const pageToPath = (page: AppNavPage): string => {
+  if (page === 'home') return '/';
+  return `/${page}`;
+};
+
+export const pathToPage = (pathname: string, hash: string): AppNavPage => {
+  const cleanPath = pathname.replace(/^\/+/, '').split('/')[0]?.toLowerCase() || '';
+  const cleanHash = hash.replace(/^#+/, '').trim().toLowerCase();
+
+  const target = cleanPath || cleanHash;
+
+  if (target === 'portraits' || target.includes('portrait')) return 'portraits';
+  if (target === 'about') return 'about';
+  if (target === 'courses') return 'courses';
+  if (target === 'course-detail') return 'course-detail';
+  if (target === 'store') return 'store';
+  if (target === 'artwork-detail' || target.includes('artwork')) return 'artwork-detail';
+  if (target === 'student-portal') return 'student-portal';
+  if (target === 'terms') return 'terms';
+  if (target === 'privacy') return 'privacy';
+  if (target === 'refund') return 'refund';
+  if (target === 'shipping') return 'shipping';
+  if (target === 'contact') return 'contact';
+
+  return 'home';
+};
+
 const AppInner: React.FC = () => {
   const getInitialPage = (): AppNavPage => {
-    const path = window.location.pathname.toLowerCase();
-    const hash = window.location.hash.replace('#', '').toLowerCase();
-
-    if (path.includes('terms') || hash === 'terms') return 'terms';
-    if (path.includes('privacy') || hash === 'privacy') return 'privacy';
-    if (path.includes('refund') || hash === 'refund') return 'refund';
-    if (path.includes('shipping') || hash === 'shipping') return 'shipping';
-    if (path.includes('contact') || hash === 'contact') return 'contact';
-    if (path.includes('student-portal') || hash.includes('student-portal')) return 'student-portal';
-    if (path.includes('about') || hash === 'about') return 'about';
-    if (path.includes('courses') || hash === 'courses') return 'courses';
-    if (path.includes('artwork-detail') || hash.includes('artwork-detail') || hash.includes('artwork')) return 'artwork-detail';
-    if (path.includes('store') || hash === 'store') return 'store';
-    return 'home';
+    if (typeof window !== 'undefined') {
+      try {
+        const redirectPath = sessionStorage.getItem('spa_redirect');
+        if (redirectPath) {
+          sessionStorage.removeItem('spa_redirect');
+          window.history.replaceState(null, '', redirectPath);
+          return pathToPage(redirectPath, '');
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+    return pathToPage(window.location.pathname, window.location.hash);
   };
 
   const [activePage, setActivePage] = useState<AppNavPage>(getInitialPage);
@@ -67,47 +94,30 @@ const AppInner: React.FC = () => {
   const { isCheckoutModalOpen, setIsCheckoutModalOpen } = useCart();
 
   useEffect(() => {
-    const handleNavigation = () => {
-      const path = window.location.pathname.toLowerCase();
-      const hash = window.location.hash.replace('#', '').toLowerCase();
+    // If user arrived via an old hash link (e.g. /#about), cleanly migrate them to /about without hash
+    if (window.location.hash) {
+      const cleanPath = pageToPath(activePage);
+      window.history.replaceState({ page: activePage }, '', cleanPath);
+    }
 
-      if (path.includes('terms') || hash === 'terms') {
-        setActivePage('terms');
-      } else if (path.includes('privacy') || hash === 'privacy') {
-        setActivePage('privacy');
-      } else if (path.includes('refund') || hash === 'refund') {
-        setActivePage('refund');
-      } else if (path.includes('shipping') || hash === 'shipping') {
-        setActivePage('shipping');
-      } else if (path.includes('contact') || hash === 'contact') {
-        setActivePage('contact');
-      } else if (path.includes('student-portal') || hash.includes('student-portal')) {
-        setActivePage('student-portal');
-      } else if (path.includes('about') || hash === 'about') {
-        setActivePage('about');
-      } else if (path.includes('courses') || hash === 'courses') {
-        setActivePage('courses');
-      } else if (path.includes('artwork-detail') || hash.includes('artwork-detail') || hash.includes('artwork')) {
-        setActivePage('artwork-detail');
-      } else if (path.includes('store') || hash === 'store') {
-        setActivePage('store');
-      } else if (!hash || hash === 'home') {
-        setActivePage('home');
-      }
+    const handleNavigation = () => {
+      const page = pathToPage(window.location.pathname, window.location.hash);
+      setActivePage(page);
     };
 
-    window.addEventListener('hashchange', handleNavigation);
     window.addEventListener('popstate', handleNavigation);
     return () => {
-      window.removeEventListener('hashchange', handleNavigation);
       window.removeEventListener('popstate', handleNavigation);
     };
-  }, []);
+  }, [activePage]);
 
-  // Scroll to top on page switch and sync URL hash
+  // Scroll to top on page switch and sync clean URL path
   const handlePageChange = (page: AppNavPage) => {
     setActivePage(page);
-    window.location.hash = page === 'home' ? '' : page;
+    const targetPath = pageToPath(page);
+    if (window.location.pathname !== targetPath || window.location.hash) {
+      window.history.pushState({ page }, '', targetPath);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -121,7 +131,7 @@ const AppInner: React.FC = () => {
     handlePageChange('artwork-detail');
   };
 
-  const navbarActivePage: 'home' | 'about' | 'courses' | 'store' | 'student-portal' = 
+  const navbarActivePage: 'home' | 'about' | 'courses' | 'store' | 'student-portal' | 'portraits' = 
     activePage === 'course-detail'
       ? 'courses'
       : activePage === 'artwork-detail'
@@ -191,7 +201,7 @@ const AppInner: React.FC = () => {
               onSelectArtwork={handleSelectArtwork}
             />
           )}
-          {activePage === 'store' && (
+          {(activePage === 'store' || activePage === 'portraits') && (
             <StorePage
               onSelectArtwork={handleSelectArtwork}
             />
