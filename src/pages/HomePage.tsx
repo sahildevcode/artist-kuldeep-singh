@@ -5,7 +5,6 @@ import type { Artwork, Course } from '../types';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { useCart } from '../context/CartContext';
 import { useStudioData } from '../context/StudioDataContext';
-import { useAudio } from '../context/AudioContext';
 import { StudioVideoReels } from '../components/home/StudioVideoReels';
 import { UpcomingCoursesSection } from '../components/home/UpcomingCoursesSection';
 import { TestimonialAutoSlider } from '../components/home/TestimonialAutoSlider';
@@ -23,7 +22,6 @@ export const HomePage: React.FC<HomePageProps> = ({
 }) => {
   const { addToCart } = useCart();
   const { artworks, courses, artistProfile } = useStudioData();
-  const { activeTheme3D, setIsSettingsModalOpen } = useAudio();
   const featuredArtworks = artworks.filter((a) => a.featured).slice(0, 4);
   const featuredCourses = courses.slice(0, 3);
 
@@ -82,32 +80,6 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <span>Explore Masterclasses</span>
                 <Sparkles className="w-4 h-4 ml-2 text-artisan-gold" />
               </MagneticButton>
-            </div>
-
-            {/* 3D Visual Atmosphere Theme Change Button */}
-            <div className="pt-4 flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setIsSettingsModalOpen(true)}
-                className="group inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-white/95 dark:bg-stone-900/95 hover:bg-white dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 border border-stone-200/90 dark:border-stone-800 shadow-xs hover:shadow-md transition-all duration-200 text-xs font-serif cursor-pointer hover:border-artisan-ochre/60"
-              >
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="font-bold text-stone-900 dark:text-stone-100">
-                  {activeTheme3D === 'brush'
-                    ? '🎨 3D Brush & Palette'
-                    : activeTheme3D === 'kuldeep'
-                    ? '🏛️ Artist Kuldeep Signature 3D'
-                    : '🌌 Celestial Easel 3D'}
-                </span>
-                <span className="text-stone-300 dark:text-stone-600">|</span>
-                <span className="px-2.5 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 group-hover:bg-artisan-ochre group-hover:text-white transition text-[11px] font-sans font-semibold text-stone-600 dark:text-stone-300">
-                  Theme Change 🎨
-                </span>
-              </button>
-
-              <span className="text-[11px] text-stone-400 italic hidden sm:inline">
-                Click to switch 3D interactive background atmosphere
-              </span>
             </div>
           </div>
 

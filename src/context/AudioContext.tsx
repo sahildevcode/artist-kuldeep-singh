@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type Theme3DMode = 'brush' | 'kuldeep' | 'celestial';
+export type Theme3DMode = 'kuldeep';
 
 interface AudioContextType {
-  // Audio state & actions
+  // Audio state & actions (disabled per user request)
   isPlaying: boolean;
   isMuted: boolean;
   volume: number;
@@ -15,13 +15,13 @@ interface AudioContextType {
   playHover: () => void;
   playBrushStroke: () => void;
 
-  // 3D Background Theme state & actions
+  // 3D Background Theme state & actions - Locked exclusively to 'kuldeep'
   activeTheme3D: Theme3DMode;
   setActiveTheme3D: (mode: Theme3DMode) => void;
   autoCycle3D: boolean;
   setAutoCycle3D: (val: boolean) => void;
 
-  // Global Settings Modal (compact popup for Theme & Sound)
+  // Global Settings Modal
   isSettingsModalOpen: boolean;
   setIsSettingsModalOpen: (val: boolean) => void;
 }
@@ -34,36 +34,22 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isMuted] = useState<boolean>(true);
   const [volume] = useState<number>(0);
 
-  // 3D Background Theme (Default to 'kuldeep' or saved theme)
-  const [activeTheme3D, setActiveTheme3DState] = useState<Theme3DMode>(() => {
-    const saved = typeof window !== 'undefined' ? (localStorage.getItem('artisan_3d_theme') as Theme3DMode) : 'kuldeep';
-    return saved === 'brush' || saved === 'kuldeep' || saved === 'celestial' ? saved : 'kuldeep';
-  });
-  const [autoCycle3D, setAutoCycle3D] = useState<boolean>(false);
+  // 3D Background Theme - Exclusively 'kuldeep' (Artist Kuldeep Singh signature & stardust)
+  const [activeTheme3D] = useState<Theme3DMode>('kuldeep');
+  const [autoCycle3D] = useState<boolean>(false);
+
+  // Ensure localStorage is cleanly set to 'kuldeep'
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('artisan_3d_theme', 'kuldeep');
+    }
+  }, []);
 
   // Modal open state
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
 
-  // Set theme & persist
-  const setActiveTheme3D = (mode: Theme3DMode) => {
-    setActiveTheme3DState(mode);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('artisan_3d_theme', mode);
-    }
-  };
-
-  // Auto-Cycle 3D Themes if enabled (switches every 22 seconds)
-  useEffect(() => {
-    if (!autoCycle3D) return;
-    const interval = setInterval(() => {
-      setActiveTheme3DState((prev) => {
-        if (prev === 'brush') return 'kuldeep';
-        if (prev === 'kuldeep') return 'celestial';
-        return 'brush';
-      });
-    }, 22000);
-    return () => clearInterval(interval);
-  }, [autoCycle3D]);
+  const setActiveTheme3D = (_mode: Theme3DMode) => {};
+  const setAutoCycle3D = (_val: boolean) => {};
 
   // Audio start/stop handler - disabled
   const togglePlay = () => {};
