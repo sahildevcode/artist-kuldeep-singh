@@ -31,6 +31,39 @@ export const HomePage: React.FC<HomePageProps> = ({
     { label: 'Global Academy Students', value: artistProfile.studentsCount, subtext: 'Trained in oils, sketch & color theory' },
   ];
 
+  const getAutoplayEmbedUrl = (rawUrl: string) => {
+    try {
+      const urlObj = new URL(rawUrl);
+      if (rawUrl.includes('mediadelivery.net')) {
+        urlObj.searchParams.set('autoplay', 'true');
+        urlObj.searchParams.set('loop', 'true');
+        urlObj.searchParams.set('muted', 'true');
+        urlObj.searchParams.set('preload', 'true');
+        urlObj.searchParams.set('responsive', 'true');
+        return urlObj.toString();
+      }
+      if (rawUrl.includes('youtube') || rawUrl.includes('youtu.be')) {
+        urlObj.searchParams.set('autoplay', '1');
+        urlObj.searchParams.set('mute', '1');
+        urlObj.searchParams.set('controls', '0');
+        urlObj.searchParams.set('loop', '1');
+        urlObj.searchParams.set('playsinline', '1');
+        return urlObj.toString();
+      }
+      if (rawUrl.includes('vimeo')) {
+        urlObj.searchParams.set('autoplay', '1');
+        urlObj.searchParams.set('muted', '1');
+        urlObj.searchParams.set('controls', '0');
+        urlObj.searchParams.set('loop', '1');
+        urlObj.searchParams.set('background', '1');
+        return urlObj.toString();
+      }
+      return rawUrl;
+    } catch {
+      return rawUrl;
+    }
+  };
+
   return (
     <div className="relative z-10 w-full">
       {/* ------------------------------------------------------------- */}
@@ -56,15 +89,16 @@ export const HomePage: React.FC<HomePageProps> = ({
 
           return (
             <div className="relative w-full h-full">
-              {/* Background Cinematic Video Player */}
+              {/* Background Cinematic Video Player (No Controls, Pure Autoplay) */}
               {isIframe ? (
-                <iframe
-                  src={heroVideoUrl}
-                  title="Artist Kuldeep Singh - Hero Video"
-                  className="w-full h-full border-0 object-cover"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+                <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none select-none">
+                  <iframe
+                    src={getAutoplayEmbedUrl(heroVideoUrl)}
+                    title="Artist Kuldeep Singh - Hero Video"
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[114%] h-[128%] min-w-full min-h-full border-0 pointer-events-none select-none"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  />
+                </div>
               ) : (
                 <video
                   src={heroVideoUrl}
@@ -74,7 +108,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   loop
                   playsInline
                   preload="auto"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover pointer-events-none select-none"
                 />
               )}
 
