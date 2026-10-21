@@ -44,90 +44,25 @@ export const HomePage: React.FC<HomePageProps> = ({
     { label: 'Global Academy Students', value: artistProfile.studentsCount, subtext: 'Trained in oils, sketch & color theory' },
   ];
 
-  const getAutoplayEmbedUrl = (rawUrl: string) => {
-    try {
-      const urlObj = new URL(rawUrl);
-      if (rawUrl.includes('mediadelivery.net')) {
-        urlObj.searchParams.set('autoplay', 'true');
-        urlObj.searchParams.set('loop', 'true');
-        urlObj.searchParams.set('muted', 'true');
-        urlObj.searchParams.set('preload', 'true');
-        urlObj.searchParams.set('responsive', 'true');
-        return urlObj.toString();
-      }
-      if (rawUrl.includes('youtube') || rawUrl.includes('youtu.be')) {
-        urlObj.searchParams.set('autoplay', '1');
-        urlObj.searchParams.set('mute', '1');
-        urlObj.searchParams.set('controls', '0');
-        urlObj.searchParams.set('loop', '1');
-        urlObj.searchParams.set('playsinline', '1');
-        return urlObj.toString();
-      }
-      if (rawUrl.includes('vimeo')) {
-        urlObj.searchParams.set('autoplay', '1');
-        urlObj.searchParams.set('muted', '1');
-        urlObj.searchParams.set('controls', '0');
-        urlObj.searchParams.set('loop', '1');
-        urlObj.searchParams.set('background', '1');
-        return urlObj.toString();
-      }
-      return rawUrl;
-    } catch {
-      return rawUrl;
-    }
-  };
-
   return (
     <div className="relative z-10 w-full">
       {/* ------------------------------------------------------------- */}
-      {/* 1. HERO SECTION - FULL-SCREEN CINEMATIC VIDEO (ART BY SEHGAL STYLE) */}
+      {/* 1. HERO SECTION - DIRECT HOSTED CINEMATIC VIDEO (FAST & SMOOTH) */}
       {/* ------------------------------------------------------------- */}
       <section className="relative w-full h-[88vh] sm:h-screen min-h-[580px] max-h-[1080px] overflow-hidden bg-black select-none">
-        {(() => {
-          const resolveVideoUrl = () => {
-            const raw = artistProfile.heroShowcaseVideoUrl || artistProfile.studioVideoUrl;
-            if (!raw || raw.includes('mediadelivery.net') || raw.includes('sample/ForBiggerBlazes')) {
-              return '/videos/hero-cinematic.mp4';
-            }
-            return raw;
-          };
-
-          const heroVideoUrl = resolveVideoUrl();
-          const heroImage =
-            artistProfile.heroShowcaseImage ||
-            artistProfile.studioVideoPoster ||
-            'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1600&auto=format&fit=crop';
-          const isIframe =
-            heroVideoUrl.includes('youtube.com') ||
-            heroVideoUrl.includes('youtu.be') ||
-            heroVideoUrl.includes('vimeo.com');
-
-          return (
-            <div className="relative w-full h-full">
-              {/* Background Cinematic Video Player (No Icons, Pure Muted Autoplay Loop) */}
-              {isIframe ? (
-                <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none select-none">
-                  <iframe
-                    src={getAutoplayEmbedUrl(heroVideoUrl)}
-                    title="Artist Kuldeep Singh - Hero Video"
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[114%] h-[128%] min-w-full min-h-full border-0 pointer-events-none select-none"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  />
-                </div>
-              ) : (
-                <video
-                  ref={heroVideoRef}
-                  src={heroVideoUrl}
-                  poster={heroImage}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="auto"
-                  className="w-full h-full object-cover pointer-events-none select-none"
-                />
-              )}
-
+        <div className="relative w-full h-full">
+          {/* Direct Code Background Cinematic Video (Ultra-Fast Native Autoplay Loop) */}
+          <video
+            ref={heroVideoRef}
+            src="/videos/hero-cinematic.mp4"
+            poster={artistProfile.heroShowcaseImage || artistProfile.studioVideoPoster || 'https://vz-bb84e70d-4d1.b-cdn.net/c6dd45dc-ae17-4465-a95e-ef3e67c996a6/thumbnail.jpg'}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            className="w-full h-full object-cover pointer-events-none select-none"
+          />
               {/* Dark Cinematic Vignette & Overlay */}
               <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/30 to-black/65 pointer-events-none" />
 
@@ -158,8 +93,6 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
               </div>
             </div>
-          );
-        })()}
       </section>
 
       {/* ------------------------------------------------------------- */}
