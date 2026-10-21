@@ -8,7 +8,7 @@ interface AboutPageProps {
 }
 
 export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
-  const { artistProfile, timeline, awards } = useStudioData();
+  const { artistProfile, awards } = useStudioData();
 
   const bioStory = Array.isArray(artistProfile?.bioStory) && artistProfile.bioStory.length > 0
     ? artistProfile.bioStory
@@ -18,7 +18,6 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
         'A painting should possess physical gravity. It should change as the sun moves across your room, revealing hidden glazes at twilight that were invisible at noon.'
       ];
 
-  const timelineList = Array.isArray(timeline) ? timeline : [];
   const awardsList = Array.isArray(awards) ? awards : [];
 
   return (
@@ -100,64 +99,6 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* ------------------------------------------------------------- */}
-      {/* 2. THE 12-YEAR TIMELINE (2014 TO 2026) */}
-      {/* ------------------------------------------------------------- */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center max-w-xl mx-auto mb-16 space-y-2">
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-artisan-crimson">
-            Evolution of Mastery
-          </span>
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-stone-900">
-            The 12-Year Atelier Journey
-          </h2>
-          <p className="text-xs text-stone-500">
-            A chronological timeline of milestones, residencies, museum showcases, and breakthroughs.
-          </p>
-        </div>
-
-        <div className="relative border-l-2 border-stone-200 ml-4 sm:ml-32 space-y-12">
-          {timelineList.map((item, idx) => (
-            <div key={idx} className="relative pl-8 sm:pl-10 group">
-              {/* Timeline Indicator Dot */}
-              <div className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-white border-4 border-artisan-crimson group-hover:scale-125 transition-transform" />
-
-              {/* Year Stamp on left for desktop */}
-              <div className="sm:absolute sm:-left-36 sm:top-1 text-xs font-bold text-artisan-crimson sm:text-right sm:w-28 mb-1 sm:mb-0">
-                {item.year}
-              </div>
-
-              {/* Milestone Card */}
-              <div className="p-6 bg-white rounded-3xl border border-stone-200 shadow-sm hover:shadow-xl transition-all duration-300 space-y-3 group-hover:border-stone-400">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-700">
-                    {item.milestoneType}
-                  </span>
-                  {item.highlightMetric && (
-                    <span className="text-[11px] font-semibold text-artisan-ochre bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
-                      ★ {item.highlightMetric}
-                    </span>
-                  )}
-                </div>
-
-                <h3 className="font-serif font-bold text-lg sm:text-xl text-stone-900">
-                  {item.title}
-                </h3>
-
-                <p className="text-xs text-artisan-gold font-medium flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5" />
-                  {item.roleOrLocation}
-                </p>
-
-                <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
-                  {item.description}
-                </p>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
 
