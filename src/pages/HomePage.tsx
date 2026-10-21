@@ -82,30 +82,19 @@ export const HomePage: React.FC<HomePageProps> = ({
               <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/30 to-black/65 pointer-events-none" />
 
               {/* Centered Overlay: Artist Kuldeep Singh & Discover Button */}
-              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-4 sm:px-8 pt-12 sm:pt-16 pointer-events-none">
-                {/* Elegant Eyebrow Badge */}
-                <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-white/90 text-[10px] sm:text-xs tracking-[0.25em] uppercase font-sans mb-4 sm:mb-6 shadow-xl">
-                  <span className="w-1.5 h-1.5 rounded-full bg-artisan-gold animate-pulse" />
-                  <span>Official Fine Art Atelier & Gallery</span>
-                </div>
-
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-4 sm:px-8 pointer-events-none">
                 {/* Stylish & Unique Typography for Artist Kuldeep Singh */}
                 <h1 className="flex flex-col items-center justify-center select-none drop-shadow-2xl text-center">
-                  <span className="font-serif italic font-light text-2xl sm:text-4xl md:text-5xl text-stone-200/90 tracking-wide mb-1 sm:mb-2">
+                  <span className="font-serif italic font-light text-lg sm:text-2xl md:text-3xl text-stone-200/90 tracking-wider mb-1 sm:mb-2">
                     The Art of
                   </span>
-                  <span className="font-serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-normal text-white uppercase tracking-[0.12em] sm:tracking-[0.18em] leading-[1.08] bg-gradient-to-r from-white via-[#FFF5E6] to-[#EADBBE] bg-clip-text text-transparent">
+                  <span className="font-serif text-2xl sm:text-4xl md:text-5xl font-normal text-white uppercase tracking-[0.12em] sm:tracking-[0.16em] leading-tight bg-gradient-to-r from-white via-[#FFF5E6] to-[#EADBBE] bg-clip-text text-transparent">
                     Artist Kuldeep Singh
                   </span>
                 </h1>
 
-                {/* Philosophy Subtitle */}
-                <p className="mt-4 sm:mt-5 text-stone-300 font-sans text-xs sm:text-sm font-light tracking-[0.2em] uppercase max-w-xl text-center">
-                  Transforming Raw Pigment & Soul Into Timeless Art
-                </p>
-
                 {/* Discover The Artist Action Button */}
-                <div className="mt-8 sm:mt-12 pointer-events-auto">
+                <div className="mt-6 sm:mt-8 pointer-events-auto">
                   <button
                     type="button"
                     onClick={() => {
