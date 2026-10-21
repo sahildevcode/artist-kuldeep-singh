@@ -45,7 +45,6 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
   const liveMeetUrl = (isThisCourseLive && liveStatus?.liveStreamUrl) || course.liveClassUrl || 'https://meet.google.com';
 
   const [activeModuleIndex, setActiveModuleIndex] = useState<number>(0);
-  const [isPlayingTeaser, setIsPlayingTeaser] = useState<boolean>(false);
   const [selectedLectureForStream, setSelectedLectureForStream] = useState<CourseLecture | null>(null);
 
   const galleryImages = useMemo(() => {
@@ -99,92 +98,60 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
         {/* ------------------------------------------------------------- */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start mb-14">
           
-          {/* SIDE 1: Portrait Painting Stage & Visual Teaser Carousel (lg:col-span-5) */}
+          {/* SIDE 1: Portrait Painting Stage & Gallery Carousel (lg:col-span-5) */}
           <div className="lg:col-span-5 space-y-3 order-1 lg:order-1">
             <div className="relative rounded-3xl overflow-hidden shadow-2xl aspect-[4/5] max-h-[640px] bg-stone-950 border border-stone-800 group">
-              {isPlayingTeaser ? (
-                <div className="w-full h-full relative bg-stone-950 flex flex-col items-center justify-center text-white p-6 text-center space-y-3">
-                  <div className="w-16 h-16 rounded-full border-4 border-artisan-crimson border-t-transparent animate-spin" />
-                  <p className="font-serif italic text-lg sm:text-xl">
-                    Streaming 4K Masterclass Orientation with Kuldeep Singh...
-                  </p>
-                  <p className="text-xs text-stone-400">
-                    "Lesson 1: Pigment Chemistry, Solvent Safety & Tonal Harmony"
-                  </p>
-                  <button
-                    onClick={() => setIsPlayingTeaser(false)}
-                    className="text-xs text-stone-400 underline hover:text-white pt-2 cursor-pointer"
-                  >
-                    Close Video Teaser
-                  </button>
-                </div>
-              ) : (
+              <img
+                src={galleryImages[activeImageIndex] || course.thumbnail}
+                alt={`${course.title} - Preview ${activeImageIndex + 1}`}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-stone-950/60 via-transparent to-stone-950/10 pointer-events-none" />
+
+              {/* Left / Right Carousel Controls */}
+              {galleryImages.length > 1 && (
                 <>
-                  <img
-                    src={galleryImages[activeImageIndex] || course.thumbnail}
-                    alt={`${course.title} - Preview ${activeImageIndex + 1}`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-stone-950/85 via-transparent to-stone-950/20" />
-
-                  {/* Left / Right Carousel Controls */}
-                  {galleryImages.length > 1 && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveImageIndex((prev) => (prev > 0 ? prev - 1 : galleryImages.length - 1));
-                        }}
-                        className="absolute left-3.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md transition-transform hover:scale-110 shadow-lg cursor-pointer z-10"
-                        title="Previous image"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveImageIndex((prev) => (prev < galleryImages.length - 1 ? prev + 1 : 0));
-                        }}
-                        className="absolute right-3.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md transition-transform hover:scale-110 shadow-lg cursor-pointer z-10"
-                        title="Next image"
-                      >
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
-                    </>
-                  )}
-
-                  {/* Big Play Button */}
                   <button
-                    onClick={() => setIsPlayingTeaser(true)}
-                    className="absolute inset-0 m-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/95 hover:bg-white text-artisan-crimson flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 cursor-pointer"
-                    aria-label="Play Course Teaser"
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveImageIndex((prev) => (prev > 0 ? prev - 1 : galleryImages.length - 1));
+                    }}
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md transition-transform hover:scale-110 shadow-lg cursor-pointer z-10"
+                    title="Previous image"
                   >
-                    <Play className="w-7 h-7 sm:w-8 sm:h-8 fill-artisan-crimson ml-1" />
+                    <ChevronLeft className="w-4 h-4" />
                   </button>
-
-                  {/* Top Overlay Badge for Multi-Image Counter */}
-                  {galleryImages.length > 1 && (
-                    <div className="absolute top-4 right-4 z-10">
-                      <span className="bg-black/70 backdrop-blur-md text-white text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-md">
-                        <Images className="w-3.5 h-3.5 text-artisan-gold" />
-                        <span>Photo {activeImageIndex + 1} of {galleryImages.length}</span>
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white text-[11px] sm:text-xs">
-                    <span className="font-medium bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5">
-                      <Video className="w-3.5 h-3.5 text-artisan-gold" />
-                      4K Studio Demonstration
-                    </span>
-                    <span className="bg-artisan-crimson text-white px-3 py-1.5 rounded-full font-bold">
-                      {course.durationHours || 36} Total Hours
-                    </span>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveImageIndex((prev) => (prev < galleryImages.length - 1 ? prev + 1 : 0));
+                    }}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md transition-transform hover:scale-110 shadow-lg cursor-pointer z-10"
+                    title="Next image"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
                 </>
               )}
+
+              {/* Top Overlay Badge for Multi-Image Counter */}
+              {galleryImages.length > 1 && (
+                <div className="absolute top-4 right-4 z-10">
+                  <span className="bg-black/70 backdrop-blur-md text-white text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-md">
+                    <Images className="w-3.5 h-3.5 text-artisan-gold" />
+                    <span>Photo {activeImageIndex + 1} of {galleryImages.length}</span>
+                  </span>
+                </div>
+              )}
+
+              {/* Bottom Info Badge */}
+              <div className="absolute bottom-4 right-4 text-white text-[11px] sm:text-xs z-10">
+                <span className="bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full font-bold border border-white/10 shadow-md">
+                  {course.durationHours || 36} Total Hours
+                </span>
+              </div>
             </div>
 
             {/* Thumbnails Strip for Multiple Images (Portrait Thumbnails) */}
@@ -196,7 +163,6 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
                     type="button"
                     onClick={() => {
                       setActiveImageIndex(idx);
-                      setIsPlayingTeaser(false);
                     }}
                     className={`relative w-16 h-20 sm:w-20 sm:h-24 rounded-2xl overflow-hidden border-2 shrink-0 transition-all cursor-pointer shadow-sm ${
                       idx === activeImageIndex
@@ -584,7 +550,6 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
                       key={idx}
                       onClick={() => {
                         setActiveImageIndex(idx);
-                        setIsPlayingTeaser(false);
                         window.scrollTo({ top: 120, behavior: 'smooth' });
                       }}
                       className={`relative rounded-2xl overflow-hidden aspect-[4/5] border-2 group cursor-pointer transition-all ${
