@@ -105,12 +105,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
   const awardsList = Array.isArray(awards) ? awards : [];
 
   return (
-    <div className="relative w-full bg-[#0A0908] text-stone-100 overflow-x-hidden">
+    <div className="relative w-full bg-[#0A0908] text-stone-100 overflow-x-clip">
       {/* ============================================================= */}
       {/* LAYER 0: FULL-WIDTH & FULL-HEIGHT STICKY HERO BACKGROUND      */}
       {/* (Portrait of Artist Kuldeep Singh stays fixed behind scroll)  */}
       {/* ============================================================= */}
-      <section className="sticky top-0 w-full h-screen min-h-[640px] max-h-[1080px] z-0 flex flex-col justify-between overflow-hidden select-none">
+      <section className="sticky top-0 w-full h-[88vh] sm:h-screen min-h-[580px] z-0 flex flex-col justify-between overflow-hidden select-none">
         {/* Dual-Layer Cinematic Portrait Background */}
         <div className="absolute inset-0">
           {/* Layer A: Ambient Color Glow */}
@@ -118,24 +118,25 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
             src="/images/artist-kuldeep-singh.jpg"
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-35 scale-110 pointer-events-none"
+            className="absolute inset-0 w-full h-full object-cover object-center sm:object-[center_50%] blur-3xl opacity-25 scale-110 pointer-events-none"
           />
-          {/* Layer B: Crisp Full-Height Portrait (Positioned for perfect head/hair framing) */}
+          {/* Layer B: Crisp Full-Height Portrait (Positioned at center 50% so face, eyes, beard & hair are 100% visible) */}
           <img
             src="/images/artist-kuldeep-singh.jpg"
             alt={artistProfile?.name || 'Artist Kuldeep Singh'}
-            className="absolute inset-0 w-full h-full object-cover object-[center_22%] sm:object-[center_26%] filter contrast-[1.03]"
+            className="absolute inset-0 w-full h-full object-cover object-center sm:object-[center_50%] filter contrast-[1.04] brightness-[1.02]"
           />
-          {/* Layer C: Cinematic Vignettes & Dramatic Dark Gradient Overlays */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-black/75 pointer-events-none" />
-          <div className="absolute inset-0 bg-radial-at-c from-transparent via-black/20 to-black/70 pointer-events-none" />
+          {/* Layer C: Gentle Vignettes - Top shadow for navbar & bottom shadow for depth, leaving the artist's face bright & clear */}
+          <div className="absolute inset-x-0 top-0 h-36 sm:h-44 bg-gradient-to-b from-black/80 via-black/35 to-transparent pointer-events-none" />
+          <div className="absolute inset-x-0 bottom-0 h-44 sm:h-56 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_45%,rgba(0,0,0,0.4)_100%)] pointer-events-none" />
         </div>
 
         {/* Top Spacer to account for fixed navbar */}
         <div className="relative z-10 pt-28 sm:pt-32 px-4 sm:px-8 max-w-7xl mx-auto w-full flex items-center justify-between">
           <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[10px] sm:text-xs font-semibold text-artisan-gold tracking-wider uppercase shadow-xl">
             <Sparkles className="w-3.5 h-3.5 text-artisan-gold" />
-            <span>{artistProfile?.yearsExperience || '12+'} of Devoted Fine Art Practice</span>
+            <span>{artistProfile?.yearsExperience || '12+'} Years Devoted Fine Art Practice</span>
           </div>
 
           <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-[11px] text-stone-300">
@@ -144,30 +145,20 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
           </div>
         </div>
 
-        {/* Bottom Hero Typography & Scroll Callout */}
-        <div className="relative z-10 pb-16 sm:pb-24 px-4 sm:px-8 max-w-5xl mx-auto w-full text-center space-y-4 sm:space-y-6">
-          <div className="space-y-2">
-            <span className="font-serif italic font-light text-base sm:text-xl md:text-2xl text-stone-300 tracking-wider block">
-              The Portrait & Legacy of
-            </span>
-            <h1 className="font-serif text-3xl sm:text-5xl md:text-7xl font-bold tracking-tight text-white uppercase drop-shadow-2xl">
+        {/* Bottom Hero Callout - Minimalist & Elegant (Leaves the face completely open and unblocked) */}
+        <div className="relative z-10 pb-20 sm:pb-28 px-4 max-w-4xl mx-auto w-full text-center">
+          <div className="inline-flex flex-col items-center gap-2 px-5 sm:px-7 py-3 rounded-2xl bg-black/55 backdrop-blur-md border border-white/20 shadow-2xl">
+            <div className="flex items-center gap-2 text-stone-300 text-[11px] sm:text-xs tracking-widest uppercase font-mono">
+              <span className="w-1.5 h-1.5 rounded-full bg-artisan-gold" />
+              <span>The Atelier & Portrait of</span>
+            </div>
+            <div className="font-serif text-xl sm:text-3xl font-bold tracking-tight text-white uppercase">
               KULDEEP <span className="text-artisan-gold font-light">SINGH</span>
-            </h1>
-          </div>
-
-          <p className="font-serif italic text-base sm:text-xl md:text-2xl text-stone-200 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
-            "{artistProfile?.bioHeadline || 'A Life Dedicated to the Alchemy of Light, Oil & Form.'}"
-          </p>
-
-          <p className="text-xs sm:text-sm text-stone-400 font-sans tracking-widest uppercase max-w-xl mx-auto">
-            Master Oil Painter • Atelier Académie Founder • Exhibited Internationally
-          </p>
-
-          {/* Gentle Animated Scroll Indicator */}
-          <div className="pt-4 flex flex-col items-center justify-center gap-2 animate-bounce cursor-default">
-            <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-artisan-gold font-bold bg-black/70 px-4 py-1 rounded-full border border-artisan-gold/30 backdrop-blur-md shadow-lg">
-              Scroll to Explore Chapters ↓
-            </span>
+            </div>
+            <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-sans tracking-widest uppercase text-artisan-gold font-medium animate-bounce pt-0.5">
+              <span>Scroll to Explore Chapters</span>
+              <ChevronDown className="w-3.5 h-3.5" />
+            </div>
           </div>
         </div>
       </section>
@@ -176,9 +167,9 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
       {/* LAYER 1 (PAGE 01): THE CREATIVE PHILOSOPHY & CLASSICAL FORM   */}
       {/* (Slides UP directly over the background photo)                */}
       {/* ============================================================= */}
-      <section className="relative z-10 -mt-10 sm:-mt-16 rounded-t-[36px] sm:rounded-t-[52px] bg-[#FAF8F5] dark:bg-[#121110] text-[#1A1816] dark:text-[#FDFBF7] shadow-[0_-25px_60px_rgba(0,0,0,0.6)] border-t border-white/60 dark:border-stone-800 transition-all duration-300">
+      <section className="relative z-10 -mt-16 sm:-mt-24 rounded-t-[36px] sm:rounded-t-[56px] bg-[#FAF8F5] dark:bg-[#121110] text-[#1A1816] dark:text-[#FDFBF7] shadow-[0_-30px_70px_rgba(0,0,0,0.6)] border-t border-white/80 dark:border-stone-800 transition-all duration-300">
         {/* Page Tab Header */}
-        <div className="pt-5 pb-4 px-6 sm:px-10 flex items-center justify-between border-b border-stone-200/70 dark:border-stone-800/70 max-w-7xl mx-auto">
+        <div className="pt-6 pb-4 px-6 sm:px-10 flex items-center justify-between border-b border-stone-200/70 dark:border-stone-800/70 max-w-7xl mx-auto">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-artisan-crimson animate-pulse" />
             <span className="text-[11px] sm:text-xs font-mono uppercase tracking-[0.2em] text-stone-600 dark:text-stone-400 font-bold">
@@ -191,18 +182,27 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
           </span>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-          <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-artisan-crimson block">
-              Chapter I • Creative Roots
-            </span>
-            <h2 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-stone-900 dark:text-stone-100 leading-[1.15]">
-              {artistProfile?.bioHeadline || 'A Life Dedicated to the Alchemy of Light, Oil & Form.'}
-            </h2>
-            <p className="text-stone-600 dark:text-stone-300 text-sm sm:text-base leading-relaxed">
-              {bioStory[0] || 'Artist Kuldeep Singh has spent over a decade perfecting the discipline of classical fine art.'}
-            </p>
-          </div>
+        {/* Grand Headline on Sliding Card (Reference Layout: Abhay Sehgal Style) */}
+        <div className="pt-10 sm:pt-14 pb-4 px-4 sm:px-8 max-w-5xl mx-auto text-center space-y-4">
+          <span className="text-xs font-bold uppercase tracking-[0.25em] text-artisan-crimson block">
+            Chapter I • The Artist & Masterwork
+          </span>
+          <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-stone-900 dark:text-stone-100 uppercase">
+            KULDEEP <span className="text-artisan-crimson dark:text-artisan-gold font-light">SINGH</span>
+          </h1>
+          <p className="text-xs sm:text-sm md:text-base text-stone-500 dark:text-stone-400 font-sans tracking-[0.2em] uppercase max-w-2xl mx-auto">
+            Master Oil Painter • Atelier Académie Founder • Contemporary Classical Fine Art
+          </p>
+          <div className="w-24 h-0.5 bg-artisan-gold/60 mx-auto mt-4" />
+          <h2 className="font-serif italic text-lg sm:text-2xl text-stone-700 dark:text-stone-300 max-w-3xl mx-auto leading-relaxed pt-2">
+            "{artistProfile?.bioHeadline || 'A Life Dedicated to the Alchemy of Light, Oil & Form.'}"
+          </h2>
+          <p className="text-stone-600 dark:text-stone-400 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed pt-1">
+            {bioStory[0] || 'Artist Kuldeep Singh has spent over a decade perfecting the discipline of classical fine art.'}
+          </p>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
 
           {/* Visual Grid & Philosophy */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-center">
@@ -277,7 +277,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
       {/* LAYER 2 (PAGE 02): CURATED PORTFOLIOS & EDITORIAL SHOWCASE    */}
       {/* (Slides UP directly over Page 01)                             */}
       {/* ============================================================= */}
-      <section className="relative z-20 -mt-10 sm:-mt-16 rounded-t-[36px] sm:rounded-t-[52px] bg-[#0E0D0C] text-white shadow-[0_-25px_60px_rgba(0,0,0,0.7)] border-t border-artisan-gold/30 transition-all duration-300">
+      <section className="relative z-20 -mt-12 sm:-mt-20 rounded-t-[36px] sm:rounded-t-[56px] bg-[#0E0D0C] text-white shadow-[0_-30px_70px_rgba(0,0,0,0.8)] border-t border-artisan-gold/30 transition-all duration-300">
         {/* Page Tab Header */}
         <div className="pt-5 pb-4 px-6 sm:px-10 flex items-center justify-between border-b border-white/10 max-w-7xl mx-auto">
           <div className="flex items-center gap-2">
@@ -359,7 +359,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
       {/* LAYER 3 (PAGE 03): RENAISSANCE MATERIAL INTEGRITY & ALCHEMY    */}
       {/* (Slides UP directly over Page 02)                             */}
       {/* ============================================================= */}
-      <section className="relative z-30 -mt-10 sm:-mt-16 rounded-t-[36px] sm:rounded-t-[52px] bg-[#F7F4EE] dark:bg-[#161412] text-[#1A1816] dark:text-[#FDFBF7] shadow-[0_-25px_60px_rgba(0,0,0,0.6)] border-t border-white/70 dark:border-stone-800 transition-all duration-300">
+      <section className="relative z-30 -mt-12 sm:-mt-20 rounded-t-[36px] sm:rounded-t-[56px] bg-[#F7F4EE] dark:bg-[#161412] text-[#1A1816] dark:text-[#FDFBF7] shadow-[0_-30px_70px_rgba(0,0,0,0.6)] border-t border-white/70 dark:border-stone-800 transition-all duration-300">
         {/* Page Tab Header */}
         <div className="pt-5 pb-4 px-6 sm:px-10 flex items-center justify-between border-b border-stone-200/70 dark:border-stone-800/70 max-w-7xl mx-auto">
           <div className="flex items-center gap-2">
@@ -447,7 +447,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
       {/* LAYER 4 (PAGE 04): HONORS, ACCOLADES & EXHIBITION TIMELINE    */}
       {/* (Slides UP directly over Page 03)                             */}
       {/* ============================================================= */}
-      <section className="relative z-40 -mt-10 sm:-mt-16 rounded-t-[36px] sm:rounded-t-[52px] bg-[#141210] text-white shadow-[0_-25px_60px_rgba(0,0,0,0.7)] border-t border-artisan-gold/25 transition-all duration-300">
+      <section className="relative z-40 -mt-12 sm:-mt-20 rounded-t-[36px] sm:rounded-t-[56px] bg-[#141210] text-white shadow-[0_-30px_70px_rgba(0,0,0,0.8)] border-t border-artisan-gold/25 transition-all duration-300">
         {/* Page Tab Header */}
         <div className="pt-5 pb-4 px-6 sm:px-10 flex items-center justify-between border-b border-white/10 max-w-7xl mx-auto">
           <div className="flex items-center gap-2">
@@ -509,7 +509,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
       {/* LAYER 5 (PAGE 05): COLLECTOR GUIDE, FAQS & PRIVATE VIEWINGS   */}
       {/* (Slides UP directly over Page 04 - Grand Finale)              */}
       {/* ============================================================= */}
-      <section className="relative z-50 -mt-10 sm:-mt-16 rounded-t-[36px] sm:rounded-t-[52px] bg-white dark:bg-[#0B0A09] text-[#1A1816] dark:text-[#FDFBF7] shadow-[0_-30px_70px_rgba(0,0,0,0.8)] border-t border-stone-200 dark:border-stone-800 pb-36 transition-all duration-300">
+      <section className="relative z-50 -mt-12 sm:-mt-20 rounded-t-[36px] sm:rounded-t-[56px] bg-white dark:bg-[#0B0A09] text-[#1A1816] dark:text-[#FDFBF7] shadow-[0_-35px_80px_rgba(0,0,0,0.85)] border-t border-stone-200 dark:border-stone-800 pb-36 transition-all duration-300">
         {/* Page Tab Header */}
         <div className="pt-5 pb-4 px-6 sm:px-10 flex items-center justify-between border-b border-stone-200/70 dark:border-stone-800/70 max-w-7xl mx-auto">
           <div className="flex items-center gap-2">
