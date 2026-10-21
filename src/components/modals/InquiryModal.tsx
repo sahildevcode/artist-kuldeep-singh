@@ -4,9 +4,9 @@ import { X, Send, Sparkles, CheckCircle2, Phone, MapPin, MessageSquare } from 'l
 const getBackendUrls = (): string[] => {
   const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
   if (isLocal) {
-    return ['http://localhost:5000', 'https://kuldeep-singh-backend.onrender.com'];
+    return ['http://localhost:5000', 'https://kuldeep-singh-backend-q1di.onrender.com'];
   }
-  return ['https://kuldeep-singh-backend.onrender.com', 'http://localhost:5000'];
+  return ['https://kuldeep-singh-backend-q1di.onrender.com', 'http://localhost:5000'];
 };
 
 interface InquiryModalProps {
