@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import {
   ArrowLeft,
   Calendar,
-  Star,
   Sparkles,
   CheckCircle2,
   BookOpen,
@@ -96,11 +95,124 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
         </div>
 
         {/* ------------------------------------------------------------- */}
-        {/* 1. HERO HEADER */}
+        {/* 1. HERO SHOWCASE: PORTRAIT PAINTING STAGE & ENROLLMENT        */}
         {/* ------------------------------------------------------------- */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          {/* Left Hero Overview */}
-          <div className="lg:col-span-8 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start mb-14">
+          
+          {/* SIDE 1: Portrait Painting Stage & Visual Teaser Carousel (lg:col-span-5) */}
+          <div className="lg:col-span-5 space-y-3 order-1 lg:order-1">
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl aspect-[4/5] max-h-[640px] bg-stone-950 border border-stone-800 group">
+              {isPlayingTeaser ? (
+                <div className="w-full h-full relative bg-stone-950 flex flex-col items-center justify-center text-white p-6 text-center space-y-3">
+                  <div className="w-16 h-16 rounded-full border-4 border-artisan-crimson border-t-transparent animate-spin" />
+                  <p className="font-serif italic text-lg sm:text-xl">
+                    Streaming 4K Masterclass Orientation with Kuldeep Singh...
+                  </p>
+                  <p className="text-xs text-stone-400">
+                    "Lesson 1: Pigment Chemistry, Solvent Safety & Tonal Harmony"
+                  </p>
+                  <button
+                    onClick={() => setIsPlayingTeaser(false)}
+                    className="text-xs text-stone-400 underline hover:text-white pt-2 cursor-pointer"
+                  >
+                    Close Video Teaser
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <img
+                    src={galleryImages[activeImageIndex] || course.thumbnail}
+                    alt={`${course.title} - Preview ${activeImageIndex + 1}`}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-stone-950/85 via-transparent to-stone-950/20" />
+
+                  {/* Left / Right Carousel Controls */}
+                  {galleryImages.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveImageIndex((prev) => (prev > 0 ? prev - 1 : galleryImages.length - 1));
+                        }}
+                        className="absolute left-3.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md transition-transform hover:scale-110 shadow-lg cursor-pointer z-10"
+                        title="Previous image"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveImageIndex((prev) => (prev < galleryImages.length - 1 ? prev + 1 : 0));
+                        }}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md transition-transform hover:scale-110 shadow-lg cursor-pointer z-10"
+                        title="Next image"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </>
+                  )}
+
+                  {/* Big Play Button */}
+                  <button
+                    onClick={() => setIsPlayingTeaser(true)}
+                    className="absolute inset-0 m-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/95 hover:bg-white text-artisan-crimson flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 cursor-pointer"
+                    aria-label="Play Course Teaser"
+                  >
+                    <Play className="w-7 h-7 sm:w-8 sm:h-8 fill-artisan-crimson ml-1" />
+                  </button>
+
+                  {/* Top Overlay Badge for Multi-Image Counter */}
+                  {galleryImages.length > 1 && (
+                    <div className="absolute top-4 right-4 z-10">
+                      <span className="bg-black/70 backdrop-blur-md text-white text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-md">
+                        <Images className="w-3.5 h-3.5 text-artisan-gold" />
+                        <span>Photo {activeImageIndex + 1} of {galleryImages.length}</span>
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white text-[11px] sm:text-xs">
+                    <span className="font-medium bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                      <Video className="w-3.5 h-3.5 text-artisan-gold" />
+                      4K Studio Demonstration
+                    </span>
+                    <span className="bg-artisan-crimson text-white px-3 py-1.5 rounded-full font-bold">
+                      {course.durationHours || 36} Total Hours
+                    </span>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Thumbnails Strip for Multiple Images (Portrait Thumbnails) */}
+            {galleryImages.length > 1 && (
+              <div className="flex items-center gap-2.5 overflow-x-auto py-1 scrollbar-thin">
+                {galleryImages.map((img, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      setActiveImageIndex(idx);
+                      setIsPlayingTeaser(false);
+                    }}
+                    className={`relative w-16 h-20 sm:w-20 sm:h-24 rounded-2xl overflow-hidden border-2 shrink-0 transition-all cursor-pointer shadow-sm ${
+                      idx === activeImageIndex
+                        ? 'border-artisan-crimson ring-2 ring-artisan-crimson/40 scale-105'
+                        : 'border-stone-200 opacity-60 hover:opacity-100 hover:border-stone-400'
+                    }`}
+                  >
+                    <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* SIDE 2: Course Information & Tuition Action Card (lg:col-span-7) */}
+          <div className="lg:col-span-7 space-y-6 order-2 lg:order-2">
             <div className="flex flex-wrap items-center gap-2.5">
               <span className="px-3.5 py-1 rounded-full bg-artisan-crimson/10 border border-artisan-crimson/20 text-artisan-crimson text-xs font-bold uppercase tracking-wider">
                 {course.category}
@@ -114,16 +226,18 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
               </span>
             </div>
 
-            <h1 className="font-serif text-3xl sm:text-5xl font-bold tracking-tight text-[#1A1816] leading-tight">
+            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#1A1816] leading-tight">
               {course.title}
             </h1>
 
-            <p className="text-base sm:text-lg text-stone-600 font-normal leading-relaxed italic">
-              "{course.subtitle}"
-            </p>
+            {course.subtitle && (
+              <p className="text-base sm:text-lg text-stone-600 font-normal leading-relaxed italic">
+                "{course.subtitle}"
+              </p>
+            )}
 
-            {/* Mentor & Student Rating Strip */}
-            <div className="flex flex-wrap items-center gap-6 pt-2 pb-4 border-y border-stone-200/80 text-xs text-stone-600">
+            {/* Mentor Strip (Clean, without dummy rating) */}
+            <div className="flex flex-wrap items-center gap-6 py-3 border-y border-stone-200/80 text-xs text-stone-600">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-full bg-[#1A1816] text-white flex items-center justify-center font-serif font-bold text-sm">
                   KS
@@ -135,18 +249,12 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
               </div>
 
               <div className="flex items-center gap-1.5">
-                <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                <span className="font-bold text-stone-900">{course.rating} Rating</span>
-                <span className="text-stone-400">({course.studentsEnrolled} artists enrolled)</span>
-              </div>
-
-              <div className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4 text-artisan-gold" />
-                <span className="font-semibold text-stone-800">{course.startDate}</span>
+                <span className="font-semibold text-stone-800">Batch Starts: {course.startDate}</span>
               </div>
             </div>
 
-            {/* Live Studio Broadcaster Alert Banner (Isolated per Course and Enrolled Students) */}
+            {/* Live Studio Broadcaster Alert Banner (if active) */}
             {isThisCourseLive && (
               <div className="p-5 rounded-3xl bg-gradient-to-r from-red-600 via-rose-700 to-amber-700 text-white shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4 border border-red-400/40 animate-in fade-in">
                 <div className="flex items-center gap-3.5">
@@ -205,296 +313,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
               </div>
             )}
 
-            {/* Multiple Images Carousel & Video Teaser Player */}
-            <div className="space-y-3">
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl aspect-video bg-stone-900 border border-stone-800 group">
-                {isPlayingTeaser ? (
-                  <div className="w-full h-full relative bg-stone-950 flex flex-col items-center justify-center text-white p-6 text-center space-y-3">
-                    <div className="w-16 h-16 rounded-full border-4 border-artisan-crimson border-t-transparent animate-spin" />
-                    <p className="font-serif italic text-lg sm:text-xl">
-                      Streaming 4K Masterclass Orientation with Kuldeep Singh...
-                    </p>
-                    <p className="text-xs text-stone-400">
-                      "Lesson 1: Pigment Chemistry, Solvent Safety & Tonal Harmony"
-                    </p>
-                    <button
-                      onClick={() => setIsPlayingTeaser(false)}
-                      className="text-xs text-stone-400 underline hover:text-white pt-2 cursor-pointer"
-                    >
-                      Close Video Teaser
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <img
-                      src={galleryImages[activeImageIndex] || course.thumbnail}
-                      alt={`${course.title} - Preview ${activeImageIndex + 1}`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-stone-950/30" />
-
-                    {/* Left / Right Carousel Controls */}
-                    {galleryImages.length > 1 && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setActiveImageIndex((prev) => (prev > 0 ? prev - 1 : galleryImages.length - 1));
-                          }}
-                          className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md transition-transform hover:scale-110 shadow-lg cursor-pointer z-10"
-                          title="Previous image"
-                        >
-                          <ChevronLeft className="w-5 h-5" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setActiveImageIndex((prev) => (prev < galleryImages.length - 1 ? prev + 1 : 0));
-                          }}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-md transition-transform hover:scale-110 shadow-lg cursor-pointer z-10"
-                          title="Next image"
-                        >
-                          <ChevronRight className="w-5 h-5" />
-                        </button>
-                      </>
-                    )}
-
-                    {/* Big Play Button */}
-                    <button
-                      onClick={() => setIsPlayingTeaser(true)}
-                      className="absolute inset-0 m-auto w-20 h-20 rounded-full bg-white/95 hover:bg-white text-artisan-crimson flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 cursor-pointer"
-                      aria-label="Play Course Teaser"
-                    >
-                      <Play className="w-8 h-8 fill-artisan-crimson ml-1" />
-                    </button>
-
-                    {/* Top Overlay Badge for Multi-Image Counter */}
-                    {galleryImages.length > 1 && (
-                      <div className="absolute top-4 right-4 z-10">
-                        <span className="bg-black/70 backdrop-blur-md text-white text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-md">
-                          <Images className="w-3.5 h-3.5 text-artisan-gold" />
-                          <span>Photo {activeImageIndex + 1} of {galleryImages.length}</span>
-                        </span>
-                      </div>
-                    )}
-
-                    <div className="absolute bottom-5 left-6 right-6 flex items-center justify-between text-white text-xs">
-                      <span className="font-medium bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5">
-                        <Video className="w-3.5 h-3.5 text-artisan-gold" />
-                        4K Studio Demonstration Preview
-                      </span>
-                      <span className="bg-artisan-crimson text-white px-3 py-1.5 rounded-full font-bold">
-                        {course.durationHours} Total Hours
-                      </span>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* Thumbnails Strip for Multiple Images */}
-              {galleryImages.length > 1 && (
-                <div className="flex items-center gap-2.5 overflow-x-auto py-1 scrollbar-thin">
-                  {galleryImages.map((img, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => {
-                        setActiveImageIndex(idx);
-                        setIsPlayingTeaser(false);
-                      }}
-                      className={`relative w-20 sm:w-24 h-14 sm:h-16 rounded-2xl overflow-hidden border-2 shrink-0 transition-all cursor-pointer shadow-sm ${
-                        idx === activeImageIndex
-                          ? 'border-artisan-crimson ring-2 ring-artisan-crimson/40 scale-105'
-                          : 'border-stone-200 opacity-60 hover:opacity-100 hover:border-stone-400'
-                      }`}
-                    >
-                      <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Course Narrative Description */}
-            <div className="space-y-4 pt-4">
-              <h3 className="font-serif font-bold text-2xl text-stone-900">
-                About This Masterclass
-              </h3>
-              <p className="text-sm sm:text-base text-stone-700 leading-relaxed">
-                {course.description}
-              </p>
-            </div>
-
-            {/* What You Will Master */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-stone-200/80 shadow-soft-lux space-y-4">
-              <h3 className="font-display font-bold text-lg text-stone-900 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-artisan-gold" />
-                What You Will Master in These {course.durationMonths}
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                {course.whatYouWillLearn.map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-3 text-xs sm:text-sm text-stone-700">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    <span className="leading-snug">{item}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Month-by-Month Detailed Curriculum */}
-            <div className="space-y-4 pt-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-serif font-bold text-2xl text-stone-900 flex items-center gap-2.5">
-                  <BookOpen className="w-6 h-6 text-artisan-crimson" />
-                  Detailed Curriculum Syllabus
-                </h3>
-                <span className="text-xs font-semibold text-stone-500">
-                  {course.modules.length} Modules • {course.totalLessons} Lessons
-                </span>
-              </div>
-
-              <div className="space-y-3">
-                {course.modules.map((mod, idx) => (
-                  <div
-                    key={mod.id}
-                    className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs"
-                  >
-                    <button
-                      onClick={() => setActiveModuleIndex(activeModuleIndex === idx ? -1 : idx)}
-                      className="w-full px-5 py-4 text-left flex items-center justify-between hover:bg-stone-50 transition-colors"
-                    >
-                      <div>
-                        <span className="text-sm font-bold text-stone-900 block">{mod.title}</span>
-                        <span className="text-xs text-stone-500 mt-0.5 block">
-                          {mod.duration} • {mod.lessonsCount} Guided Lessons
-                        </span>
-                      </div>
-                      <span className="text-base font-bold text-stone-400">
-                        {activeModuleIndex === idx ? '−' : '+'}
-                      </span>
-                    </button>
-
-                    {activeModuleIndex === idx && (
-                      <div className="px-5 pb-5 pt-2 border-t border-stone-100 bg-stone-50/50 space-y-2.5">
-                        {mod.lectures && mod.lectures.length > 0 ? (
-                          mod.lectures.map((lec) => {
-                            const isFree = lec.accessType === 'free' || lec.isFreePreview;
-                            const canStream = isUnlocked || isFree;
-                            return (
-                              <div
-                                key={lec.id}
-                                className="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200/80 text-xs hover:border-artisan-gold transition-colors gap-2"
-                              >
-                                <div className="flex items-center gap-2.5 text-stone-800 font-medium truncate flex-1 min-w-0 pr-2">
-                                  <Play className="w-3.5 h-3.5 text-artisan-gold fill-artisan-gold flex-shrink-0" />
-                                  <span className="truncate font-medium">{lec.title}</span>
-                                  {isFree && (
-                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0">
-                                      Free Preview
-                                    </span>
-                                  )}
-                                </div>
-                                <div className="flex items-center gap-2 flex-shrink-0">
-                                  <span className="text-[11px] text-stone-500 font-mono bg-stone-100 px-2 py-0.5 rounded-md">
-                                    {lec.duration}
-                                  </span>
-                                  {canStream && (
-                                    <button
-                                      onClick={() => setSelectedLectureForStream(lec)}
-                                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 border ${
-                                        isFree && !isUnlocked
-                                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700'
-                                          : 'bg-artisan-gold/15 hover:bg-artisan-gold text-stone-900 border-artisan-gold/30'
-                                      }`}
-                                    >
-                                      <Play className="w-3 h-3 fill-current" />
-                                      <span>{isFree && !isUnlocked ? 'Watch Free Trailer' : 'Stream'}</span>
-                                    </button>
-                                  )}
-                                </div>
-                              </div>
-                            );
-                          })
-                        ) : (
-                          <div className="py-4 text-center text-xs text-stone-500 bg-stone-100/50 rounded-xl">
-                            Lectures and video demonstrations will be published here for this module.
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Materials & Tools Provided / Needed */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-stone-100/70 border border-stone-200 space-y-3">
-              <h4 className="font-display font-bold text-sm text-stone-900 uppercase tracking-wider">
-                Materials & Equipment Needed
-              </h4>
-              <ul className="space-y-2 text-xs sm:text-sm text-stone-600">
-                {course.materialsNeeded.map((mat, idx) => (
-                  <li key={idx} className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-artisan-crimson" />
-                    <span>{mat}</span>
-                  </li>
-                ))}
-              </ul>
-              <p className="text-[11px] text-stone-500 pt-2 italic">
-                * Full video streaming access in 4K quality is enabled on your account immediately upon enrollment.
-              </p>
-            </div>
-
-            {/* Masterclass Artwork Gallery & Reference Photos */}
-            {galleryImages.length > 1 && (
-              <div className="p-6 sm:p-8 rounded-3xl bg-white border border-stone-200 shadow-soft-lux space-y-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-display font-bold text-base text-stone-900 flex items-center gap-2">
-                    <Images className="w-5 h-5 text-artisan-crimson" />
-                    <span>Masterclass Artwork Gallery & Reference Photos ({galleryImages.length})</span>
-                  </h4>
-                  <span className="text-xs text-stone-500">Click photo to view in main banner</span>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {galleryImages.map((img, idx) => (
-                    <div
-                      key={idx}
-                      onClick={() => {
-                        setActiveImageIndex(idx);
-                        setIsPlayingTeaser(false);
-                        window.scrollTo({ top: 320, behavior: 'smooth' });
-                      }}
-                      className={`relative rounded-2xl overflow-hidden aspect-video border-2 group cursor-pointer transition-all ${
-                        idx === activeImageIndex
-                          ? 'border-artisan-crimson ring-2 ring-artisan-crimson/30 shadow-md'
-                          : 'border-stone-200 hover:border-stone-400 hover:shadow-md'
-                      }`}
-                    >
-                      <img
-                        src={img}
-                        alt={`Gallery ${idx + 1}`}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src =
-                            'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=600&auto=format&fit=crop';
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-semibold">
-                        View in Banner
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* ------------------------------------------------------------- */}
-          {/* RIGHT COLUMN: ENROLLMENT & PRICE ACTION CARD */}
-          {/* ------------------------------------------------------------- */}
-          <div className="lg:col-span-4 sticky top-28 space-y-6">
+            {/* Tuition Fee & Enrollment Box */}
             <div className="p-6 sm:p-8 rounded-3xl bg-white border border-stone-200 shadow-xl space-y-6">
               {/* Unlocked State Banner */}
               {isUnlocked ? (
@@ -603,8 +422,198 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
                 </div>
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* Direct Mentor Q&A Card */}
+        {/* ------------------------------------------------------------- */}
+        {/* 2. LOWER CONTENT: ABOUT, WHAT YOU MASTER, SYLLABUS, MATERIALS, GALLERY */}
+        {/* ------------------------------------------------------------- */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          <div className="lg:col-span-8 space-y-8">
+            {/* Course Narrative Description */}
+            <div className="space-y-4">
+              <h3 className="font-serif font-bold text-2xl text-stone-900">
+                About This Masterclass
+              </h3>
+              <p className="text-sm sm:text-base text-stone-700 leading-relaxed whitespace-pre-line">
+                {course.description}
+              </p>
+            </div>
+
+            {/* What You Will Master */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-stone-200/80 shadow-soft-lux space-y-4">
+              <h3 className="font-display font-bold text-lg text-stone-900 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-artisan-gold" />
+                What You Will Master in These {course.durationMonths}
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {(course.whatYouWillLearn && course.whatYouWillLearn.length > 0 ? course.whatYouWillLearn : [
+                  'Live Real-Time Easel Demonstrations',
+                  'Direct 1-on-1 Critique & Q&A Rooms',
+                  'Permanent Access to HD Class Recordings & Archives'
+                ]).map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-3 text-xs sm:text-sm text-stone-700">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <span className="leading-snug">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Month-by-Month Detailed Curriculum */}
+            <div className="space-y-4 pt-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-serif font-bold text-2xl text-stone-900 flex items-center gap-2.5">
+                  <BookOpen className="w-6 h-6 text-artisan-crimson" />
+                  Detailed Curriculum Syllabus
+                </h3>
+                <span className="text-xs font-semibold text-stone-500">
+                  {course.modules.length} Modules • {course.totalLessons} Lessons
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                {course.modules.map((mod, idx) => (
+                  <div
+                    key={mod.id}
+                    className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-xs"
+                  >
+                    <button
+                      onClick={() => setActiveModuleIndex(activeModuleIndex === idx ? -1 : idx)}
+                      className="w-full px-5 py-4 text-left flex items-center justify-between hover:bg-stone-50 transition-colors"
+                    >
+                      <div>
+                        <span className="text-sm font-bold text-stone-900 block">{mod.title}</span>
+                        <span className="text-xs text-stone-500 mt-0.5 block">
+                          {mod.duration} • {mod.lessonsCount} Guided Lessons
+                        </span>
+                      </div>
+                      <span className="text-base font-bold text-stone-400">
+                        {activeModuleIndex === idx ? '−' : '+'}
+                      </span>
+                    </button>
+
+                    {activeModuleIndex === idx && (
+                      <div className="px-5 pb-5 pt-2 border-t border-stone-100 bg-stone-50/50 space-y-2.5">
+                        {mod.lectures && mod.lectures.length > 0 ? (
+                          mod.lectures.map((lec) => {
+                            const isFree = lec.accessType === 'free' || lec.isFreePreview;
+                            const canStream = isUnlocked || isFree;
+                            return (
+                              <div
+                                key={lec.id}
+                                className="flex items-center justify-between p-3 rounded-xl bg-white border border-stone-200/80 text-xs hover:border-artisan-gold transition-colors gap-2"
+                              >
+                                <div className="flex items-center gap-2.5 text-stone-800 font-medium truncate flex-1 min-w-0 pr-2">
+                                  <Play className="w-3.5 h-3.5 text-artisan-gold fill-artisan-gold flex-shrink-0" />
+                                  <span className="truncate font-medium">{lec.title}</span>
+                                  {isFree && (
+                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0">
+                                      Free Preview
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                  <span className="text-[11px] text-stone-500 font-mono bg-stone-100 px-2 py-0.5 rounded-md">
+                                    {lec.duration}
+                                  </span>
+                                  {canStream && (
+                                    <button
+                                      onClick={() => setSelectedLectureForStream(lec)}
+                                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 border ${
+                                        isFree && !isUnlocked
+                                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700'
+                                          : 'bg-artisan-gold/15 hover:bg-artisan-gold text-stone-900 border-artisan-gold/30'
+                                      }`}
+                                    >
+                                      <Play className="w-3 h-3 fill-current" />
+                                      <span>{isFree && !isUnlocked ? 'Watch Free Trailer' : 'Stream'}</span>
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <div className="py-4 text-center text-xs text-stone-500 bg-stone-100/50 rounded-xl">
+                            Lectures and video demonstrations will be published here for this module.
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Materials & Tools Provided / Needed */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-stone-100/70 border border-stone-200 space-y-3">
+              <h4 className="font-display font-bold text-sm text-stone-900 uppercase tracking-wider">
+                Materials & Equipment Needed
+              </h4>
+              <ul className="space-y-2 text-xs sm:text-sm text-stone-600">
+                {(course.materialsNeeded && course.materialsNeeded.length > 0 ? course.materialsNeeded : [
+                  'Linseed Oil & Turpentine',
+                  'Raw Pigments & Oil Paints',
+                  'Belgian Stretched Linen'
+                ]).map((mat, idx) => (
+                  <li key={idx} className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-artisan-crimson" />
+                    <span>{mat}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-[11px] text-stone-500 pt-2 italic">
+                * Full video streaming access in 4K quality is enabled on your account immediately upon enrollment.
+              </p>
+            </div>
+
+            {/* Masterclass Artwork Gallery & Reference Photos (Portrait cards aspect-[4/5]) */}
+            {galleryImages.length > 1 && (
+              <div className="p-6 sm:p-8 rounded-3xl bg-white border border-stone-200 shadow-soft-lux space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-display font-bold text-base text-stone-900 flex items-center gap-2">
+                    <Images className="w-5 h-5 text-artisan-crimson" />
+                    <span>Masterclass Artwork Gallery & Reference Photos ({galleryImages.length})</span>
+                  </h4>
+                  <span className="text-xs text-stone-500">Click photo to view in main banner</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {galleryImages.map((img, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => {
+                        setActiveImageIndex(idx);
+                        setIsPlayingTeaser(false);
+                        window.scrollTo({ top: 120, behavior: 'smooth' });
+                      }}
+                      className={`relative rounded-2xl overflow-hidden aspect-[4/5] border-2 group cursor-pointer transition-all ${
+                        idx === activeImageIndex
+                          ? 'border-artisan-crimson ring-2 ring-artisan-crimson/30 shadow-md'
+                          : 'border-stone-200 hover:border-stone-400 hover:shadow-md'
+                      }`}
+                    >
+                      <img
+                        src={img}
+                        alt={`Gallery ${idx + 1}`}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src =
+                            'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=600&auto=format&fit=crop';
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-semibold">
+                        View in Banner
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right Column: Direct Mentor Q&A Card */}
+          <div className="lg:col-span-4 sticky top-28 space-y-6">
             <div className="p-6 rounded-3xl bg-stone-50 border border-stone-200/80 space-y-2">
               <div className="flex items-center gap-2 text-xs font-bold text-stone-900">
                 <MessageSquare className="w-4 h-4 text-artisan-crimson" />
