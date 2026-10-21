@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { ArrowRight, Eye, Play, Pause, Volume2, VolumeX, Maximize2 } from 'lucide-react';
+import React from 'react';
+import { ArrowRight, Eye } from 'lucide-react';
 import { PRESS_LOGOS } from '../data/reviews';
 import type { Artwork, Course } from '../types';
 import { MagneticButton } from '../components/ui/MagneticButton';
@@ -23,36 +23,6 @@ export const HomePage: React.FC<HomePageProps> = ({
   const { artworks, courses, artistProfile } = useStudioData();
   const featuredArtworks = artworks.filter((a) => a.featured).slice(0, 4);
   const featuredCourses = courses.slice(0, 3);
-
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(true);
-
-  const togglePlay = () => {
-    if (!videoRef.current) return;
-    if (videoRef.current.paused) {
-      videoRef.current.play();
-      setIsPlaying(true);
-    } else {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    }
-  };
-
-  const toggleMute = () => {
-    if (!videoRef.current) return;
-    videoRef.current.muted = !isMuted;
-    setIsMuted(!isMuted);
-  };
-
-  const toggleFullscreen = () => {
-    if (!videoRef.current) return;
-    if (document.fullscreenElement) {
-      document.exitFullscreen().catch(() => {});
-    } else {
-      videoRef.current.requestFullscreen().catch(() => {});
-    }
-  };
 
   const dynamicStats = [
     { label: 'Years of Devoted Mastery', value: artistProfile.yearsExperience, subtext: 'Continuous studio practice' },
@@ -84,12 +54,9 @@ export const HomePage: React.FC<HomePageProps> = ({
             heroVideoUrl.includes('vimeo.com') ||
             heroVideoUrl.includes('mediadelivery.net');
 
-          const heroHeadline =
-            (artistProfile.heroShowcaseTitle || 'Art That Transforms Spaces Into Stories').toUpperCase();
-
           return (
             <div className="relative w-full h-full">
-              {/* Background Video Player */}
+              {/* Background Cinematic Video Player */}
               {isIframe ? (
                 <iframe
                   src={heroVideoUrl}
@@ -100,11 +67,10 @@ export const HomePage: React.FC<HomePageProps> = ({
                 />
               ) : (
                 <video
-                  ref={videoRef}
                   src={heroVideoUrl}
                   poster={heroImage}
                   autoPlay
-                  muted={isMuted}
+                  muted
                   loop
                   playsInline
                   preload="auto"
@@ -113,49 +79,32 @@ export const HomePage: React.FC<HomePageProps> = ({
               )}
 
               {/* Dark Cinematic Vignette & Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/25 to-black/60 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/30 to-black/65 pointer-events-none" />
 
-              {/* Top Floating Controls Pill (Sound / Play / Fullscreen like reference) */}
-              {!isIframe && (
-                <div className="absolute top-24 sm:top-28 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-black/60 hover:bg-black/80 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/25 shadow-2xl transition-all">
-                  <button
-                    type="button"
-                    onClick={togglePlay}
-                    className="p-1.5 text-white/80 hover:text-white transition-colors cursor-pointer"
-                    title={isPlaying ? 'Pause Video' : 'Play Video'}
-                    aria-label="Play or Pause"
-                  >
-                    {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 fill-white" />}
-                  </button>
-                  <div className="w-px h-3.5 bg-white/20" />
-                  <button
-                    type="button"
-                    onClick={toggleMute}
-                    className="p-1.5 text-white/80 hover:text-white transition-colors cursor-pointer"
-                    title={isMuted ? 'Unmute Sound' : 'Mute Sound'}
-                    aria-label="Mute or Unmute"
-                  >
-                    {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5 text-emerald-400" />}
-                  </button>
-                  <div className="w-px h-3.5 bg-white/20" />
-                  <button
-                    type="button"
-                    onClick={toggleFullscreen}
-                    className="p-1.5 text-white/80 hover:text-white transition-colors cursor-pointer"
-                    title="Fullscreen"
-                    aria-label="Toggle Fullscreen"
-                  >
-                    <Maximize2 className="w-3.5 h-3.5" />
-                  </button>
+              {/* Centered Overlay: Artist Kuldeep Singh & Discover Button */}
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-4 sm:px-8 pt-12 sm:pt-16 pointer-events-none">
+                {/* Elegant Eyebrow Badge */}
+                <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-white/90 text-[10px] sm:text-xs tracking-[0.25em] uppercase font-sans mb-4 sm:mb-6 shadow-xl">
+                  <span className="w-1.5 h-1.5 rounded-full bg-artisan-gold animate-pulse" />
+                  <span>Official Fine Art Atelier & Gallery</span>
                 </div>
-              )}
 
-              {/* Centered Overlay: Headline & Discover Button (Identical to ART BY SEHGAL reference) */}
-              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-4 sm:px-8 pt-16 sm:pt-20 pointer-events-none">
-                <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-normal text-white uppercase tracking-[0.08em] sm:tracking-[0.14em] max-w-5xl leading-[1.18] drop-shadow-2xl">
-                  {heroHeadline}
+                {/* Stylish & Unique Typography for Artist Kuldeep Singh */}
+                <h1 className="flex flex-col items-center justify-center select-none drop-shadow-2xl text-center">
+                  <span className="font-serif italic font-light text-2xl sm:text-4xl md:text-5xl text-stone-200/90 tracking-wide mb-1 sm:mb-2">
+                    The Art of
+                  </span>
+                  <span className="font-serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-normal text-white uppercase tracking-[0.12em] sm:tracking-[0.18em] leading-[1.08] bg-gradient-to-r from-white via-[#FFF5E6] to-[#EADBBE] bg-clip-text text-transparent">
+                    Artist Kuldeep Singh
+                  </span>
                 </h1>
 
+                {/* Philosophy Subtitle */}
+                <p className="mt-4 sm:mt-5 text-stone-300 font-sans text-xs sm:text-sm font-light tracking-[0.2em] uppercase max-w-xl text-center">
+                  Transforming Raw Pigment & Soul Into Timeless Art
+                </p>
+
+                {/* Discover The Artist Action Button */}
                 <div className="mt-8 sm:mt-12 pointer-events-auto">
                   <button
                     type="button"
