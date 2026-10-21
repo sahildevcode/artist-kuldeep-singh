@@ -38,8 +38,8 @@ export default {
           '50%': { transform: 'translateY(-12px) rotate(1deg)' },
         },
         pulseGlow: {
-          '0%, 100%': { opacity: '0.4', filter: 'blur(20px)' },
-          '50%': { opacity: '0.8', filter: 'blur(30px)' },
+          '0%, 100%': { opacity: '0.2' },
+          '50%': { opacity: '0.45' },
         }
       },
       boxShadow: {
