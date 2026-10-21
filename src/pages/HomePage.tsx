@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { ArrowRight, Eye } from 'lucide-react';
 import { PRESS_LOGOS } from '../data/reviews';
 import type { Artwork, Course } from '../types';
@@ -23,6 +23,24 @@ export const HomePage: React.FC<HomePageProps> = ({
   const { artworks, courses, artistProfile } = useStudioData();
   const featuredArtworks = artworks.filter((a) => a.featured).slice(0, 4);
   const featuredCourses = courses.slice(0, 3);
+
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (heroVideoRef.current) {
+      heroVideoRef.current.defaultMuted = true;
+      heroVideoRef.current.muted = true;
+      const p = heroVideoRef.current.play();
+      if (p !== undefined) {
+        p.catch(() => {
+          if (heroVideoRef.current) {
+            heroVideoRef.current.muted = true;
+            heroVideoRef.current.play().catch(() => {});
+          }
+        });
+      }
+    }
+  }, []);
 
   const dynamicStats = [
     { label: 'Years of Devoted Mastery', value: artistProfile.yearsExperience, subtext: 'Continuous studio practice' },
@@ -71,25 +89,27 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* ------------------------------------------------------------- */}
       <section className="relative w-full h-[88vh] sm:h-screen min-h-[580px] max-h-[1080px] overflow-hidden bg-black select-none">
         {(() => {
-          const heroVideoUrl =
-            artistProfile.heroShowcaseVideoUrl ||
-            artistProfile.studioVideoUrl ||
-            '/videos/hero-cinematic.mp4';
+          const resolveVideoUrl = () => {
+            const raw = artistProfile.heroShowcaseVideoUrl || artistProfile.studioVideoUrl;
+            if (!raw || raw.includes('mediadelivery.net') || raw.includes('sample/ForBiggerBlazes')) {
+              return '/videos/hero-cinematic.mp4';
+            }
+            return raw;
+          };
+
+          const heroVideoUrl = resolveVideoUrl();
           const heroImage =
             artistProfile.heroShowcaseImage ||
             artistProfile.studioVideoPoster ||
             'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1600&auto=format&fit=crop';
           const isIframe =
-            heroVideoUrl.includes('iframe') ||
-            heroVideoUrl.includes('embed') ||
             heroVideoUrl.includes('youtube.com') ||
             heroVideoUrl.includes('youtu.be') ||
-            heroVideoUrl.includes('vimeo.com') ||
-            heroVideoUrl.includes('mediadelivery.net');
+            heroVideoUrl.includes('vimeo.com');
 
           return (
             <div className="relative w-full h-full">
-              {/* Background Cinematic Video Player (No Controls, Pure Autoplay) */}
+              {/* Background Cinematic Video Player (No Icons, Pure Muted Autoplay Loop) */}
               {isIframe ? (
                 <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none select-none">
                   <iframe
@@ -101,6 +121,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
               ) : (
                 <video
+                  ref={heroVideoRef}
                   src={heroVideoUrl}
                   poster={heroImage}
                   autoPlay

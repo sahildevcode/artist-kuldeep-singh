@@ -7,7 +7,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { InquiryModal } from '../modals/InquiryModal';
 
 interface NavbarProps {
-  activePage: 'home' | 'about' | 'courses' | 'store' | 'student-portal' | 'portraits';
+  activePage: 'home' | 'about' | 'courses' | 'store' | 'student-portal';
   setActivePage: (page: any) => void;
 }
 
@@ -43,12 +43,11 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks: { id: 'home' | 'about' | 'courses' | 'store' | 'student-portal' | 'portraits'; label: string; icon: React.ReactNode }[] = [
+  const navLinks: { id: 'home' | 'about' | 'courses' | 'store' | 'student-portal'; label: string; icon: React.ReactNode }[] = [
     { id: 'home', label: 'Home', icon: <Compass className="w-3.5 h-3.5" /> },
-    { id: 'portraits', label: 'Portraits & Art', icon: <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" /> },
-    { id: 'store', label: 'Gallery Store', icon: <ImageIcon className="w-3.5 h-3.5" /> },
-    { id: 'courses', label: 'Masterclasses', icon: <BookOpen className="w-3.5 h-3.5" /> },
     { id: 'about', label: 'About & Legacy', icon: <Award className="w-3.5 h-3.5" /> },
+    { id: 'courses', label: 'Masterclasses', icon: <BookOpen className="w-3.5 h-3.5" /> },
+    { id: 'store', label: 'Gallery Store', icon: <ImageIcon className="w-3.5 h-3.5" /> },
     { id: 'student-portal', label: 'Student Portal', icon: <Sparkles className="w-3.5 h-3.5 text-artisan-gold" /> }
   ];
 
