@@ -397,6 +397,11 @@ export const ThreeBackground: React.FC = () => {
     const clock = new THREE.Clock();
     const cycleColors = [0xe63946, 0x2563eb, 0xd97706, 0x059669, 0xc5a059];
 
+    // Pre-allocated colors for zero-garbage-collection fluid transitions
+    const tipColorA = new THREE.Color();
+    const tipColorB = new THREE.Color();
+    const currentTipColor = new THREE.Color();
+
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
       if (typeof document !== 'undefined' && document.hidden) return;
@@ -440,29 +445,48 @@ export const ThreeBackground: React.FC = () => {
       ambientAngleY += delta * 0.04;
 
       // -----------------------------------------------------------
-      // Animate Theme 1 (Brush & Palette)
+      // Animate Theme 1 (Brush & Palette) - 100% Butter-Smooth Fluid Motion
       // -----------------------------------------------------------
       if (theme1Group.visible) {
-        brushGroup.rotation.z = Math.PI / 4.5 + Math.sin(elapsedTime * 0.8) * 0.08 + scrollFactor * 0.6;
-        brushGroup.rotation.y = Math.cos(elapsedTime * 0.6) * 0.15 + scrollFactor * 0.9;
-        brushGroup.rotation.x = 0.25 + currentMouseY * 0.15;
-        brushGroup.position.x = 2.4 + currentMouseX * 0.3 + Math.sin(scrollFactor) * 0.2;
-        brushGroup.position.y = 0.4 - Math.sin(scrollFactor * 1.2) * 0.6 + Math.cos(elapsedTime) * 0.1;
+        // Natural weightless floating motion (continuous, zero stutter, zero lagging yo-yo)
+        const floatY = Math.sin(elapsedTime * 1.2) * 0.12;
+        const floatX = Math.cos(elapsedTime * 0.8) * 0.06;
+        const swayZ = Math.sin(elapsedTime * 0.9) * 0.05;
+        const scrollParallax = -currentScrollY * 0.0004;
 
-        // Paint tip color shift
-        const colorIndex = Math.floor((elapsedTime * 0.2) % cycleColors.length);
+        brushGroup.position.set(
+          2.4 + floatX + currentMouseX * 0.2,
+          0.4 + floatY + scrollParallax,
+          0
+        );
+
+        brushGroup.rotation.set(
+          0.25 + currentMouseY * 0.1,
+          Math.cos(elapsedTime * 0.5) * 0.12 + currentMouseX * 0.12,
+          Math.PI / 4.5 + swayZ
+        );
+
+        // Zero-allocation liquid paint tip color shift
+        const colorIndex = Math.floor((elapsedTime * 0.25) % cycleColors.length);
         const nextColorIndex = (colorIndex + 1) % cycleColors.length;
-        const blend = (elapsedTime * 0.2) % 1;
-        const c1 = new THREE.Color(cycleColors[colorIndex]);
-        const c2 = new THREE.Color(cycleColors[nextColorIndex]);
-        c1.lerp(c2, blend);
-        paintTipMat.color.copy(c1);
-        paintTipMat.emissive.copy(c1);
+        const blend = (elapsedTime * 0.25) % 1;
+        tipColorA.setHex(cycleColors[colorIndex]);
+        tipColorB.setHex(cycleColors[nextColorIndex]);
+        currentTipColor.copy(tipColorA).lerp(tipColorB, blend);
+        paintTipMat.color.copy(currentTipColor);
+        paintTipMat.emissive.copy(currentTipColor);
 
-        paletteGroup.rotation.z = -0.2 + scrollFactor * 0.4 + Math.sin(elapsedTime * 0.4) * 0.05;
-        paletteGroup.rotation.x = 0.5 + currentMouseY * 0.12;
-        paletteGroup.rotation.y = -0.3 + currentMouseX * 0.15;
-        paletteGroup.position.y = -1.2 + Math.sin(scrollFactor * 0.8) * 0.5;
+        // Smooth floating wooden palette (serene breathing drift)
+        paletteGroup.position.set(
+          -0.2 + currentMouseX * 0.12,
+          -1.2 + Math.cos(elapsedTime * 1.0) * 0.08 + scrollParallax * 0.7,
+          0
+        );
+        paletteGroup.rotation.set(
+          0.5 + currentMouseY * 0.08,
+          -0.3 + currentMouseX * 0.1,
+          -0.2 + Math.sin(elapsedTime * 0.6) * 0.04
+        );
       }
 
       // -----------------------------------------------------------
