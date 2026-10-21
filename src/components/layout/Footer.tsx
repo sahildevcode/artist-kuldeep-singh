@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowUpRight, Check, MapPin, ShieldCheck, FileText, RefreshCw, Truck, Mail, Phone, Lock } from 'lucide-react';
+import { ArrowUpRight, Check, MapPin, ShieldCheck, Phone } from 'lucide-react';
 
 interface FooterProps {
   setActivePage: (page: any) => void;
@@ -32,8 +32,8 @@ export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-8 lg:gap-10 pb-14 border-b border-stone-800/80">
           
-          {/* Brand Column (4 cols) */}
-          <div className="md:col-span-4 space-y-4 sm:space-y-5">
+          {/* Brand Column (5 cols) */}
+          <div className="md:col-span-5 space-y-4 sm:space-y-5">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-stone-100 text-[#151311] flex items-center justify-center font-serif text-xl font-bold">
                 K
@@ -111,8 +111,8 @@ export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
             </div>
           </div>
 
-          {/* Exploration Links (2 cols) */}
-          <div className="md:col-span-2 space-y-4">
+          {/* Exploration Links (3 cols) */}
+          <div className="md:col-span-3 space-y-4">
             <h4 className="text-xs uppercase tracking-[0.2em] text-stone-400 font-bold">Exploration</h4>
             <ul className="space-y-2.5 text-xs text-stone-400">
               <li>
@@ -163,68 +163,8 @@ export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
             </ul>
           </div>
 
-          {/* Legal & Razorpay Compliance Policies (3 cols) */}
-          <div className="md:col-span-3 space-y-4">
-            <h4 className="text-xs uppercase tracking-[0.2em] text-stone-400 font-bold flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-artisan-gold" />
-              Legal & Compliance
-            </h4>
-            <ul className="space-y-2.5 text-xs text-stone-400">
-              <li>
-                <button
-                  onClick={() => navigateTo('terms')}
-                  className="hover:text-white transition-colors flex items-center gap-1.5 group text-left"
-                >
-                  <FileText className="w-3.5 h-3.5 text-stone-500 group-hover:text-artisan-gold" />
-                  <span>Terms & Conditions</span>
-                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => navigateTo('privacy')}
-                  className="hover:text-white transition-colors flex items-center gap-1.5 group text-left"
-                >
-                  <Lock className="w-3.5 h-3.5 text-stone-500 group-hover:text-artisan-gold" />
-                  <span>Privacy Policy</span>
-                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => navigateTo('refund')}
-                  className="hover:text-white transition-colors flex items-center gap-1.5 group text-left"
-                >
-                  <RefreshCw className="w-3.5 h-3.5 text-stone-500 group-hover:text-artisan-gold" />
-                  <span>Refund & Cancellation</span>
-                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => navigateTo('shipping')}
-                  className="hover:text-white transition-colors flex items-center gap-1.5 group text-left"
-                >
-                  <Truck className="w-3.5 h-3.5 text-stone-500 group-hover:text-artisan-gold" />
-                  <span>Shipping & Delivery Policy</span>
-                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => navigateTo('contact')}
-                  className="hover:text-white text-emerald-400 font-medium transition-colors flex items-center gap-1.5 group text-left"
-                >
-                  <Mail className="w-3.5 h-3.5 text-emerald-500" />
-                  <span>Contact Us & Grievance</span>
-                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          {/* Newsletter & Payment Security Badge (3 cols) */}
-          <div className="md:col-span-3 space-y-4">
+          {/* Newsletter & Payment Security Badge (4 cols) */}
+          <div className="md:col-span-4 space-y-4">
             <h4 className="text-xs uppercase tracking-[0.2em] text-stone-400 font-bold">Collector Gazette</h4>
             <p className="text-xs text-stone-400 leading-relaxed">
               Receive private previews of newly completed canvases 48 hours prior to public release.
