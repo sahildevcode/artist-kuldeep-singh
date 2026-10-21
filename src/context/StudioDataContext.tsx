@@ -447,13 +447,67 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       // fallback to polling
     }
 
-    // Resilient Polling backup
-    const interval = setInterval(fetchAllCloudData, 3000);
+    // Smart Eco-Sync Polling (Saves 80%+ Bandwidth, Pauses when tab is hidden or phone locked)
+    let syncInterval: any = null;
+    let idleTimer: any = null;
+    let isUserIdle = false;
+
+    const startSync = () => {
+      if (syncInterval) clearInterval(syncInterval);
+      syncInterval = setInterval(() => {
+        if (!document.hidden && !isUserIdle) {
+          fetchAllCloudData();
+        }
+      }, 12000);
+    };
+
+    const stopSync = () => {
+      if (syncInterval) {
+        clearInterval(syncInterval);
+        syncInterval = null;
+      }
+    };
+
+    const handleUserActivity = () => {
+      if (isUserIdle) {
+        isUserIdle = false;
+        if (!document.hidden) {
+          fetchAllCloudData();
+          startSync();
+        }
+      }
+      if (idleTimer) clearTimeout(idleTimer);
+      // Mark idle after 3 minutes of no interaction
+      idleTimer = setTimeout(() => {
+        isUserIdle = true;
+        stopSync();
+      }, 180000);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopSync();
+      } else {
+        isUserIdle = false;
+        fetchAllCloudData();
+        startSync();
+      }
+    };
 
     const onFocus = () => {
+      isUserIdle = false;
       fetchAllCloudData();
+      startSync();
     };
+
+    startSync();
+    handleUserActivity();
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('focus', onFocus);
+    window.addEventListener('mousemove', handleUserActivity, { passive: true });
+    window.addEventListener('touchstart', handleUserActivity, { passive: true });
+    window.addEventListener('scroll', handleUserActivity, { passive: true });
 
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'kuldeep_studio_courses' && e.newValue) {
@@ -491,9 +545,14 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     return () => {
       isMounted = false;
-      clearInterval(interval);
+      stopSync();
+      if (idleTimer) clearTimeout(idleTimer);
       if (eventSource) eventSource.close();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('focus', onFocus);
+      window.removeEventListener('mousemove', handleUserActivity);
+      window.removeEventListener('touchstart', handleUserActivity);
+      window.removeEventListener('scroll', handleUserActivity);
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);

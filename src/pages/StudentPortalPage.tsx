@@ -163,6 +163,9 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
     let isMounted = true;
 
     const checkHeartbeat = async () => {
+      // If tab is in background and no lecture is playing, pause heartbeat to save bandwidth
+      if (document.hidden && !streamingLecture) return;
+
       try {
         const primaryUrl = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
           ? 'http://localhost:5000'
@@ -200,11 +203,17 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
     };
 
     checkHeartbeat();
-    const interval = setInterval(checkHeartbeat, 3500);
+    const interval = setInterval(checkHeartbeat, 10000);
+
+    const onVisible = () => {
+      if (!document.hidden) checkHeartbeat();
+    };
+    document.addEventListener('visibilitychange', onVisible);
 
     return () => {
       isMounted = false;
       clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
     };
   }, [currentUser?.email, currentUser?.sessionToken, isEnrolled, deviceId, activeCourse?.id, logout]);
 
