@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Sparkles, ShieldCheck, ArrowUpRight, Eye, Play } from 'lucide-react';
+import { ArrowRight, Eye } from 'lucide-react';
 import { PRESS_LOGOS } from '../data/reviews';
 import type { Artwork, Course } from '../types';
 import { MagneticButton } from '../components/ui/MagneticButton';
@@ -34,160 +34,59 @@ export const HomePage: React.FC<HomePageProps> = ({
   return (
     <div className="relative z-10 pt-28 sm:pt-36">
       {/* ------------------------------------------------------------- */}
-      {/* 1. HERO SECTION WITH 3D BRUSH SPOTLIGHT */}
+      {/* 1. HERO SECTION - MAIN FULL-WIDTH CINEMATIC VIDEO */}
       {/* ------------------------------------------------------------- */}
-      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 sm:pb-32 overflow-hidden min-h-[580px]">
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-8 space-y-8">
-            {/* Top Pill */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-stone-100/90 dark:bg-stone-900/90 border border-stone-200/80 dark:border-stone-800 backdrop-blur-md text-xs font-semibold text-stone-800 dark:text-stone-200 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-artisan-crimson animate-pulse" />
-              <span>Artist Kuldeep Singh • Official Fine Art Gallery & Masterclasses</span>
-            </div>
+      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 sm:pb-24">
+        {/* Full-width Cinema Video Container */}
+        <div className="relative w-full rounded-3xl overflow-hidden shadow-2xl border border-stone-200/90 dark:border-stone-800 bg-black aspect-[16/9] sm:aspect-[21/9] lg:aspect-[16/8] group">
+          {(() => {
+            const heroVideoUrl =
+              artistProfile.heroShowcaseVideoUrl ||
+              artistProfile.studioVideoUrl ||
+              'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+            const heroImage =
+              artistProfile.heroShowcaseImage ||
+              artistProfile.studioVideoPoster ||
+              'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1600&auto=format&fit=crop';
+            const isIframe =
+              heroVideoUrl.includes('iframe') ||
+              heroVideoUrl.includes('embed') ||
+              heroVideoUrl.includes('youtube.com') ||
+              heroVideoUrl.includes('youtu.be') ||
+              heroVideoUrl.includes('vimeo.com') ||
+              heroVideoUrl.includes('mediadelivery.net');
 
-            {/* Main Headline */}
-            <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[#1A1816] dark:text-[#FDFBF7] leading-[1.08]">
-              Transforming Raw{' '}
-              <span className="text-gradient-pigment italic font-normal">
-                Pigment & Soul
-              </span>{' '}
-              Into Timeless Art.
-            </h1>
+            if (isIframe) {
+              return (
+                <iframe
+                  src={heroVideoUrl}
+                  title="Artist Kuldeep Singh - Hero Video"
+                  className="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              );
+            }
 
-            {/* Subtitle */}
-            <p className="text-base sm:text-xl text-stone-600 dark:text-stone-300 max-w-2xl font-normal leading-relaxed">
-              Explore the fine art paintings, original artwork, art collections and creative work of Artist Kuldeep Singh. Discover the gallery and browse available artworks online.
-            </p>
-
-            {/* CTAs */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              <MagneticButton
-                onClick={() => setActivePage('store')}
-                variant="primary"
-                size="lg"
-                className="shadow-xl"
-              >
-                <span>Acquire Original Works</span>
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </MagneticButton>
-
-              <MagneticButton
-                onClick={() => setActivePage('courses')}
-                variant="glass"
-                size="lg"
-              >
-                <span>Explore Masterclasses</span>
-                <Sparkles className="w-4 h-4 ml-2 text-artisan-gold" />
-              </MagneticButton>
-            </div>
-          </div>
-
-          {/* Right Floating Quick Card (Hero visual anchor) */}
-          <div className="lg:col-span-4 flex justify-center lg:justify-end">
-            <div className="relative max-w-sm w-full">
-              {/* Decorative behind glow */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-artisan-crimson via-artisan-ochre to-artisan-ultramarine rounded-3xl blur-xl opacity-20 group-hover:opacity-30 transition duration-1000 animate-pulse-glow" />
-
-              {(() => {
-                const isHeroVideo = artistProfile.heroShowcaseType === 'video';
-                const heroBadge = artistProfile.heroShowcaseBadge || (isHeroVideo ? 'Featured Atelier Video' : 'Featured Canvas');
-                const heroTitle = artistProfile.heroShowcaseTitle || (isHeroVideo ? 'Behind the Canvas Demonstration' : 'Symphony of the Solitary Tide');
-                const heroSubtitle = artistProfile.heroShowcaseSubtitle || (isHeroVideo ? 'Original Masterclass Demonstration' : 'Original Oil on Belgian Linen (40 x 54 in)');
-                const heroPrice = artistProfile.heroShowcasePrice !== undefined ? artistProfile.heroShowcasePrice : (isHeroVideo ? '' : '₹4,12,250');
-                const heroImage = artistProfile.heroShowcaseImage || 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=800&auto=format&fit=crop';
-                const heroVideoUrl = artistProfile.heroShowcaseVideoUrl || artistProfile.studioVideoUrl || 'https://vjs.zencdn.net/v/oceans.mp4';
-                const heroCert = artistProfile.heroShowcaseCertificateText || (isHeroVideo ? 'Atelier Studio Archive' : 'Archival Certificate');
-                const isIframe = heroVideoUrl.includes('iframe') || heroVideoUrl.includes('embed') || heroVideoUrl.includes('youtube.com') || heroVideoUrl.includes('youtu.be') || heroVideoUrl.includes('vimeo.com') || heroVideoUrl.includes('mediadelivery.net');
-
-                return (
-                  <div className="relative glass-panel rounded-3xl p-5 border border-white shadow-2xl space-y-4">
-                    <div className="relative h-64 rounded-2xl overflow-hidden shadow-inner group bg-black/90">
-                      {isHeroVideo ? (
-                        isIframe ? (
-                          <iframe
-                            src={heroVideoUrl}
-                            title={heroTitle}
-                            className="w-full h-full border-0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                          />
-                        ) : (
-                          <video
-                            src={heroVideoUrl}
-                            poster={heroImage}
-                            controls
-                            playsInline
-                            className="w-full h-full object-cover"
-                          />
-                        )
-                      ) : (
-                        <img
-                          src={heroImage}
-                          alt={heroTitle}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                        />
-                      )}
-
-                      <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5 shadow-md pointer-events-none">
-                        {isHeroVideo && <Play className="w-3 h-3 text-red-500 fill-red-500" />}
-                        {heroBadge}
-                      </div>
-
-                      {heroPrice ? (
-                        <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full text-xs font-serif font-bold text-artisan-crimson shadow-md pointer-events-none">
-                          {heroPrice}
-                        </div>
-                      ) : isHeroVideo ? (
-                        <div className="absolute bottom-3 right-3 bg-black/75 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[10px] font-mono text-emerald-400 font-semibold shadow pointer-events-none border border-emerald-500/30">
-                          HD Atelier 4K
-                        </div>
-                      ) : null}
-                    </div>
-
-                    <div>
-                      <h3 className="font-serif font-bold text-lg text-stone-900 line-clamp-1">
-                        {heroTitle}
-                      </h3>
-                      <p className="text-xs text-stone-500 mt-0.5 line-clamp-2">
-                        {heroSubtitle}
-                      </p>
-                    </div>
-
-                    <div className="pt-2 border-t border-stone-200/60 flex items-center justify-between">
-                      <div className="flex items-center gap-1 text-xs text-stone-600">
-                        <ShieldCheck className="w-4 h-4 text-artisan-gold" />
-                        <span>{heroCert}</span>
-                      </div>
-                      {isHeroVideo ? (
-                        <a
-                          href="#studio-reels"
-                          className="text-xs font-bold text-artisan-crimson hover:underline flex items-center gap-1"
-                        >
-                          Watch Studio Reel <ArrowUpRight className="w-3.5 h-3.5" />
-                        </a>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            const matched = (artistProfile.heroShowcaseArtworkId && artworks.find((a) => a.id === artistProfile.heroShowcaseArtworkId)) || artworks[0];
-                            if (matched) onSelectArtwork(matched);
-                          }}
-                          className="text-xs font-bold text-artisan-crimson hover:underline flex items-center gap-1 cursor-pointer"
-                        >
-                          Quick View <ArrowUpRight className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                );
-              })()}
-            </div>
-          </div>
+            return (
+              <video
+                src={heroVideoUrl}
+                poster={heroImage}
+                controls
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            );
+          })()}
         </div>
 
         {/* ------------------------------------------------------------- */}
         {/* STATS COUNTER STRIP */}
         {/* ------------------------------------------------------------- */}
-        <div className="mt-20 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="mt-14 sm:mt-20 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {dynamicStats.map((stat, idx) => (
             <div
               key={idx}

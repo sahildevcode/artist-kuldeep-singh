@@ -1,5 +1,5 @@
-import React from 'react';
-import { CheckCircle2, Sparkles, MapPin, ArrowRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { CheckCircle2, Sparkles, MapPin, ArrowRight, ChevronDown } from 'lucide-react';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { useStudioData } from '../context/StudioDataContext';
 
@@ -7,8 +7,88 @@ interface AboutPageProps {
   setActivePage: (page: 'home' | 'about' | 'courses' | 'store') => void;
 }
 
+const SHOWCASE_SECTIONS = [
+  {
+    id: 'originals',
+    title: 'Originals',
+    description:
+      'One-of-one artworks created by Artist Kuldeep Singh. Each original painting is a unique expression of story, culture, and craftsmanship created entirely by hand and available to collectors seeking a singular piece of art.',
+    image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=1200&auto=format&fit=crop',
+    imageAlt: 'Artist Kuldeep Singh creating an original painting in studio',
+    reverse: false,
+    action: 'store',
+    actionText: 'Explore Originals',
+  },
+  {
+    id: 'prints',
+    title: 'Prints',
+    description:
+      "These limited-edition prints make Artist Kuldeep Singh's work accessible while preserving the richness, detail, and emotion of the original piece.",
+    image: 'https://images.unsplash.com/photo-1582561424760-0321d75e81fa?q=80&w=1200&auto=format&fit=crop',
+    imageAlt: 'Limited edition archival art print framed in architectural space',
+    reverse: true,
+    action: 'store',
+    actionText: 'Browse Fine Art Prints',
+  },
+  {
+    id: 'projects',
+    title: 'Projects',
+    description:
+      'From luxury brand collaborations and immersive installations to custom commissions and experiential spaces, discover how art transforms environments, products, and cultural conversations.',
+    image: 'https://images.unsplash.com/photo-1561214115-f2f134cc4912?q=80&w=1200&auto=format&fit=crop',
+    imageAlt: 'Curated artistic projects and architectural installations',
+    reverse: false,
+    action: null,
+    actionText: null,
+  },
+  {
+    id: 'exhibitions',
+    title: 'Exhibitions',
+    description:
+      "A showcase of exhibitions, gallery presentations, and curated experiences that bring Artist Kuldeep Singh's artistic vision to life and invite viewers into his world of storytelling.",
+    image: 'https://images.unsplash.com/photo-1531247448606-44fa13e90a6c?q=80&w=1200&auto=format&fit=crop',
+    imageAlt: 'Curated gallery exhibition with art collectors',
+    reverse: true,
+    action: null,
+    actionText: null,
+  },
+];
+
+const FAQS = [
+  {
+    question: 'Do the artworks come framed?',
+    answer:
+      'Yes, all original paintings come encased in custom museum-grade, hand-crafted timber frames with archival museum backing. For limited-edition prints, you may select our bespoke framing option or receive them safely rolled inside heavy-duty archival tubes.',
+  },
+  {
+    question: 'How are artworks shipped?',
+    answer:
+      'Artworks are custom-crated with multi-layer shock absorption, moisture-resistant barriers, and corner protection. Each delivery is tracked end-to-end and insured for full commercial value during transit.',
+  },
+  {
+    question: 'Do you ship internationally?',
+    answer:
+      'Yes, we ship to collectors worldwide via DHL Express and FedEx International Priority with complete door-to-door tracking and white-glove customs clearance support.',
+  },
+  {
+    question: 'Can I commission a custom piece or private project?',
+    answer:
+      'Artist Kuldeep Singh accepts a limited number of bespoke commissions each year for private residences, institutional collections, and architectural projects. Reach out via our inquiry form to discuss scale and timeline.',
+  },
+  {
+    question: 'Are limited edition prints numbered and signed?',
+    answer:
+      'Every limited-edition print is individually numbered, hand-signed by Artist Kuldeep Singh, and accompanied by a serialized Certificate of Authenticity embossed with the atelier seal.',
+  },
+];
+
 export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
   const { artistProfile, awards } = useStudioData();
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  const toggleFaq = (idx: number) => {
+    setOpenFaq(prev => (prev === idx ? null : idx));
+  };
 
   const bioStory = Array.isArray(artistProfile?.bioStory) && artistProfile.bioStory.length > 0
     ? artistProfile.bioStory
@@ -103,7 +183,93 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
       </section>
 
       {/* ------------------------------------------------------------- */}
-      {/* 3. AWARDS & INSTITUTIONAL RECOGNITION */}
+      {/* 2. EDITORIAL SHOWCASE (ORIGINALS, PRINTS, PROJECTS, EXHIBITIONS) */}
+      {/* ------------------------------------------------------------- */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 space-y-20 sm:space-y-32">
+        {SHOWCASE_SECTIONS.map((sec) => (
+          <div
+            key={sec.id}
+            className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center"
+          >
+            {/* Image Column */}
+            <div className={sec.reverse ? 'order-1 md:order-2' : 'order-1 md:order-1'}>
+              <div className="relative aspect-[16/10] sm:aspect-[4/3] rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border border-stone-200/80 group bg-stone-100">
+                <img
+                  src={sec.image}
+                  alt={sec.imageAlt}
+                  loading="lazy"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+              </div>
+            </div>
+
+            {/* Text Column */}
+            <div className={sec.reverse ? 'order-2 md:order-1' : 'order-2 md:order-2'}>
+              <div className="max-w-lg space-y-4">
+                <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-stone-900 tracking-tight">
+                  {sec.title}
+                </h2>
+                <p className="text-stone-600 text-sm sm:text-base leading-relaxed font-sans">
+                  {sec.description}
+                </p>
+                {sec.action && sec.actionText && (
+                  <div className="pt-2">
+                    <button
+                      onClick={() => setActivePage(sec.action as any)}
+                      className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-stone-900 hover:text-artisan-crimson transition-colors cursor-pointer border-b border-stone-900 hover:border-artisan-crimson pb-0.5"
+                    >
+                      <span>{sec.actionText}</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {/* ------------------------------------------------------------- */}
+      {/* 3. FAQS SECTION */}
+      {/* ------------------------------------------------------------- */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-stone-900 text-center mb-10 sm:mb-14 tracking-tight">
+          FAQs
+        </h2>
+
+        <div className="border-t border-stone-200 divide-y divide-stone-200">
+          {FAQS.map((faq, idx) => {
+            const isOpen = openFaq === idx;
+            return (
+              <div key={idx} className="transition-colors">
+                <button
+                  type="button"
+                  onClick={() => toggleFaq(idx)}
+                  className="w-full py-5 sm:py-6 flex items-center justify-between text-left group cursor-pointer focus:outline-none"
+                  aria-expanded={isOpen}
+                >
+                  <span className="font-sans text-sm sm:text-base text-stone-900 font-normal group-hover:text-stone-600 transition-colors pr-4">
+                    {faq.question}
+                  </span>
+                  <ChevronDown
+                    className={`w-4 h-4 text-stone-500 flex-shrink-0 transition-transform duration-300 ${
+                      isOpen ? 'rotate-180 text-stone-900' : ''
+                    }`}
+                  />
+                </button>
+                {isOpen && (
+                  <div className="pb-6 pr-6 text-stone-600 text-xs sm:text-sm leading-relaxed font-sans animate-fadeIn">
+                    {faq.answer}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------- */}
+      {/* 4. AWARDS & INSTITUTIONAL RECOGNITION */}
       {/* ------------------------------------------------------------- */}
       <section className="py-20 bg-stone-100/60 border-y border-stone-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -147,7 +313,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
       </section>
 
       {/* ------------------------------------------------------------- */}
-      {/* 4. MATERIALS & ATELIER CRAFT */}
+      {/* 5. MATERIALS & ATELIER CRAFT */}
       {/* ------------------------------------------------------------- */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
