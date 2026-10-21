@@ -150,7 +150,7 @@ export const ScrollSignatureBackground: React.FC = () => {
       }`}
       style={{ zIndex: 0 }}
     >
-      <div className="relative w-full max-w-6xl px-4 sm:px-8 py-6 flex items-center justify-center">
+      <div className="relative w-full max-w-6xl px-4 sm:px-8 py-6 flex items-center justify-center overflow-hidden">
         {/* ------------------------------------------------------------- */}
         {/* ATMOSPHERIC LUMINOUS RADIANT GLOW                             */}
         {/* Pure CSS Radial Gradient - Hardware Accelerated, Zero Lag     */}
@@ -171,7 +171,7 @@ export const ScrollSignatureBackground: React.FC = () => {
         <svg
           viewBox="0 0 1440 740"
           preserveAspectRatio="xMidYMid meet"
-          className="w-full h-auto overflow-visible relative z-1"
+          className="w-full h-auto max-w-full overflow-hidden relative z-1"
           style={{ transform: 'translate3d(0, 0, 0)' }}
         >
           <defs>

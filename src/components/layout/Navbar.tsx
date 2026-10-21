@@ -276,7 +276,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
               ) : (
                 <button
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-semibold tracking-wide text-white bg-[#1A1816] hover:bg-black dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white rounded-full transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-1.5 active:scale-95 whitespace-nowrap cursor-pointer shrink-0"
+                  className="hidden sm:inline-flex px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-semibold tracking-wide text-white bg-[#1A1816] hover:bg-black dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white rounded-full transition-all duration-200 shadow-sm hover:shadow-md items-center gap-1.5 active:scale-95 whitespace-nowrap cursor-pointer shrink-0"
                 >
                   <User className="w-3.5 h-3.5 shrink-0" />
                   <span className="whitespace-nowrap">Sign In</span>
@@ -286,7 +286,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
               {/* Studio Inquiry Button */}
               <button
                 onClick={() => setIsInquiryOpen(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full bg-artisan-gold/15 hover:bg-artisan-gold text-[#5C4010] dark:text-amber-300 hover:text-white border border-artisan-gold/40 text-[11px] sm:text-xs font-bold transition-all shadow-xs cursor-pointer group shrink-0 active:scale-95 whitespace-nowrap"
+                className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full bg-artisan-gold/15 hover:bg-artisan-gold text-[#5C4010] dark:text-amber-300 hover:text-white border border-artisan-gold/40 text-[11px] sm:text-xs font-bold transition-all shadow-xs cursor-pointer group shrink-0 active:scale-95 whitespace-nowrap"
                 title="Send Studio Inquiry / पूछताछ करें"
               >
                 <MessageSquare className="w-3.5 h-3.5 text-artisan-gold group-hover:text-white transition-colors shrink-0" />
@@ -366,6 +366,20 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                 <MessageSquare className="w-4 h-4 text-artisan-gold shrink-0" />
                 <span>Enquire / पूछताछ (Direct Inquiry)</span>
               </button>
+
+              {/* Sign In in Mobile Dropdown */}
+              {!currentUser && (
+                <button
+                  onClick={() => {
+                    setIsAuthModalOpen(true);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-white bg-[#1A1816] hover:bg-black transition-all text-left cursor-pointer"
+                >
+                  <User className="w-4 h-4 text-white shrink-0" />
+                  <span>Sign In / Student Login</span>
+                </button>
+              )}
 
               <div className="pt-2 mt-1 border-t border-stone-200/60">
                 <button

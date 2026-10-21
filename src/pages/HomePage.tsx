@@ -37,7 +37,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* ------------------------------------------------------------- */}
       {/* 1. HERO SECTION WITH 3D BRUSH SPOTLIGHT */}
       {/* ------------------------------------------------------------- */}
-      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 sm:pb-32 overflow-visible min-h-[580px]">
+      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 sm:pb-32 overflow-hidden min-h-[580px]">
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-8 space-y-8">
             {/* Top Pill */}
