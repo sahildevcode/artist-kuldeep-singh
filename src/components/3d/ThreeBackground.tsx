@@ -2,6 +2,30 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useAudio } from '../../context/AudioContext';
 
+// Helper to create soft, glowing, circular golden stardust particles (zero pixelated square boxes)
+const createSoftStardustTexture = (): THREE.Texture | null => {
+  if (typeof document === 'undefined') return null;
+  const canvas = document.createElement('canvas');
+  canvas.width = 64;
+  canvas.height = 64;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+
+  const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gradient.addColorStop(0, 'rgba(255, 250, 210, 1)');      // Pure radiant gold center
+  gradient.addColorStop(0.2, 'rgba(255, 215, 64, 0.9)');    // Golden luminous core
+  gradient.addColorStop(0.5, 'rgba(218, 165, 32, 0.35)');   // Soft ambient warm aura
+  gradient.addColorStop(1, 'rgba(218, 165, 32, 0)');        // Completely transparent silky edge
+
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 64, 64);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.generateMipmaps = false;
+  texture.minFilter = THREE.LinearFilter;
+  return texture;
+};
+
 export const ThreeBackground: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { activeTheme3D } = useAudio();
@@ -40,6 +64,9 @@ export const ThreeBackground: React.FC = () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.2));
     renderer.shadowMap.enabled = false;
     container.appendChild(renderer.domElement);
+
+    // Soft glowing circular particle texture
+    const stardustTexture = createSoftStardustTexture();
 
     // -------------------------------------------------------------
     // Lighting
@@ -167,27 +194,29 @@ export const ThreeBackground: React.FC = () => {
 
     // =============================================================
     // THEME 2: Artist Kuldeep Singh Signature Atelier
-    // Clean & atmospheric: Floating 24K gold leaf embers (Calligraphy scroll in ScrollSignatureBackground)
+    // Clean & atmospheric: Floating 24K soft round stardust embers
     // =============================================================
     const theme2Group = new THREE.Group();
     scene.add(theme2Group);
 
-    // Floating 24K Gold Leaf Embers
+    // Floating 24K Gold Stardust (Soft Circular Glowing Particles - Zero Boxes)
     const goldFlakeCount = 65;
     const goldFlakeGeo = new THREE.BufferGeometry();
     const goldFlakePositions = new Float32Array(goldFlakeCount * 3);
     for (let i = 0; i < goldFlakeCount; i++) {
-      goldFlakePositions[i * 3] = (Math.random() - 0.5) * 14;
-      goldFlakePositions[i * 3 + 1] = (Math.random() - 0.5) * 10;
-      goldFlakePositions[i * 3 + 2] = (Math.random() - 0.5) * 6;
+      goldFlakePositions[i * 3] = (Math.random() - 0.5) * 15;
+      goldFlakePositions[i * 3 + 1] = (Math.random() - 0.5) * 11;
+      goldFlakePositions[i * 3 + 2] = (Math.random() - 0.5) * 7;
     }
     goldFlakeGeo.setAttribute('position', new THREE.BufferAttribute(goldFlakePositions, 3));
     const goldFlakeMat = new THREE.PointsMaterial({
       color: 0xffd700,
-      size: 0.16,
+      size: 0.26,
+      map: stardustTexture || undefined,
       transparent: true,
-      opacity: 0.75,
+      opacity: 0.8,
       blending: THREE.AdditiveBlending,
+      depthWrite: false,
     });
     const goldFlakes = new THREE.Points(goldFlakeGeo, goldFlakeMat);
     theme2Group.add(goldFlakes);
@@ -309,21 +338,25 @@ export const ThreeBackground: React.FC = () => {
 
     // =============================================================
     // Ambient Background Stardust (Shared across themes)
+    // Soft Circular Glowing Golden Particles (Zero Boxes)
     // =============================================================
-    const dustCount = 50;
+    const dustCount = 45;
     const dustGeo = new THREE.BufferGeometry();
     const dustPositions = new Float32Array(dustCount * 3);
     for (let i = 0; i < dustCount; i++) {
-      dustPositions[i * 3] = (Math.random() - 0.5) * 14;
-      dustPositions[i * 3 + 1] = (Math.random() - 0.5) * 10;
-      dustPositions[i * 3 + 2] = (Math.random() - 0.5) * 6;
+      dustPositions[i * 3] = (Math.random() - 0.5) * 16;
+      dustPositions[i * 3 + 1] = (Math.random() - 0.5) * 12;
+      dustPositions[i * 3 + 2] = (Math.random() - 0.5) * 8;
     }
     dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
     const dustMat = new THREE.PointsMaterial({
-      color: 0xc5a059,
-      size: 0.08,
+      color: 0xe6ca7d,
+      size: 0.16,
+      map: stardustTexture || undefined,
       transparent: true,
       opacity: 0.45,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
     });
     const ambientDust = new THREE.Points(dustGeo, dustMat);
     scene.add(ambientDust);
@@ -337,16 +370,9 @@ export const ThreeBackground: React.FC = () => {
     let targetMouseY = 0;
     let currentMouseX = 0;
     let currentMouseY = 0;
-    let scrollTicking = false;
 
     const onScroll = () => {
-      if (!scrollTicking) {
-        requestAnimationFrame(() => {
-          targetScrollY = window.scrollY;
-          scrollTicking = false;
-        });
-        scrollTicking = true;
-      }
+      targetScrollY = window.scrollY;
     };
 
     const onMouseMove = (e: MouseEvent) => {
@@ -362,6 +388,10 @@ export const ThreeBackground: React.FC = () => {
     let theme2Scale = activeTheme3D === 'kuldeep' ? 1 : 0.001;
     let theme3Scale = activeTheme3D === 'celestial' ? 1 : 0.001;
 
+    // Independent continuous orbital drift angles (Unbroken, never freezes, zero stutter)
+    let stardustAngleY = 0;
+    let ambientAngleY = 0;
+
     // Animation Loop
     let animationFrameId: number;
     const clock = new THREE.Clock();
@@ -371,20 +401,18 @@ export const ThreeBackground: React.FC = () => {
       animationFrameId = requestAnimationFrame(animate);
       if (typeof document !== 'undefined' && document.hidden) return;
 
+      const delta = Math.min(clock.getDelta(), 0.05); // Capped to 50ms to prevent any frame drops or spikes
       const elapsedTime = clock.getElapsedTime();
 
-      // Fluid, butter-smooth response to user scroll & mouse motion
+      // Fluid, butter-smooth lerp response to user scroll & mouse motion (zero jerky jumps)
       const scrollDiff = targetScrollY - currentScrollY;
-      if (Math.abs(scrollDiff) > 0.5) {
-        currentScrollY += scrollDiff * 0.22;
-      } else {
-        currentScrollY = targetScrollY;
-      }
+      currentScrollY += scrollDiff * 0.12;
+      const scrollSpeed = Math.abs(scrollDiff);
 
-      currentMouseX += (targetMouseX - currentMouseX) * 0.18;
-      currentMouseY += (targetMouseY - currentMouseY) * 0.18;
+      currentMouseX += (targetMouseX - currentMouseX) * 0.12;
+      currentMouseY += (targetMouseY - currentMouseY) * 0.12;
 
-      const scrollFactor = currentScrollY * 0.0015;
+      const scrollFactor = currentScrollY * 0.0012;
 
       // Smooth Theme Cross-Fade / Scale Transitions
       const active = themeRef.current;
@@ -406,14 +434,21 @@ export const ThreeBackground: React.FC = () => {
       theme3Group.visible = theme3Scale > 0.01;
 
       // -----------------------------------------------------------
+      // Continuous, Silky Unbroken Stardust Drift (Never Stutters / Atakta Nahi Hai)
+      // Base continuous speed + very gentle scroll momentum (never abrupt halts)
+      // -----------------------------------------------------------
+      stardustAngleY += delta * 0.12 + Math.min(scrollSpeed * 0.00004, 0.008);
+      ambientAngleY += delta * 0.04;
+
+      // -----------------------------------------------------------
       // Animate Theme 1 (Brush & Palette)
       // -----------------------------------------------------------
       if (theme1Group.visible) {
-        brushGroup.rotation.z = Math.PI / 4.5 + Math.sin(elapsedTime * 0.8) * 0.08 + scrollFactor * 0.8;
-        brushGroup.rotation.y = Math.cos(elapsedTime * 0.6) * 0.15 + scrollFactor * 1.2;
-        brushGroup.rotation.x = 0.25 + currentMouseY * 0.2;
-        brushGroup.position.x = 2.4 + currentMouseX * 0.4 + Math.sin(scrollFactor) * 0.3;
-        brushGroup.position.y = 0.4 - Math.sin(scrollFactor * 1.5) * 0.8 + Math.cos(elapsedTime) * 0.1;
+        brushGroup.rotation.z = Math.PI / 4.5 + Math.sin(elapsedTime * 0.8) * 0.08 + scrollFactor * 0.6;
+        brushGroup.rotation.y = Math.cos(elapsedTime * 0.6) * 0.15 + scrollFactor * 0.9;
+        brushGroup.rotation.x = 0.25 + currentMouseY * 0.15;
+        brushGroup.position.x = 2.4 + currentMouseX * 0.3 + Math.sin(scrollFactor) * 0.2;
+        brushGroup.position.y = 0.4 - Math.sin(scrollFactor * 1.2) * 0.6 + Math.cos(elapsedTime) * 0.1;
 
         // Paint tip color shift
         const colorIndex = Math.floor((elapsedTime * 0.2) % cycleColors.length);
@@ -425,29 +460,30 @@ export const ThreeBackground: React.FC = () => {
         paintTipMat.color.copy(c1);
         paintTipMat.emissive.copy(c1);
 
-        paletteGroup.rotation.z = -0.2 + scrollFactor * 0.5 + Math.sin(elapsedTime * 0.4) * 0.05;
-        paletteGroup.rotation.x = 0.5 + currentMouseY * 0.15;
-        paletteGroup.rotation.y = -0.3 + currentMouseX * 0.2;
-        paletteGroup.position.y = -1.2 + Math.sin(scrollFactor * 0.9) * 0.6;
+        paletteGroup.rotation.z = -0.2 + scrollFactor * 0.4 + Math.sin(elapsedTime * 0.4) * 0.05;
+        paletteGroup.rotation.x = 0.5 + currentMouseY * 0.12;
+        paletteGroup.rotation.y = -0.3 + currentMouseX * 0.15;
+        paletteGroup.position.y = -1.2 + Math.sin(scrollFactor * 0.8) * 0.5;
       }
 
       // -----------------------------------------------------------
-      // Animate Theme 2 (Kuldeep Singh Seal & Gilded Frames)
+      // Animate Theme 2 (Kuldeep Singh Seal & Gilded Golden Stardust)
       // -----------------------------------------------------------
       if (theme2Group.visible) {
-        goldFlakes.rotation.y = elapsedTime * 0.08 + scrollFactor * 0.4;
-        goldFlakes.rotation.x = Math.sin(elapsedTime * 0.04) * 0.1;
+        goldFlakes.rotation.y = stardustAngleY;
+        goldFlakes.rotation.x = Math.sin(elapsedTime * 0.35) * 0.08;
+        goldFlakes.position.y = -currentScrollY * 0.0003;
       }
 
       // -----------------------------------------------------------
       // Animate Theme 3 (Celestial Easel & Pigment Nebula)
       // -----------------------------------------------------------
       if (theme3Group.visible) {
-        easelGroup.rotation.y = -0.3 + Math.sin(elapsedTime * 0.5) * 0.15 + currentMouseX * 0.3 + scrollFactor * 0.35;
-        easelGroup.rotation.x = 0.1 + Math.cos(elapsedTime * 0.4) * 0.08 - currentMouseY * 0.2;
-        easelGroup.position.y = -0.2 + Math.sin(elapsedTime * 0.7) * 0.15 - scrollFactor * 0.2;
+        easelGroup.rotation.y = -0.3 + Math.sin(elapsedTime * 0.5) * 0.15 + currentMouseX * 0.25 + scrollFactor * 0.25;
+        easelGroup.rotation.x = 0.1 + Math.cos(elapsedTime * 0.4) * 0.08 - currentMouseY * 0.15;
+        easelGroup.position.y = -0.2 + Math.sin(elapsedTime * 0.7) * 0.15 - scrollFactor * 0.15;
 
-        // Continuous fluid orbital motion: completely unbroken and continuous (never freezes or stops on scroll)
+        // Continuous fluid orbital motion
         const sLen = nebulaSpheres.length;
         for (let i = 0; i < sLen; i++) {
           const item = nebulaSpheres[i];
@@ -460,9 +496,9 @@ export const ThreeBackground: React.FC = () => {
         }
 
         // Gentle smooth 3D depth parallax for the entire nebula cluster
-        nebulaGroup.position.y = 0.2 - scrollFactor * 0.3;
-        nebulaGroup.rotation.x = currentMouseY * 0.2;
-        nebulaGroup.rotation.y = currentMouseX * 0.2;
+        nebulaGroup.position.y = 0.2 - scrollFactor * 0.25;
+        nebulaGroup.rotation.x = currentMouseY * 0.15;
+        nebulaGroup.rotation.y = currentMouseX * 0.15;
 
         crystal1.rotation.x = elapsedTime * 0.5;
         crystal1.rotation.y = elapsedTime * 0.7;
@@ -470,8 +506,9 @@ export const ThreeBackground: React.FC = () => {
         crystal2.rotation.z = elapsedTime * 0.6;
       }
 
-      // Ambient dust rotation
-      ambientDust.rotation.y = elapsedTime * 0.02 + scrollFactor * 0.15;
+      // Ambient dust rotation - unbroken constant smooth drift
+      ambientDust.rotation.y = ambientAngleY;
+      ambientDust.rotation.x = Math.cos(elapsedTime * 0.25) * 0.05;
 
       renderer.render(scene, camera);
     };
@@ -491,6 +528,7 @@ export const ThreeBackground: React.FC = () => {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('resize', handleResize);
+      stardustTexture?.dispose();
       renderer.dispose();
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
