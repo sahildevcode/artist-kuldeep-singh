@@ -145,22 +145,31 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                       setActivePage(link.id);
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
-                    className={`relative px-2.5 py-1.5 lg:px-3.5 lg:py-1.5 rounded-full text-[11px] lg:text-xs font-semibold tracking-normal transition-all duration-300 flex items-center gap-1.5 select-none whitespace-nowrap shrink-0 cursor-pointer ${
+                    className={`group relative px-2.5 py-1.5 lg:px-3.5 lg:py-1.5 rounded-full text-[11px] lg:text-xs font-semibold tracking-normal transition-all duration-300 flex items-center gap-1.5 select-none whitespace-nowrap shrink-0 cursor-pointer overflow-hidden ${
                       isActive
-                        ? 'text-white bg-[#1A1816] dark:bg-stone-100 dark:text-stone-900 shadow-md shadow-black/10'
-                        : 'text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-stone-800/60'
+                        ? 'text-white bg-[#1A1816] dark:bg-stone-100 dark:text-stone-900 shadow-md shadow-black/20 ring-1 ring-white/10 dark:ring-stone-300'
+                        : 'text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-white dark:hover:bg-stone-800 hover:shadow-[0_4px_16px_rgba(212,175,55,0.25)] dark:hover:shadow-[0_4px_16px_rgba(212,175,55,0.18)] hover:-translate-y-0.5 active:translate-y-0'
                     }`}
                   >
-                    <span className="shrink-0">{link.icon}</span>
-                    <span className="whitespace-nowrap">{link.label}</span>
+                    {/* Golden Ambient Glow & Shimmer on Hover */}
+                    {!isActive && (
+                      <span className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-amber-300/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                    )}
+
+                    <span className="relative z-10 shrink-0 transition-transform duration-300 group-hover:scale-110 group-hover:text-artisan-gold">
+                      {link.icon}
+                    </span>
+                    <span className="relative z-10 whitespace-nowrap transition-colors duration-200">
+                      {link.label}
+                    </span>
                     {link.id === 'student-portal' && isUserEnrolledInLiveCourse && (
-                      <span className="flex items-center gap-1 bg-red-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse shadow-sm whitespace-nowrap shrink-0">
+                      <span className="relative z-10 flex items-center gap-1 bg-red-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse shadow-sm whitespace-nowrap shrink-0">
                         <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
                         LIVE
                       </span>
                     )}
                     {isActive && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-artisan-crimson animate-pulse shrink-0" />
+                      <span className="relative z-10 w-1.5 h-1.5 rounded-full bg-artisan-crimson animate-pulse shrink-0 shadow-[0_0_8px_#E63946]" />
                     )}
                   </button>
                 );
