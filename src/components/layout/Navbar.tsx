@@ -65,8 +65,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
       <header
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
           isScrolled
-            ? 'bg-white/90 dark:bg-[#12100E]/90 backdrop-blur-xl border-b border-black/[0.06] dark:border-white/[0.08] shadow-sm'
-            : 'bg-white/60 dark:bg-[#12100E]/60 backdrop-blur-md border-b border-black/[0.03] dark:border-white/[0.04]'
+            ? 'bg-[#0E0C0A]/95 backdrop-blur-xl border-b border-white/[0.08] shadow-md shadow-black/40'
+            : 'bg-[#0E0C0A]/90 backdrop-blur-md border-b border-white/[0.06]'
         }`}
       >
         {/* Real-Time Global Broadcast Alert Banner (ONLY for Enrolled Students of this course) */}
@@ -119,15 +119,15 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                 }}
                 className="text-left group flex items-center gap-2 sm:gap-3 focus:outline-none cursor-pointer"
               >
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#1A1816] text-white flex items-center justify-center font-serif text-lg sm:text-xl font-bold shadow-md group-hover:scale-105 transition-transform duration-300 relative overflow-hidden">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-stone-900 border border-white/20 text-white flex items-center justify-center font-serif text-lg sm:text-xl font-bold shadow-md group-hover:scale-105 transition-transform duration-300 relative overflow-hidden">
                   <span className="relative z-10">K</span>
                   <span className="absolute inset-0 bg-gradient-to-tr from-artisan-crimson/50 to-artisan-ochre/50 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
                 <div>
-                  <span className="font-display font-bold text-lg sm:text-xl tracking-tight text-[#1A1816] dark:text-[#FDFBF7] block leading-none">
+                  <span className="font-display font-bold text-lg sm:text-xl tracking-tight text-white block leading-none">
                     KULDEEP <span className="font-light text-artisan-gold">SINGH</span>
                   </span>
-                  <span className="text-[9px] sm:text-[10px] tracking-[0.2em] uppercase text-stone-500 dark:text-stone-400 font-medium block mt-1">
+                  <span className="text-[9px] sm:text-[10px] tracking-[0.2em] uppercase text-stone-400 font-medium block mt-1">
                     Artist • 12Y Fine Art Atelier
                   </span>
                 </div>
@@ -135,7 +135,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
             </div>
 
             {/* Desktop Navigation Links (Compact, Single-Line, Elegant) */}
-            <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 bg-stone-100/80 dark:bg-stone-900/80 backdrop-blur-md p-1 rounded-full border border-stone-200/60 dark:border-stone-800 shadow-inner">
+            <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 bg-white/95 backdrop-blur-md p-1 rounded-full border border-stone-200/80 shadow-md">
               {navLinks.map((link) => {
                 const isActive = activePage === link.id;
                 return (
@@ -147,8 +147,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                     }}
                     className={`group relative px-2.5 py-1.5 lg:px-3.5 lg:py-1.5 rounded-full text-[11px] lg:text-xs font-semibold tracking-normal transition-all duration-300 flex items-center gap-1.5 select-none whitespace-nowrap shrink-0 cursor-pointer overflow-hidden ${
                       isActive
-                        ? 'text-white bg-[#1A1816] dark:bg-stone-100 dark:text-stone-900 shadow-md shadow-black/20 ring-1 ring-white/10 dark:ring-stone-300'
-                        : 'text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-white dark:hover:bg-stone-800 hover:shadow-[0_4px_16px_rgba(212,175,55,0.25)] dark:hover:shadow-[0_4px_16px_rgba(212,175,55,0.18)] hover:-translate-y-0.5 active:translate-y-0'
+                        ? 'text-white bg-[#1A1816] shadow-md shadow-black/20 ring-1 ring-white/10'
+                        : 'text-stone-700 hover:text-stone-950 hover:bg-stone-100 hover:shadow-[0_4px_16px_rgba(212,175,55,0.25)] hover:-translate-y-0.5 active:translate-y-0'
                     }`}
                   >
                     {/* Golden Ambient Glow & Shimmer on Hover */}
@@ -285,7 +285,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
               ) : (
                 <button
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-semibold tracking-wide text-white bg-[#1A1816] hover:bg-black dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white rounded-full transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-1.5 active:scale-95 whitespace-nowrap cursor-pointer shrink-0"
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-semibold tracking-wide text-stone-900 bg-white hover:bg-stone-100 rounded-full transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-1.5 active:scale-95 whitespace-nowrap cursor-pointer shrink-0"
                 >
                   <User className="w-3.5 h-3.5 shrink-0" />
                   <span className="whitespace-nowrap">Sign In</span>
@@ -295,17 +295,17 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
               {/* Studio Inquiry Button */}
               <button
                 onClick={() => setIsInquiryOpen(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full bg-artisan-gold/15 hover:bg-artisan-gold text-[#5C4010] dark:text-amber-300 hover:text-white border border-artisan-gold/40 text-[11px] sm:text-xs font-bold transition-all shadow-xs cursor-pointer group shrink-0 active:scale-95 whitespace-nowrap"
+                className="flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full bg-artisan-gold/20 hover:bg-artisan-gold text-[#EADBBE] hover:text-stone-950 border border-artisan-gold/50 text-[11px] sm:text-xs font-bold transition-all shadow-xs cursor-pointer group shrink-0 active:scale-95 whitespace-nowrap"
                 title="Send Studio Inquiry / पूछताछ करें"
               >
-                <MessageSquare className="w-3.5 h-3.5 text-artisan-gold group-hover:text-white transition-colors shrink-0" />
+                <MessageSquare className="w-3.5 h-3.5 text-artisan-gold group-hover:text-stone-950 transition-colors shrink-0" />
                 <span className="whitespace-nowrap">Inquiry</span>
               </button>
 
               {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-1.5 sm:p-2 text-stone-700 dark:text-stone-300 hover:text-black dark:hover:text-white focus:outline-none cursor-pointer shrink-0"
+                className="md:hidden p-1.5 sm:p-2 text-white hover:text-stone-300 focus:outline-none cursor-pointer shrink-0"
                 aria-label="Toggle menu"
               >
                 {isMobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
@@ -316,7 +316,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
 
         {/* Mobile Navigation Dropdown */}
         {isMobileMenuOpen && (
-          <div className="md:hidden mt-3 px-4 pb-4 pt-2 glass-dropdown border-b border-stone-200/80">
+          <div className="md:hidden mt-3 px-4 pb-4 pt-2 bg-[#0E0C0A]/98 backdrop-blur-xl border-b border-white/10 shadow-2xl">
             <div className="flex flex-col gap-1.5">
               {navLinks.map((link) => (
                 <button
@@ -328,8 +328,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                   }}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
                     activePage === link.id
-                      ? 'bg-[#1A1816] text-white'
-                      : 'text-stone-700 hover:bg-stone-100'
+                      ? 'bg-white text-stone-900 font-bold'
+                      : 'text-stone-300 hover:bg-white/10 hover:text-white'
                   }`}
                 >
                   {link.icon}
@@ -349,17 +349,17 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                 onClick={() => {
                   toggleTheme();
                 }}
-                className="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 cursor-pointer"
+                className="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all bg-white/10 hover:bg-white/15 text-stone-200 cursor-pointer border border-white/10"
               >
                 <div className="flex items-center gap-3">
                   {theme === 'dark' ? (
                     <Sun className="w-4 h-4 text-amber-400" />
                   ) : (
-                    <Moon className="w-4 h-4 text-stone-600" />
+                    <Moon className="w-4 h-4 text-stone-300" />
                   )}
                   <span>{theme === 'dark' ? 'Light Theme (लाइट थीम)' : 'Dark Theme (डार्क थीम)'}</span>
                 </div>
-                <span className="text-xs px-2.5 py-1 rounded-full font-bold bg-white dark:bg-stone-700 shadow-xs border border-stone-200/50 dark:border-stone-600">
+                <span className="text-xs px-2.5 py-1 rounded-full font-bold bg-white/20 text-white shadow-xs border border-white/20">
                   {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
                 </span>
               </button>
@@ -370,20 +370,20 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                   setIsInquiryOpen(true);
                   setIsMobileMenuOpen(false);
                 }}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-[#5C4010] bg-artisan-gold/15 hover:bg-artisan-gold/25 border border-artisan-gold/30 transition-all text-left cursor-pointer"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-amber-200 bg-artisan-gold/20 hover:bg-artisan-gold/30 border border-artisan-gold/40 transition-all text-left cursor-pointer"
               >
                 <MessageSquare className="w-4 h-4 text-artisan-gold shrink-0" />
                 <span>Enquire / पूछताछ (Direct Inquiry)</span>
               </button>
 
-              <div className="pt-2 mt-1 border-t border-stone-200/60">
+              <div className="pt-2 mt-1 border-t border-white/10">
                 <button
                   onClick={() => {
                     setActivePage('terms');
                     setIsMobileMenuOpen(false);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold text-stone-500 hover:text-stone-900 hover:bg-stone-100 transition-all text-left"
+                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold text-stone-400 hover:text-white hover:bg-white/10 transition-all text-left"
                 >
                   <ShieldCheck className="w-4 h-4 text-artisan-gold" />
                   <span>Terms & Legal Compliance (Razorpay)</span>
