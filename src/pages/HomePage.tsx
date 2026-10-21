@@ -5,7 +5,6 @@ import type { Artwork, Course } from '../types';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { useCart } from '../context/CartContext';
 import { useStudioData } from '../context/StudioDataContext';
-import { StudioVideoReels } from '../components/home/StudioVideoReels';
 import { UpcomingCoursesSection } from '../components/home/UpcomingCoursesSection';
 import { TestimonialAutoSlider } from '../components/home/TestimonialAutoSlider';
 
@@ -206,11 +205,6 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
-      {/* ------------------------------------------------------------- */}
-      {/* 1.5 ATELIER VIDEO REELS & MASTERCLASS PROCESS SHOWCASE         */}
-      {/* Zero initial video payload, 100% on-demand streaming           */}
-      {/* ------------------------------------------------------------- */}
-      <StudioVideoReels />
 
       {/* ------------------------------------------------------------- */}
       {/* 2. SELECTED MASTERWORKS SHOWCASE */}

@@ -5,7 +5,7 @@ import { StudioDataProvider, useStudioData } from './context/StudioDataContext';
 import { AudioProvider } from './context/AudioContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ThreeBackground } from './components/3d/ThreeBackground';
-import { ScrollSignatureBackground } from './components/3d/ScrollSignatureBackground';
+import { PortraitsPage } from './pages/PortraitsPage';
 import { IntroSplash } from './components/layout/IntroSplash';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
@@ -28,6 +28,7 @@ import type { Artwork, Course } from './types';
 
 export type AppNavPage = 
   | 'home' 
+  | 'portraits'
   | 'about' 
   | 'courses' 
   | 'store' 
@@ -53,6 +54,7 @@ const AppInner: React.FC = () => {
     if (path.includes('student-portal') || hash.includes('student-portal')) return 'student-portal';
     if (path.includes('about') || hash === 'about') return 'about';
     if (path.includes('courses') || hash === 'courses') return 'courses';
+    if (path.includes('portrait') || hash.includes('portrait') || path.includes('painting') || hash.includes('painting')) return 'portraits';
     if (path.includes('artwork-detail') || hash.includes('artwork-detail') || hash.includes('artwork')) return 'artwork-detail';
     if (path.includes('store') || hash === 'store') return 'store';
     return 'home';
@@ -87,6 +89,8 @@ const AppInner: React.FC = () => {
         setActivePage('about');
       } else if (path.includes('courses') || hash === 'courses') {
         setActivePage('courses');
+      } else if (path.includes('portrait') || hash.includes('portrait') || path.includes('painting') || hash.includes('painting')) {
+        setActivePage('portraits');
       } else if (path.includes('artwork-detail') || hash.includes('artwork-detail') || hash.includes('artwork')) {
         setActivePage('artwork-detail');
       } else if (path.includes('store') || hash === 'store') {
@@ -121,28 +125,25 @@ const AppInner: React.FC = () => {
     handlePageChange('artwork-detail');
   };
 
-  const navbarActivePage: 'home' | 'about' | 'courses' | 'store' | 'student-portal' = 
+  const navbarActivePage: 'home' | 'about' | 'courses' | 'store' | 'student-portal' | 'portraits' = 
     activePage === 'course-detail'
       ? 'courses'
       : activePage === 'artwork-detail'
       ? 'store'
-      : (['home', 'about', 'courses', 'store', 'student-portal'].includes(activePage)
-          ? (activePage as 'home' | 'about' | 'courses' | 'store' | 'student-portal')
+      : (['home', 'about', 'courses', 'store', 'student-portal', 'portraits'].includes(activePage)
+          ? (activePage as any)
           : 'home');
 
   return (
-    <div className="relative w-full max-w-full overflow-x-hidden min-h-screen bg-[#FDFBF7] dark:bg-[#0E0C0A] text-[#1A1816] dark:text-[#F5F2EB] transition-colors duration-300 selection:bg-artisan-crimson selection:text-white">
+    <div className="relative w-full max-w-full overflow-x-hidden min-h-screen bg-[#070708] text-[#F3EFE6] transition-colors duration-300 selection:bg-[#D4AF37] selection:text-black">
       {/* Cinematic Intro Splash Animation for 'Artist Kuldeep Singh' */}
       {showSplash && <IntroSplash onFinish={() => setShowSplash(false)} />}
 
       {/* 3D WebGL Layer (Interactive Paintbrush & Palette in Background) */}
       <ThreeBackground />
 
-      {/* Dynamic Calligraphy Handwriting Signature Background with Luminous Halo */}
-      <ScrollSignatureBackground />
-
       {/* Navigation Bar */}
-      <Navbar activePage={navbarActivePage} setActivePage={handlePageChange as any} />
+      <Navbar activePage={navbarActivePage as any} setActivePage={handlePageChange as any} />
 
       {/* Active Page View wrapped in ErrorBoundary */}
       <ErrorBoundary>
@@ -152,6 +153,12 @@ const AppInner: React.FC = () => {
               setActivePage={handlePageChange}
               onSelectArtwork={handleSelectArtwork}
               onSelectCourse={handleSelectCourse}
+            />
+          )}
+          {activePage === 'portraits' && (
+            <PortraitsPage
+              onBackToHome={() => handlePageChange('home')}
+              onSelectArtwork={handleSelectArtwork}
             />
           )}
           {activePage === 'about' && (
