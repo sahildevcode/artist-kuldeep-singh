@@ -9,10 +9,10 @@ export const IntroSplash: React.FC<IntroSplashProps> = ({ onFinish }) => {
   const [isFadingOut, setIsFadingOut] = useState(false);
 
   useEffect(() => {
-    // Automatically transition into main site after 2.6 seconds
+    // Brisk & cinematic transition: 1.2s display before smooth fadeout
     const timer = setTimeout(() => {
       handleComplete();
-    }, 2800);
+    }, 1200);
 
     return () => clearTimeout(timer);
   }, []);
@@ -21,12 +21,12 @@ export const IntroSplash: React.FC<IntroSplashProps> = ({ onFinish }) => {
     setIsFadingOut(true);
     setTimeout(() => {
       onFinish();
-    }, 700); // 700ms smooth fadeout transition
+    }, 400); // 400ms crisp fadeout transition
   };
 
   return (
     <div
-      className={`fixed inset-0 z-[99999] bg-[#0E0D0C] flex flex-col items-center justify-center select-none overflow-hidden transition-all duration-700 ${
+      className={`fixed inset-0 z-[99999] bg-[#0E0D0C] flex flex-col items-center justify-center select-none overflow-hidden transition-all duration-400 ${
         isFadingOut ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'
       }`}
     >
@@ -52,7 +52,7 @@ export const IntroSplash: React.FC<IntroSplashProps> = ({ onFinish }) => {
 
         {/* Subtitle with slight delay */}
         <p className="text-xs sm:text-sm text-stone-400 font-light tracking-[0.2em] uppercase mt-4 max-w-md animate-fadeInDelay">
-          12 Years of Fine Art Mastery � Original Works & Masterclasses
+          12 Years of Fine Art Mastery • Original Works & Masterclasses
         </p>
 
         {/* Golden accent brush line */}
@@ -61,7 +61,7 @@ export const IntroSplash: React.FC<IntroSplashProps> = ({ onFinish }) => {
         {/* Interactive Enter / Skip Button */}
         <button
           onClick={handleComplete}
-          className="mt-2 text-xs font-semibold tracking-wider text-stone-400 hover:text-white flex items-center gap-1.5 transition-all duration-300 hover:scale-105 group"
+          className="mt-2 text-xs font-semibold tracking-wider text-stone-400 hover:text-white flex items-center gap-1.5 transition-all duration-300 hover:scale-105 group cursor-pointer"
         >
           <span>Enter Atelier</span>
           <ArrowRight className="w-3.5 h-3.5 text-artisan-gold group-hover:translate-x-1 transition-transform" />
@@ -72,8 +72,8 @@ export const IntroSplash: React.FC<IntroSplashProps> = ({ onFinish }) => {
         @keyframes zoomFade {
           0% {
             opacity: 0;
-            transform: scale(0.85) translateY(15px);
-            filter: blur(8px);
+            transform: scale(0.9) translateY(10px);
+            filter: blur(6px);
           }
           60% {
             filter: blur(0px);
@@ -84,11 +84,11 @@ export const IntroSplash: React.FC<IntroSplashProps> = ({ onFinish }) => {
           }
         }
         @keyframes fadeIn {
-          0% { opacity: 0; transform: translateY(-8px); }
+          0% { opacity: 0; transform: translateY(-6px); }
           100% { opacity: 1; transform: translateY(0); }
         }
         @keyframes fadeInDelay {
-          0% { opacity: 0; transform: translateY(10px); }
+          0% { opacity: 0; transform: translateY(8px); }
           40% { opacity: 0; }
           100% { opacity: 0.9; transform: translateY(0); }
         }
@@ -97,16 +97,16 @@ export const IntroSplash: React.FC<IntroSplashProps> = ({ onFinish }) => {
           100% { transform: scaleX(1); opacity: 1; }
         }
         .animate-zoomFade {
-          animation: zoomFade 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          animation: zoomFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         .animate-fadeIn {
-          animation: fadeIn 1s ease-out forwards;
+          animation: fadeIn 0.5s ease-out forwards;
         }
         .animate-fadeInDelay {
-          animation: fadeInDelay 1.8s ease-out forwards;
+          animation: fadeInDelay 0.8s ease-out forwards;
         }
         .animate-scaleX {
-          animation: scaleX 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          animation: scaleX 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
       `}</style>
     </div>
