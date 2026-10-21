@@ -14,10 +14,15 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [theme, setThemeState] = useState<ColorTheme>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('artisan_color_theme');
-      if (saved === 'dark' || saved === 'light') return saved;
-      return 'dark'; // Royal Black is the flagship default
+      if (saved === 'dark') {
+        localStorage.setItem('artisan_color_theme', 'light');
+        document.documentElement.classList.remove('dark');
+        return 'light';
+      }
+      if (saved === 'light') return 'light';
+      return 'light';
     }
-    return 'dark';
+    return 'light';
   });
 
   useEffect(() => {
