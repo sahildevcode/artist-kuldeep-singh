@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Sparkles, Star, ShieldCheck, ArrowUpRight, Eye, Play } from 'lucide-react';
+import { ArrowRight, Sparkles, ShieldCheck, ArrowUpRight, Eye, Play } from 'lucide-react';
 import { PRESS_LOGOS } from '../data/reviews';
 import type { Artwork, Course } from '../types';
 import { MagneticButton } from '../components/ui/MagneticButton';
@@ -270,7 +270,8 @@ export const HomePage: React.FC<HomePageProps> = ({
             {featuredArtworks.map((art) => (
               <div
                 key={art.id}
-                className="group bg-white dark:bg-stone-900 rounded-3xl overflow-hidden border border-stone-200/80 dark:border-stone-800 shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between hover:-translate-y-2"
+                onClick={() => onSelectArtwork(art)}
+                className="group bg-white dark:bg-stone-900 rounded-3xl overflow-hidden border border-stone-200/80 dark:border-stone-800 shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between hover:-translate-y-2 cursor-pointer"
               >
                 <div className="relative aspect-[4/5] overflow-hidden bg-stone-100 dark:bg-stone-800">
                   <img
@@ -365,7 +366,8 @@ export const HomePage: React.FC<HomePageProps> = ({
           {featuredCourses.map((course) => (
             <div
               key={course.id}
-              className="bg-white dark:bg-stone-900 rounded-3xl overflow-hidden border border-stone-200/80 dark:border-stone-800 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1.5"
+              onClick={() => onSelectCourse(course)}
+              className="bg-white dark:bg-stone-900 rounded-3xl overflow-hidden border border-stone-200/80 dark:border-stone-800 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1.5 cursor-pointer"
             >
               <div className="relative h-52 overflow-hidden bg-stone-900">
                 <img
@@ -378,12 +380,8 @@ export const HomePage: React.FC<HomePageProps> = ({
                     {course.category}
                   </span>
                   <span className="bg-white/95 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[10px] font-bold text-stone-900">
-                    {course.durationMonths.split(' ')[0]} {course.durationMonths.split(' ')[1]}
+                    {course.durationMonths}
                   </span>
-                </div>
-                <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-bold text-stone-900 flex items-center gap-1">
-                  <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
-                  <span>{course.rating}</span>
                 </div>
               </div>
 
@@ -416,8 +414,11 @@ export const HomePage: React.FC<HomePageProps> = ({
                     </div>
 
                     <button
-                      onClick={() => onSelectCourse(course)}
-                      className="px-4 py-2 bg-stone-100 dark:bg-stone-800 hover:bg-stone-900 hover:text-white dark:hover:bg-stone-100 dark:hover:text-stone-900 dark:text-stone-200 rounded-xl text-xs font-bold tracking-wide transition-all"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSelectCourse(course);
+                      }}
+                      className="px-4 py-2 bg-stone-100 dark:bg-stone-800 hover:bg-stone-900 hover:text-white dark:hover:bg-stone-100 dark:hover:text-stone-900 dark:text-stone-200 rounded-xl text-xs font-bold tracking-wide transition-all cursor-pointer"
                     >
                       Syllabus & Enroll
                     </button>

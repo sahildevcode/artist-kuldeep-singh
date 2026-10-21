@@ -69,7 +69,8 @@ export const UpcomingCoursesSection: React.FC = () => {
           {activeUpcoming.map((course) => (
             <div
               key={course.id}
-              className="group bg-white/95 dark:bg-stone-900/95 backdrop-blur-md rounded-3xl overflow-hidden border border-stone-200/90 dark:border-stone-800 shadow-soft-lux hover:shadow-2xl transition-all duration-500 flex flex-col justify-between hover:-translate-y-2 relative"
+              onClick={() => handleOpenInquiry(course)}
+              className="group bg-white/95 dark:bg-stone-900/95 backdrop-blur-md rounded-3xl overflow-hidden border border-stone-200/90 dark:border-stone-800 shadow-soft-lux hover:shadow-2xl transition-all duration-500 flex flex-col justify-between hover:-translate-y-2 relative cursor-pointer"
             >
               {/* Top Image & Badges */}
               <div className="relative h-56 overflow-hidden bg-stone-900">
