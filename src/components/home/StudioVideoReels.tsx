@@ -216,7 +216,7 @@ export const StudioVideoReels: React.FC = () => {
         </div>
 
         {/* 4 REELS IN ONE FRAME GRID (Portrait 9:16) */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {reelsList.map((reel, idx) => (
             <div
               key={reel.id}
