@@ -135,7 +135,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
             </div>
 
             {/* Desktop Navigation Links (Compact, Single-Line, Elegant) */}
-            <nav className="hidden lg:flex items-center gap-0.5 lg:gap-1 bg-stone-100/80 dark:bg-stone-900/80 backdrop-blur-md p-1 rounded-full border border-stone-200/60 dark:border-stone-800 shadow-inner">
+            <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 bg-stone-100/80 dark:bg-stone-900/80 backdrop-blur-md p-1 rounded-full border border-stone-200/60 dark:border-stone-800 shadow-inner">
               {navLinks.map((link) => {
                 const isActive = activePage === link.id;
                 return (
@@ -276,7 +276,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
               ) : (
                 <button
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="hidden sm:inline-flex px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-semibold tracking-wide text-white bg-[#1A1816] hover:bg-black dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white rounded-full transition-all duration-200 shadow-sm hover:shadow-md items-center gap-1.5 active:scale-95 whitespace-nowrap cursor-pointer shrink-0"
+                  className="px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-semibold tracking-wide text-white bg-[#1A1816] hover:bg-black dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white rounded-full transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-1.5 active:scale-95 whitespace-nowrap cursor-pointer shrink-0"
                 >
                   <User className="w-3.5 h-3.5 shrink-0" />
                   <span className="whitespace-nowrap">Sign In</span>
@@ -286,7 +286,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
               {/* Studio Inquiry Button */}
               <button
                 onClick={() => setIsInquiryOpen(true)}
-                className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full bg-artisan-gold/15 hover:bg-artisan-gold text-[#5C4010] dark:text-amber-300 hover:text-white border border-artisan-gold/40 text-[11px] sm:text-xs font-bold transition-all shadow-xs cursor-pointer group shrink-0 active:scale-95 whitespace-nowrap"
+                className="flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full bg-artisan-gold/15 hover:bg-artisan-gold text-[#5C4010] dark:text-amber-300 hover:text-white border border-artisan-gold/40 text-[11px] sm:text-xs font-bold transition-all shadow-xs cursor-pointer group shrink-0 active:scale-95 whitespace-nowrap"
                 title="Send Studio Inquiry / पूछताछ करें"
               >
                 <MessageSquare className="w-3.5 h-3.5 text-artisan-gold group-hover:text-white transition-colors shrink-0" />
@@ -296,7 +296,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
               {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-1.5 sm:p-2 text-stone-700 dark:text-stone-300 hover:text-black dark:hover:text-white focus:outline-none cursor-pointer shrink-0"
+                className="md:hidden p-1.5 sm:p-2 text-stone-700 dark:text-stone-300 hover:text-black dark:hover:text-white focus:outline-none cursor-pointer shrink-0"
                 aria-label="Toggle menu"
               >
                 {isMobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
@@ -307,7 +307,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
 
         {/* Mobile Navigation Dropdown */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden mt-3 px-4 pb-4 pt-2 glass-dropdown border-b border-stone-200/80">
+          <div className="md:hidden mt-3 px-4 pb-4 pt-2 glass-dropdown border-b border-stone-200/80">
             <div className="flex flex-col gap-1.5">
               {navLinks.map((link) => (
                 <button
@@ -366,20 +366,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                 <MessageSquare className="w-4 h-4 text-artisan-gold shrink-0" />
                 <span>Enquire / पूछताछ (Direct Inquiry)</span>
               </button>
-
-              {/* Sign In in Mobile Dropdown */}
-              {!currentUser && (
-                <button
-                  onClick={() => {
-                    setIsAuthModalOpen(true);
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-white bg-[#1A1816] hover:bg-black transition-all text-left cursor-pointer"
-                >
-                  <User className="w-4 h-4 text-white shrink-0" />
-                  <span>Sign In / Student Login</span>
-                </button>
-              )}
 
               <div className="pt-2 mt-1 border-t border-stone-200/60">
                 <button
