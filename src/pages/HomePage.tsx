@@ -27,17 +27,12 @@ export const HomePage: React.FC<HomePageProps> = ({
   const heroVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (heroVideoRef.current) {
-      heroVideoRef.current.defaultMuted = true;
-      heroVideoRef.current.muted = true;
-      const p = heroVideoRef.current.play();
-      if (p !== undefined) {
-        p.catch(() => {
-          if (heroVideoRef.current) {
-            heroVideoRef.current.muted = true;
-            heroVideoRef.current.play().catch(() => {});
-          }
-        });
+    const video = heroVideoRef.current;
+    if (video) {
+      video.muted = true;
+      video.defaultMuted = true;
+      if (video.paused) {
+        video.play().catch(() => {});
       }
     }
   }, []);
