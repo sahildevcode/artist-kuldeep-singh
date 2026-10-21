@@ -210,6 +210,7 @@ export interface ArtistProfile {
   heroShowcaseVideoUrl?: string;
   heroShowcaseCertificateText?: string;
   heroShowcaseArtworkId?: string;
+  // Top Executive Hero Video (Art By Sehgal style)
   heroTopVideoUrl?: string;
   heroTopVideoPoster?: string;
   heroTopVideoTitle?: string;

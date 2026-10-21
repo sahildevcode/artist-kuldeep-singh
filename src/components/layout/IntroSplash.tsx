@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sparkles, ArrowRight } from 'lucide-react';
 
 interface IntroSplashProps {
@@ -52,7 +52,7 @@ export const IntroSplash: React.FC<IntroSplashProps> = ({ onFinish }) => {
 
         {/* Subtitle with slight delay */}
         <p className="text-xs sm:text-sm text-stone-400 font-light tracking-[0.2em] uppercase mt-4 max-w-md animate-fadeInDelay">
-          12 Years of Fine Art Mastery • Original Works & Masterclasses
+          12 Years of Fine Art Mastery � Original Works & Masterclasses
         </p>
 
         {/* Golden accent brush line */}

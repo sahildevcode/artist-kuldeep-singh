@@ -253,7 +253,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const fetchAllCloudData = async () => {
       try {
         // 1. Artworks
-        const artRes = await fetch('https://kuldeep-singh-backend.onrender.com/api/artworks');
+        const artRes = await fetch('https://kuldeep-singh-backend-q1di.onrender.com/api/artworks');
         if (artRes.ok) {
           const cloudArtworks: Artwork[] = await artRes.json();
           if (Array.isArray(cloudArtworks) && isMounted) {
@@ -265,7 +265,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
 
         // 2. Courses, Lectures & Live Status
-        const courseRes = await fetch('https://kuldeep-singh-backend.onrender.com/api/courses');
+        const courseRes = await fetch('https://kuldeep-singh-backend-q1di.onrender.com/api/courses');
         if (courseRes.ok) {
           const cloudCourses: Course[] = await courseRes.json();
           if (Array.isArray(cloudCourses) && isMounted) {
@@ -279,7 +279,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
 
         // 3. Students (Cloud is absolute source of truth)
-        const stuRes = await fetch('https://kuldeep-singh-backend.onrender.com/api/students');
+        const stuRes = await fetch('https://kuldeep-singh-backend-q1di.onrender.com/api/students');
         if (stuRes.ok) {
           const cloudStudents: EnrolledStudent[] = await stuRes.json();
           if (Array.isArray(cloudStudents) && isMounted) {
@@ -291,7 +291,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
 
         // 4. Live Broadcast Status
-        const liveRes = await fetch('https://kuldeep-singh-backend.onrender.com/api/live');
+        const liveRes = await fetch('https://kuldeep-singh-backend-q1di.onrender.com/api/live');
         if (liveRes.ok) {
           const cloudLive = await liveRes.json();
           if (cloudLive && isMounted) {
@@ -307,7 +307,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
 
         // 5. Artist Profile & Studio Reels
-        const profileRes = await fetch('https://kuldeep-singh-backend.onrender.com/api/profile').catch(() => null);
+        const profileRes = await fetch('https://kuldeep-singh-backend-q1di.onrender.com/api/profile').catch(() => null);
         if (profileRes && profileRes.ok) {
           const cloudProfile = await profileRes.json();
           if (cloudProfile && isMounted) {
@@ -320,7 +320,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
 
         // 6. Upcoming Courses
-        const upRes = await fetch('https://kuldeep-singh-backend.onrender.com/api/upcoming-courses').catch(() => null);
+        const upRes = await fetch('https://kuldeep-singh-backend-q1di.onrender.com/api/upcoming-courses').catch(() => null);
         if (upRes && upRes.ok) {
           const upData = await upRes.json();
           const list = upData?.upcomingCourses || (Array.isArray(upData) ? upData : null);
@@ -330,7 +330,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
 
         // 7. Testimonials / Reviews
-        const testRes = await fetch('https://kuldeep-singh-backend.onrender.com/api/testimonials').catch(() => null);
+        const testRes = await fetch('https://kuldeep-singh-backend-q1di.onrender.com/api/testimonials').catch(() => null);
         if (testRes && testRes.ok) {
           const testData = await testRes.json();
           const list = testData?.testimonials || (Array.isArray(testData) ? testData : null);
@@ -348,7 +348,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     // EventSource for Instant Real-Time Push Sync across Admin and Website
     let eventSource: EventSource | null = null;
     try {
-      eventSource = new EventSource('https://kuldeep-singh-backend.onrender.com/api/events');
+      eventSource = new EventSource('https://kuldeep-singh-backend-q1di.onrender.com/api/events');
       eventSource.onmessage = (event) => {
         try {
           const raw = JSON.parse(event.data);
@@ -458,7 +458,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         if (!document.hidden && !isUserIdle) {
           fetchAllCloudData();
         }
-      }, 12000);
+      }, 4000);
     };
 
     const stopSync = () => {
@@ -594,7 +594,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const addArtwork = async (artwork: Artwork) => {
     setArtworks((prev) => [artwork, ...prev]);
     try {
-      await fetch('https://kuldeep-singh-backend.onrender.com/api/artworks', {
+      await fetch('https://kuldeep-singh-backend-q1di.onrender.com/api/artworks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(artwork)
@@ -609,7 +609,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       prev.map((item) => (item.id === id ? { ...item, ...updates } : item))
     );
     try {
-      await fetch(`https://kuldeep-singh-backend.onrender.com/api/artworks/${id}`, {
+      await fetch(`https://kuldeep-singh-backend-q1di.onrender.com/api/artworks/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates)
@@ -628,7 +628,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       return next;
     });
     try {
-      await fetch(`https://kuldeep-singh-backend.onrender.com/api/artworks/${id}`, {
+      await fetch(`https://kuldeep-singh-backend-q1di.onrender.com/api/artworks/${id}`, {
         method: 'DELETE'
       });
     } catch (err) {
@@ -640,7 +640,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const addCourse = async (course: Course) => {
     setCourses((prev) => [course, ...prev]);
     try {
-      await fetch(`https://kuldeep-singh-backend.onrender.com/api/courses`, {
+      await fetch(`https://kuldeep-singh-backend-q1di.onrender.com/api/courses`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(course)
@@ -655,7 +655,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       prev.map((c) => (c.id === id ? { ...c, ...updates } : c))
     );
     try {
-      await fetch(`https://kuldeep-singh-backend.onrender.com/api/courses/${id}`, {
+      await fetch(`https://kuldeep-singh-backend-q1di.onrender.com/api/courses/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates)
@@ -674,7 +674,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       return next;
     });
     try {
-      await fetch(`https://kuldeep-singh-backend.onrender.com/api/courses/${id}`, {
+      await fetch(`https://kuldeep-singh-backend-q1di.onrender.com/api/courses/${id}`, {
         method: 'DELETE'
       });
     } catch (e) {
@@ -740,13 +740,13 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
 
     try {
-      await fetch(`https://kuldeep-singh-backend.onrender.com/api/courses/${courseId}/modules/${moduleIndex}/lectures`, {
+      await fetch(`https://kuldeep-singh-backend-q1di.onrender.com/api/courses/${courseId}/modules/${moduleIndex}/lectures`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(lecture)
       });
       if (targetCourse) {
-        await fetch(`https://kuldeep-singh-backend.onrender.com/api/courses/${courseId}`, {
+        await fetch(`https://kuldeep-singh-backend-q1di.onrender.com/api/courses/${courseId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(targetCourse)
@@ -801,7 +801,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     if (targetCourse) {
       try {
-        await fetch(`https://kuldeep-singh-backend.onrender.com/api/courses/${courseId}`, {
+        await fetch(`https://kuldeep-singh-backend-q1di.onrender.com/api/courses/${courseId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(targetCourse)
@@ -864,8 +864,8 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     try {
       const delUrl = targetLectureId
-        ? `https://kuldeep-singh-backend.onrender.com/api/courses/${courseId}/modules/${moduleIndex}/lectures/${lectureIndex}?lectureId=${targetLectureId}`
-        : `https://kuldeep-singh-backend.onrender.com/api/courses/${courseId}/modules/${moduleIndex}/lectures/${lectureIndex}`;
+        ? `https://kuldeep-singh-backend-q1di.onrender.com/api/courses/${courseId}/modules/${moduleIndex}/lectures/${lectureIndex}?lectureId=${targetLectureId}`
+        : `https://kuldeep-singh-backend-q1di.onrender.com/api/courses/${courseId}/modules/${moduleIndex}/lectures/${lectureIndex}`;
       await fetch(delUrl, { method: 'DELETE' });
     } catch (e) {
       console.error('Error deleting lecture on backend:', e);
@@ -873,7 +873,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     if (targetCourse) {
       try {
-        await fetch(`https://kuldeep-singh-backend.onrender.com/api/courses/${courseId}`, {
+        await fetch(`https://kuldeep-singh-backend-q1di.onrender.com/api/courses/${courseId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(targetCourse)
@@ -926,7 +926,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     if (courseToPut) {
       const backendEndpoints = [
-        'https://kuldeep-singh-backend.onrender.com',
+        'https://kuldeep-singh-backend-q1di.onrender.com',
         'http://localhost:5000'
       ];
       for (const baseUrl of backendEndpoints) {
@@ -980,7 +980,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     if (courseToPut) {
       const backendEndpoints = [
-        'https://kuldeep-singh-backend.onrender.com',
+        'https://kuldeep-singh-backend-q1di.onrender.com',
         'http://localhost:5000'
       ];
       for (const baseUrl of backendEndpoints) {
@@ -1020,7 +1020,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const addStudent = async (student: EnrolledStudent) => {
     setStudents((prev) => [student, ...prev]);
     try {
-      await fetch('https://kuldeep-singh-backend.onrender.com/api/students', {
+      await fetch('https://kuldeep-singh-backend-q1di.onrender.com/api/students', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(student)
@@ -1035,7 +1035,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       prev.map((s) => (s.id === id ? { ...s, ...updates } : s))
     );
     try {
-      await fetch(`https://kuldeep-singh-backend.onrender.com/api/students/${id}`, {
+      await fetch(`https://kuldeep-singh-backend-q1di.onrender.com/api/students/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates)
@@ -1048,7 +1048,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const deleteStudent = async (id: string) => {
     setStudents((prev) => prev.filter((s) => s.id !== id));
     try {
-      await fetch(`https://kuldeep-singh-backend.onrender.com/api/students/${id}`, {
+      await fetch(`https://kuldeep-singh-backend-q1di.onrender.com/api/students/${id}`, {
         method: 'DELETE'
       });
     } catch (e) {
@@ -1059,7 +1059,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   // Upcoming Courses CRUD
   const addUpcomingCourse = (course: UpcomingCourse) => {
     setUpcomingCourses((prev) => [course, ...prev]);
-    fetch('https://kuldeep-singh-backend.onrender.com/api/upcoming-courses', {
+    fetch('https://kuldeep-singh-backend-q1di.onrender.com/api/upcoming-courses', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(course)
@@ -1070,7 +1070,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setUpcomingCourses((prev) =>
       prev.map((c) => (c.id === id ? { ...c, ...updates } : c))
     );
-    fetch(`https://kuldeep-singh-backend.onrender.com/api/upcoming-courses/${id}`, {
+    fetch(`https://kuldeep-singh-backend-q1di.onrender.com/api/upcoming-courses/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updates)
@@ -1079,7 +1079,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const deleteUpcomingCourse = (id: string) => {
     setUpcomingCourses((prev) => prev.filter((c) => c.id !== id));
-    fetch(`https://kuldeep-singh-backend.onrender.com/api/upcoming-courses/${id}`, {
+    fetch(`https://kuldeep-singh-backend-q1di.onrender.com/api/upcoming-courses/${id}`, {
       method: 'DELETE'
     }).catch((e) => console.warn('Cloud delete error for upcoming course:', e));
   };
@@ -1087,7 +1087,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   // Testimonials / Reviews CRUD
   const addReview = (review: CollectorReview) => {
     setReviews((prev) => [review, ...prev]);
-    fetch('https://kuldeep-singh-backend.onrender.com/api/testimonials', {
+    fetch('https://kuldeep-singh-backend-q1di.onrender.com/api/testimonials', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(review)
@@ -1098,7 +1098,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setReviews((prev) =>
       prev.map((r) => (r.id === id ? { ...r, ...updates } : r))
     );
-    fetch(`https://kuldeep-singh-backend.onrender.com/api/testimonials/${id}`, {
+    fetch(`https://kuldeep-singh-backend-q1di.onrender.com/api/testimonials/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updates)
@@ -1107,7 +1107,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const deleteReview = (id: string) => {
     setReviews((prev) => prev.filter((r) => r.id !== id));
-    fetch(`https://kuldeep-singh-backend.onrender.com/api/testimonials/${id}`, {
+    fetch(`https://kuldeep-singh-backend-q1di.onrender.com/api/testimonials/${id}`, {
       method: 'DELETE'
     }).catch((e) => console.warn('Cloud delete error for testimonial:', e));
   };
