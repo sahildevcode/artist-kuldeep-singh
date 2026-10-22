@@ -11,7 +11,7 @@ interface CheckoutModalProps {
 }
 
 export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, onSuccessCourseEnroll }) => {
-  const { cart, subtotal, discount, shipping, finalTotal, performCheckout, isCheckingOut } = useCart();
+  const { cart, subtotal, discount, shipping, deliveryLabel, finalTotal, performCheckout, isCheckingOut } = useCart();
   const { currentUser, setIsAuthModalOpen, unlockCourse } = useAuth();
 
   const [fullName, setFullName] = useState('');
@@ -549,7 +549,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
                     </div>
                   )}
                   <div className="flex justify-between">
-                    <span>{isOnlyCourses ? 'Digital Classroom Delivery' : 'Insured Wooden Crating'}</span>
+                    <span>{isOnlyCourses ? 'Digital Classroom Delivery' : (deliveryLabel || 'Insured Wooden Crating')}</span>
                     <span>{shipping === 0 ? 'Complimentary' : `₹${shipping}`}</span>
                   </div>
                   <div className="pt-2 border-t border-stone-200 flex justify-between text-sm font-bold text-stone-900">

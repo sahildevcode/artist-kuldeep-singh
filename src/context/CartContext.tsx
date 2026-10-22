@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { CartItem, OrderRecord } from '../types';
+import type { CartItem, OrderRecord, PromoCode } from '../types';
 import confetti from 'canvas-confetti';
 import { useAuth } from './AuthContext';
+import { useStudioData, DEFAULT_PROMO_CODES } from './StudioDataContext';
 
 interface CartContextType {
   cart: CartItem[];
@@ -18,6 +19,7 @@ interface CartContextType {
   removeDiscount: () => void;
   discountError: string | null;
   shipping: number;
+  deliveryLabel: string;
   finalTotal: number;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
@@ -121,6 +123,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isOrderHistoryOpen, setIsOrderHistoryOpen] = useState(false);
+  const { promoCodes, deliverySettings } = useStudioData();
+  const [appliedPromo, setAppliedPromo] = useState<PromoCode | null>(null);
   const [discountCode, setDiscountCode] = useState('');
   const [discountPercent, setDiscountPercent] = useState(0);
   const [discountError, setDiscountError] = useState<string | null>(null);
@@ -187,24 +191,43 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const applyDiscountCode = (code: string): boolean => {
     const clean = code.trim().toUpperCase();
-    if (clean === 'ARTISAN15' || clean === 'KULDEEP15') {
-      setDiscountCode(clean);
-      setDiscountPercent(0.15);
-      setDiscountError(null);
-      return true;
+    if (!clean) {
+      setDiscountError('Please enter a valid coupon code.');
+      return false;
     }
-    if (clean === 'COLLECTOR20') {
-      setDiscountCode(clean);
-      setDiscountPercent(0.20);
-      setDiscountError(null);
-      return true;
+
+    const availablePromos: PromoCode[] = (promoCodes && promoCodes.length > 0) ? promoCodes : DEFAULT_PROMO_CODES;
+
+
+
+
+
+
+    const match = availablePromos.find((p) => p.code.toUpperCase() === clean);
+    if (!match || !match.isActive) {
+      setDiscountError('Invalid or expired promotional code.');
+      return false;
     }
-    setDiscountError('Invalid promotional code. Try KULDEEP15');
-    return false;
+
+    if (match.minOrderAmount && subtotal < match.minOrderAmount) {
+      setDiscountError(`Code "${clean}" requires minimum order of ₹${match.minOrderAmount.toLocaleString('en-IN')}`);
+      return false;
+    }
+
+    setDiscountCode(clean);
+    setAppliedPromo(match);
+    if (match.discountType === 'percentage') {
+      setDiscountPercent(match.discountValue / 100);
+    } else {
+      setDiscountPercent(0);
+    }
+    setDiscountError(null);
+    return true;
   };
 
   const removeDiscount = () => {
     setDiscountCode('');
+    setAppliedPromo(null);
     setDiscountPercent(0);
     setDiscountError(null);
   };
@@ -246,10 +269,23 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const discount = Math.round(subtotal * discountPercent);
+  
+  const discount = appliedPromo
+    ? appliedPromo.discountType === 'percentage'
+      ? Math.round(subtotal * (appliedPromo.discountValue / 100))
+      : Math.min(subtotal, appliedPromo.discountValue)
+    : Math.round(subtotal * discountPercent);
 
   const hasPhysicalArt = cart.some((i) => i.type === 'artwork');
-  const shipping = hasPhysicalArt ? (subtotal > 3000 ? 0 : 180) : 0;
+  const isDeliveryEnabled = deliverySettings ? deliverySettings.isEnabled : true;
+  const standardFee = deliverySettings ? deliverySettings.deliveryFee : 180;
+  const freeThreshold = deliverySettings ? deliverySettings.freeDeliveryThreshold : 3000;
+  const deliveryLabel = deliverySettings?.deliveryLabel || 'Insured Fine Art Delivery';
+
+  const shipping = hasPhysicalArt && isDeliveryEnabled
+    ? (freeThreshold > 0 && subtotal >= freeThreshold ? 0 : standardFee)
+    : 0;
+
   const finalTotal = Math.max(0, subtotal - discount + shipping);
 
   const addOrder = (order: OrderRecord) => {
@@ -398,6 +434,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         removeDiscount,
         discountError,
         shipping,
+        deliveryLabel,
         finalTotal,
         isCartOpen,
         setIsCartOpen,

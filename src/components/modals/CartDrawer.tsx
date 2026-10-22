@@ -24,6 +24,7 @@ export const CartDrawer: React.FC = () => {
     lastOrderId,
     setIsOrderHistoryOpen,
     resetCheckout,
+    deliveryLabel,
     setIsCheckoutModalOpen,
   } = useCart();
 
@@ -257,7 +258,7 @@ export const CartDrawer: React.FC = () => {
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span>Insured Fine Art Delivery</span>
+                  <span>{deliveryLabel}</span>
                   <span className="font-semibold text-stone-800">
                     {shipping === 0 ? 'Complimentary' : `₹${shipping}`}
                   </span>
