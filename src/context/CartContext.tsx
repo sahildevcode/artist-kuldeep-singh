@@ -106,7 +106,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [cart, setCart] = useState<CartItem[]>(() => {
     try {
       const saved = localStorage.getItem('kuldeep_art_cart');
-      return saved ? JSON.parse(saved) : [];
+      const raw = saved ? JSON.parse(saved) : [];
+      return raw.map((item: any) => (item.type === 'artwork' ? { ...item, quantity: 1 } : item));
     } catch {
       return [];
     }
@@ -156,11 +157,16 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const withoutCourses = prev.filter((i) => i.type !== 'course');
       const existing = withoutCourses.find((i) => i.id === item.id);
       if (existing) {
+        if (item.type === 'artwork') {
+          return withoutCourses.map((i) =>
+            i.id === item.id ? { ...i, quantity: 1, price: item.price } : i
+          );
+        }
         return withoutCourses.map((i) =>
           i.id === item.id ? { ...i, quantity: i.quantity + quantity } : i
         );
       }
-      return [...withoutCourses, { ...item, quantity }];
+      return [...withoutCourses, { ...item, quantity: item.type === 'artwork' ? 1 : quantity }];
     });
     if (openCart && item.type !== 'course') {
       setIsCartOpen(true);
