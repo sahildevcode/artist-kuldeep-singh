@@ -179,7 +179,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                       {art.title}
                     </h3>
                     <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 line-clamp-1">
-                      {art.dimensions} â€¢ {art.year}
+                      {art.dimensions} • {art.year}
                     </p>
                   </div>
 
@@ -187,7 +187,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     <div>
                       <span className="text-[10px] text-stone-400 block uppercase font-semibold">Price</span>
                       <span className="font-serif font-bold text-lg text-stone-900 dark:text-amber-300">
-                        â‚¹{(art.price >= 10000 ? art.price : Math.round(art.price * 85)).toLocaleString('en-IN')}
+                        ₹{(art.price >= 10000 ? art.price : Math.round(art.price * 85)).toLocaleString('en-IN')}
                       </span>
                     </div>
 
@@ -278,7 +278,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
                 <div className="space-y-3 pt-4 border-t border-stone-100 dark:border-stone-800">
                   <div className="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400">
-                    <span>{course.durationHours} Hours â€¢ {course.totalLessons} Lessons</span>
+                    <span>{course.durationHours} Hours • {course.totalLessons} Lessons</span>
                     <span className="font-bold text-stone-800 dark:text-stone-200">{course.level}</span>
                   </div>
 
@@ -286,11 +286,11 @@ export const HomePage: React.FC<HomePageProps> = ({
                     <div>
                       {course.originalPrice && (
                         <span className="text-xs text-stone-400 line-through mr-1.5">
-                          â‚¹{course.originalPrice.toLocaleString('en-IN')}
+                          ₹{course.originalPrice.toLocaleString('en-IN')}
                         </span>
                       )}
                       <span className="font-serif font-bold text-2xl text-artisan-crimson dark:text-red-400">
-                        â‚¹{course.price.toLocaleString('en-IN')}
+                        ₹{course.price.toLocaleString('en-IN')}
                       </span>
                     </div>
 
