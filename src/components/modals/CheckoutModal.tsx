@@ -548,10 +548,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
                       <span>-₹{discount.toLocaleString()}</span>
                     </div>
                   )}
-                  <div className="flex justify-between">
-                    <span>{isOnlyCourses ? 'Digital Classroom Delivery' : (deliveryLabel || 'Insured Wooden Crating')}</span>
-                    <span>{shipping === 0 ? 'Complimentary' : `₹${shipping}`}</span>
-                  </div>
+                  {shipping > 0 && (
+                    <div className="flex justify-between">
+                      <span>{isOnlyCourses ? 'Digital Classroom Delivery' : (deliveryLabel || 'Insured Wooden Crating')}</span>
+                      <span>₹{shipping}</span>
+                    </div>
+                  )}
                   <div className="pt-2 border-t border-stone-200 flex justify-between text-sm font-bold text-stone-900">
                     <span>Total Payable</span>
                     <span className="text-base text-artisan-crimson font-serif font-bold">

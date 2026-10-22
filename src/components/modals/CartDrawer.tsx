@@ -257,12 +257,14 @@ export const CartDrawer: React.FC = () => {
                     <span className="font-semibold">-₹{discount.toLocaleString('en-IN')}</span>
                   </div>
                 )}
-                <div className="flex justify-between">
-                  <span>{deliveryLabel}</span>
-                  <span className="font-semibold text-stone-800">
-                    {shipping === 0 ? 'Complimentary' : `₹${shipping}`}
-                  </span>
-                </div>
+                {shipping > 0 && (
+                  <div className="flex justify-between">
+                    <span>{deliveryLabel}</span>
+                    <span className="font-semibold text-stone-800">
+                      ₹{shipping}
+                    </span>
+                  </div>
+                )}
                 <div className="pt-2 border-t border-stone-200 flex justify-between text-sm font-bold text-stone-900">
                   <span>Total Amount</span>
                   <span className="text-base text-artisan-crimson font-serif font-bold">

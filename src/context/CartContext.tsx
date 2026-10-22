@@ -278,8 +278,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const hasPhysicalArt = cart.some((i) => i.type === 'artwork');
   const isDeliveryEnabled = deliverySettings ? deliverySettings.isEnabled : true;
-  const standardFee = deliverySettings ? deliverySettings.deliveryFee : 180;
-  const freeThreshold = deliverySettings ? deliverySettings.freeDeliveryThreshold : 3000;
+  const standardFee = deliverySettings ? deliverySettings.deliveryFee : 0;
+  const freeThreshold = deliverySettings ? deliverySettings.freeDeliveryThreshold : 0;
   const deliveryLabel = deliverySettings?.deliveryLabel || 'Insured Fine Art Delivery';
 
   const shipping = hasPhysicalArt && isDeliveryEnabled
