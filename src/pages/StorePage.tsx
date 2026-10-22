@@ -183,7 +183,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredArtworks.map((art) => {
-              const inrPrice = art.price >= 10000 ? art.price : Math.round(art.price * 85);
+              const inrPrice = art.price;
               const commissionWhatsAppUrl = `https://wa.me/918858060101?text=${encodeURIComponent(
                 `Hello Artist Kuldeep Singh, I saw your artwork "${art.title}" (${art.medium}) on your store. Since it is ${art.status.toUpperCase()}, I would love to enquire about commissioning a similar custom piece. Please share details.`
               )}`;

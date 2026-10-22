@@ -59,7 +59,7 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({ artwork: initialArtw
   if (!activeArtwork) return null;
 
   const currentImage = selectedImage || activeArtwork.image;
-  const inrPrice = activeArtwork.price >= 10000 ? activeArtwork.price : Math.round(activeArtwork.price * 85);
+  const inrPrice = activeArtwork.price;
 
   // Commission message URL for WhatsApp
   const commissionWhatsAppUrl = `https://wa.me/918858060101?text=${encodeURIComponent(
@@ -625,7 +625,7 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({ artwork: initialArtw
                         </h4>
                         <div className="flex items-center gap-2 mt-1">
                           <span className="font-serif font-bold text-xs text-artisan-crimson">
-                            ₹{Math.round(rel.price * 85).toLocaleString()}
+                            ₹{rel.price.toLocaleString('en-IN')}
                           </span>
                           <span className={`text-[9px] font-semibold px-1.5 py-0.2 rounded-full uppercase ${
                             rel.status === 'available' ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-200 text-stone-600'

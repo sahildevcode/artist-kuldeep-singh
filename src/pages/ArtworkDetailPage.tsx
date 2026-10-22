@@ -93,7 +93,7 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
   }
 
   const currentImage = selectedImage || activeArtwork.image;
-  const inrPrice = activeArtwork.price >= 10000 ? activeArtwork.price : Math.round(activeArtwork.price * 85);
+  const inrPrice = activeArtwork.price;
 
   const getShareUrl = () => {
     if (typeof window !== 'undefined') {
@@ -730,7 +730,7 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
                     </p>
                     <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
                       <span className="font-serif font-bold text-lg text-artisan-crimson">
-                        ₹{Math.round(rel.price * 85).toLocaleString()}
+                        ₹{rel.price.toLocaleString('en-IN')}
                       </span>
                       <span className="text-xs font-bold text-stone-800 group-hover:text-artisan-crimson flex items-center gap-1">
                         <span>View Masterwork</span>

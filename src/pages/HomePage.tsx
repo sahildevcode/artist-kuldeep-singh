@@ -185,7 +185,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     <div>
                       <span className="text-[10px] text-stone-400 block uppercase font-semibold">Price</span>
                       <span className="font-serif font-bold text-lg text-stone-900 dark:text-amber-300">
-                        ₹{(art.price >= 10000 ? art.price : Math.round(art.price * 85)).toLocaleString('en-IN')}
+                        ₹{art.price.toLocaleString('en-IN')}
                       </span>
                     </div>
 
@@ -196,7 +196,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                           type: 'artwork',
                           title: art.title,
                           subtitle: art.subtitle,
-                          price: art.price >= 10000 ? art.price : Math.round(art.price * 85),
+                          price: art.price,
                           image: art.image,
                           mediumOrCategory: art.medium,
                         })
