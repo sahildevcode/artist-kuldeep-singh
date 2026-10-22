@@ -183,7 +183,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
         }
 
         const orderData = await orderRes.json();
-        const razorpayKeyId = orderData.key_id || orderData.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID;
+        const razorpayKeyId = orderData.key_id || orderData.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_live_TpFxRsfihf9Itb";
         const razorpayOrderId = orderData.order_id || orderData.orderId;
 
         const rzp = new (window as any).Razorpay({
