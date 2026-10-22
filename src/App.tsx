@@ -141,7 +141,7 @@ const AppInner: React.FC = () => {
           : 'home');
 
   return (
-    <div className="relative w-full max-w-full overflow-x-clip min-h-screen bg-[#FDFBF7] dark:bg-[#0E0C0A] text-[#1A1816] dark:text-[#F5F2EB] transition-colors duration-300 selection:bg-artisan-crimson selection:text-white">
+    <div className="relative w-full max-w-full overflow-x-hidden min-h-screen bg-[#FDFBF7] dark:bg-[#0E0C0A] text-[#1A1816] dark:text-[#F5F2EB] transition-colors duration-300 selection:bg-artisan-crimson selection:text-white">
       {/* Cinematic Intro Splash Animation for 'Artist Kuldeep Singh' */}
       {showSplash && <IntroSplash onFinish={() => setShowSplash(false)} />}
 

@@ -1,4 +1,4 @@
-﻿import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { ArrowRight, Eye } from 'lucide-react';
 import { PRESS_LOGOS } from '../data/reviews';
 import type { Artwork, Course } from '../types';
@@ -45,11 +45,11 @@ export const HomePage: React.FC<HomePageProps> = ({
   ];
 
   return (
-    <div className="relative w-full bg-black overflow-x-hidden">
+    <div className="relative z-10 w-full">
       {/* ------------------------------------------------------------- */}
       {/* 1. HERO SECTION - DIRECT HOSTED CINEMATIC VIDEO (FAST & SMOOTH) */}
       {/* ------------------------------------------------------------- */}
-      <section className="sticky top-0 w-full h-screen min-h-[580px] max-h-[1080px] overflow-hidden bg-black select-none z-0">
+      <section className="relative w-full h-[88vh] sm:h-screen min-h-[580px] max-h-[1080px] overflow-hidden bg-black select-none">
         <div className="relative w-full h-full">
           {/* Direct Code Background Cinematic Video (Ultra-Fast Native Autoplay Loop) */}
           <video
@@ -98,8 +98,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* ------------------------------------------------------------- */}
       {/* STATS COUNTER STRIP */}
       {/* ------------------------------------------------------------- */}
-      <section className="relative z-10 -mt-14 rounded-t-[40px] bg-white dark:bg-[#121110] shadow-[0_-30px_80px_rgba(0,0,0,0.7)] border-t border-stone-200/50 dark:border-stone-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {dynamicStats.map((stat, idx) => (
             <div
@@ -115,7 +114,6 @@ export const HomePage: React.FC<HomePageProps> = ({
               <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">{stat.subtext}</p>
             </div>
           ))}
-          </div>
         </div>
       </section>
 
@@ -123,7 +121,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* ------------------------------------------------------------- */}
       {/* 2. SELECTED MASTERWORKS SHOWCASE */}
       {/* ------------------------------------------------------------- */}
-      <section className="relative z-20 -mt-14 rounded-t-[40px] bg-[#F5F3EF] dark:bg-[#0E0D0C] shadow-[0_-30px_80px_rgba(0,0,0,0.65)] border-t border-stone-200/60 dark:border-stone-800/60">
+      <section className="py-20 sm:py-28 bg-stone-100/50 dark:bg-stone-950/60 border-y border-stone-200/60 dark:border-stone-800/60 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
             <div>
@@ -218,15 +216,14 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* ------------------------------------------------------------- */}
       {/* 3. FEATURED MASTERCLASSES */}
       {/* ------------------------------------------------------------- */}
-      <section className="relative z-30 -mt-14 rounded-t-[40px] bg-white dark:bg-[#0A0908] shadow-[0_-30px_80px_rgba(0,0,0,0.65)] border-t border-stone-200/80 dark:border-stone-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
+      <section className="py-20 sm:py-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
           <div>
             <span className="text-xs font-bold uppercase tracking-[0.2em] text-artisan-gold block mb-2">
               The Digital Atelier
             </span>
             <h2 className="font-serif text-3xl sm:text-5xl font-bold text-stone-900 dark:text-stone-100 tracking-tight">
-              Master the Craft: Online AcadÃ©mie
+              Master the Craft: Online Académie
             </h2>
             <p className="text-sm text-stone-600 dark:text-stone-300 mt-2 max-w-xl">
               12 years of specialized knowledge distilled into crystal-clear video masterclasses covering Oil Painting, Realistic Sketching, and Color Theory.
@@ -308,7 +305,6 @@ export const HomePage: React.FC<HomePageProps> = ({
               </div>
             </div>
           ))}
-          </div>
         </div>
       </section>
 
@@ -320,7 +316,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* ------------------------------------------------------------- */}
       {/* 4. 12 YEARS JOURNEY TEASER BANNER */}
       {/* ------------------------------------------------------------- */}
-      <section className="relative z-40 -mt-14 rounded-t-[40px] bg-[#1A1816] text-white shadow-[0_-30px_80px_rgba(0,0,0,0.8)] border-t border-artisan-gold/20 overflow-visible">
+      <section className="py-20 bg-[#1A1816] text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-artisan-crimson/20 rounded-full blur-[80px] pointer-events-none gpu-blur-ambient" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
@@ -385,4 +381,3 @@ export const HomePage: React.FC<HomePageProps> = ({
     </div>
   );
 };
-
