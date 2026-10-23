@@ -97,7 +97,8 @@ export const CartDrawer: React.FC = () => {
                 {/* HIGHLIGHTED WHATSAPP COMMUNITY INVITE FOR PURCHASED COURSES */}
                 {lastPurchasedCourses && lastPurchasedCourses.length > 0 && (() => {
                   const purchasedCourseObj = courses.find((c) => c.id === lastPurchasedCourses[0]?.id);
-                  const whatsappLink = purchasedCourseObj?.whatsappGroupUrl || 'https://wa.me/919810088231?text=Hello%20Artist%20Kuldeep%20Singh%20Atelier,%20I%20just%20enrolled%20in%20the%20course%20and%20would%20love%20to%20join%20the%20batch%20group.';
+                  const whatsappLink = (purchasedCourseObj?.whatsappGroupUrl && purchasedCourseObj.whatsappGroupUrl.trim())
+                    || (courses.find((c) => c.whatsappGroupUrl && c.whatsappGroupUrl.trim())?.whatsappGroupUrl);
                   return (
                     <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-950 via-[#0a2318] to-emerald-950 text-white border-2 border-emerald-400 shadow-xl space-y-3 text-left animate-in zoom-in-95 ring-4 ring-emerald-500/20">
                       <div className="flex items-center gap-2">
@@ -113,16 +114,18 @@ export const CartDrawer: React.FC = () => {
                       <p className="text-[11px] text-emerald-100/90 leading-relaxed">
                         Connect directly with Master Kuldeep Singh and fellow students for class schedules, live links, and weekly easel critique.
                       </p>
-                      <a
-                        href={whatsappLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/60 transition-transform hover:-translate-y-0.5 cursor-pointer ring-2 ring-white/20"
-                      >
-                        <MessageSquare className="w-4 h-4 fill-white" />
-                        <span>Tap to Join Official WhatsApp Group</span>
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
+                      {whatsappLink ? (
+                        <a
+                          href={whatsappLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/60 transition-transform hover:-translate-y-0.5 cursor-pointer ring-2 ring-white/20"
+                        >
+                          <MessageSquare className="w-4 h-4 fill-white" />
+                          <span>Tap to Join Official WhatsApp Group 📲</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      ) : null}
                     </div>
                   );
                 })()}
