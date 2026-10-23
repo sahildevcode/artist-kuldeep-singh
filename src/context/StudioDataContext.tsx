@@ -211,12 +211,22 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.filter((a: any) => a.id && !a.id.startsWith('art-0') && Number(a.price) > 100);
+          const valid = parsed.filter((a: any) => a.id && !a.id.startsWith('art-0') && Number(a.price) > 100);
+          if (valid.length > 0) {
+            const cachedIds = new Set(valid.map((a: any) => a.id));
+            const missing = ARTWORKS.filter((a) => !cachedIds.has(a.id));
+            if (missing.length > 0) {
+              const merged = [...valid, ...missing];
+              try { localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(merged)); } catch {}
+              return merged;
+            }
+            return valid;
+          }
         }
       }
-      return [];
+      return ARTWORKS;
     } catch {
-      return [];
+      return ARTWORKS;
     }
   });
 

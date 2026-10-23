@@ -1,0 +1,14 @@
+name: 24/7 Render Cloud API Keepalive
+
+on:
+  schedule:
+    - cron: '*/10 * * * *' # Pings every 10 minutes to prevent Render free instance sleep
+  workflow_dispatch:
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Kuldeep Singh Render Cloud API
+        run: |
+          curl -s -m 15 -f https://kuldeep-singh-backend-q1di.onrender.com/api/ping || echo "Backend ping dispatched"
