@@ -70,6 +70,7 @@ export interface Course {
   upcomingDate?: string;
   liveClassUrl?: string;
   liveClassStatus?: 'offline' | 'live' | 'scheduled';
+  whatsappGroupUrl?: string;
 }
 
 export interface LiveBroadcastStatus {

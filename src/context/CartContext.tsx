@@ -28,6 +28,7 @@ interface CartContextType {
   isCheckingOut: boolean;
   checkoutSuccess: boolean;
   lastOrderId: string | null;
+  lastPurchasedCourses: CartItem[];
   isCheckoutModalOpen: boolean;
   setIsCheckoutModalOpen: (open: boolean) => void;
   performCheckout: (customerInfo?: {
@@ -132,6 +133,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
   const [lastOrderId, setLastOrderId] = useState<string | null>(null);
+  const [lastPurchasedCourses, setLastPurchasedCourses] = useState<CartItem[]>([]);
 
   useEffect(() => {
     try {
@@ -372,6 +374,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // If order contains courses, unlock courses in student profile and sync enrollment
     const courseItems = cart.filter((i) => i.type === 'course');
+    setLastPurchasedCourses(courseItems);
     for (const cItem of courseItems) {
       // 1. Immediately unlock course in student session
       unlockCourse(cItem.id);
@@ -449,6 +452,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isCheckingOut,
         checkoutSuccess,
         lastOrderId,
+        lastPurchasedCourses,
         isCheckoutModalOpen,
         setIsCheckoutModalOpen,
         performCheckout,

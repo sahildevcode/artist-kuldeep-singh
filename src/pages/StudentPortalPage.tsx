@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import {
+  MessageSquare,
   BookOpen,
   Video,
   Play,
@@ -654,6 +655,61 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
                 </div>
               </div>
             </div>
+
+            {/* HIGH-VISIBILITY OFFICIAL BATCH WHATSAPP COMMUNITY CARD */}
+            {isEnrolled && (
+              <div className="rounded-2xl p-5 sm:p-6 bg-gradient-to-r from-emerald-950/90 via-[#0a2318] to-emerald-950/90 border-2 border-emerald-500/60 shadow-xl relative overflow-hidden ring-4 ring-emerald-500/10">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
+                <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/30">
+                      <MessageSquare className="w-6 h-6" />
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-400 text-emerald-950 shadow-sm">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-950 animate-ping"></span>
+                          Official Enrolled Batch
+                        </span>
+                        <span className="text-[11px] text-emerald-300 font-semibold">Artist Kuldeep Singh Atelier</span>
+                      </div>
+                      <h4 className="text-lg sm:text-xl font-bold font-serif text-white tracking-wide">
+                        Join Official Students WhatsApp Group
+                      </h4>
+                      <p className="text-xs sm:text-sm text-emerald-100/90 max-w-xl leading-relaxed">
+                        Daily live class reminders, studio assignments critique, high-res PDF references and direct discussion with Master Kuldeep Singh and fellow batch scholars.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="shrink-0 w-full md:w-auto">
+                    {activeCourse.whatsappGroupUrl ? (
+                      <a
+                        href={activeCourse.whatsappGroupUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full md:w-auto px-6 py-3.5 rounded-xl font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 transition-all transform hover:-translate-y-0.5 shadow-lg shadow-emerald-900/50 flex items-center justify-center gap-2.5 cursor-pointer ring-2 ring-white/20"
+                      >
+                        <MessageSquare className="w-4 h-4 fill-white" />
+                        <span>Join Batch WhatsApp Community</span>
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    ) : (
+                      <a
+                        href="https://wa.me/919810088231?text=Hello%20Artist%20Kuldeep%20Singh%20Atelier,%20I%20have%20enrolled%20in%20the%20batch%20and%20would%20like%20to%20join%20the%20student%20WhatsApp%20group."
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full md:w-auto px-6 py-3.5 rounded-xl font-bold text-xs sm:text-sm text-emerald-200 bg-emerald-900/60 border border-emerald-500/40 hover:bg-emerald-800/80 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        <MessageSquare className="w-4 h-4" />
+                        <span>Contact Atelier on WhatsApp</span>
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* C. BATCH REFERENCE GALLERY (MULTIPLE PHOTOS) */}

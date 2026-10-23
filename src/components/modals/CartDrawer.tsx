@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight, CheckCircle2, ShieldCheck, Truck, Lock } from 'lucide-react';
+import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight, CheckCircle2, ShieldCheck, Truck, Lock, MessageSquare, ExternalLink } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useStudioData } from '../../context/StudioDataContext';
 import { useAuth } from '../../context/AuthContext';
 import { MagneticButton } from '../ui/MagneticButton';
 
 export const CartDrawer: React.FC = () => {
+  const { courses } = useStudioData();
   const {
     cart,
     removeFromCart,
@@ -22,6 +24,7 @@ export const CartDrawer: React.FC = () => {
     isCheckingOut,
     checkoutSuccess,
     lastOrderId,
+    lastPurchasedCourses,
     setIsOrderHistoryOpen,
     resetCheckout,
     deliveryLabel,
@@ -86,10 +89,43 @@ export const CartDrawer: React.FC = () => {
                     <span className="font-mono font-bold">#{lastOrderId || 'KS-2026-98124'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-stone-500">Shipping Mode:</span>
-                    <span className="font-medium">Climate-Controlled Wooden Crate</span>
+                    <span className="text-stone-500">Access Status:</span>
+                    <span className="font-semibold text-emerald-700">Immediate Access Unlocked</span>
                   </div>
                 </div>
+
+                {/* HIGHLIGHTED WHATSAPP COMMUNITY INVITE FOR PURCHASED COURSES */}
+                {lastPurchasedCourses && lastPurchasedCourses.length > 0 && (() => {
+                  const purchasedCourseObj = courses.find((c) => c.id === lastPurchasedCourses[0]?.id);
+                  const whatsappLink = purchasedCourseObj?.whatsappGroupUrl || 'https://wa.me/919810088231?text=Hello%20Artist%20Kuldeep%20Singh%20Atelier,%20I%20just%20enrolled%20in%20the%20course%20and%20would%20love%20to%20join%20the%20batch%20group.';
+                  return (
+                    <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-950 via-[#0a2318] to-emerald-950 text-white border-2 border-emerald-400 shadow-xl space-y-3 text-left animate-in zoom-in-95 ring-4 ring-emerald-500/20">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                        <span className="text-[10px] font-black uppercase tracking-wider bg-emerald-500 text-emerald-950 px-2 py-0.5 rounded-full">
+                          Action Required
+                        </span>
+                        <span className="text-xs font-bold text-emerald-300">Official Batch Community</span>
+                      </div>
+                      <h4 className="font-serif font-bold text-base text-white">
+                        Join Your Batch WhatsApp Group Now 📲
+                      </h4>
+                      <p className="text-[11px] text-emerald-100/90 leading-relaxed">
+                        Connect directly with Master Kuldeep Singh and fellow students for class schedules, live links, and weekly easel critique.
+                      </p>
+                      <a
+                        href={whatsappLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/60 transition-transform hover:-translate-y-0.5 cursor-pointer ring-2 ring-white/20"
+                      >
+                        <MessageSquare className="w-4 h-4 fill-white" />
+                        <span>Tap to Join Official WhatsApp Group</span>
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+                  );
+                })()}
                 <div className="flex flex-col gap-2 mt-4">
                   <MagneticButton
                     onClick={() => {
