@@ -101,20 +101,34 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
   const awardsList = Array.isArray(awards) ? awards : [];
 
   return (
-    <div className="relative z-10 pt-28 sm:pt-36 pb-28">
+    <div className="relative z-10 pt-28 sm:pt-36 pb-28 min-h-screen">
+      {/* ------------------------------------------------------------- */}
+      {/* ARTIST PORTRAIT PAGE BACKGROUND (Adjusted for Clear Face Focus) */}
+      {/* ------------------------------------------------------------- */}
+      <div className="absolute top-0 left-0 right-0 h-[700px] sm:h-[880px] lg:h-[980px] overflow-hidden pointer-events-none -z-10">
+        <img
+          src="/images/artist-kuldeep-singh.jpg"
+          alt="Artist Kuldeep Singh"
+          className="w-full h-full object-cover object-[center_18%] sm:object-[center_15%] opacity-35 dark:opacity-25 filter contrast-110 brightness-100"
+        />
+        {/* Soft luxury atmospheric vignette for text clarity */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#FAF8F5]/40 via-[#FAF8F5]/75 to-[#FAF8F5] dark:from-stone-950/50 dark:via-stone-950/85 dark:to-stone-950" />
+        <div className="absolute inset-0 bg-radial from-transparent via-[#FAF8F5]/30 to-[#FAF8F5] dark:via-stone-950/40 dark:to-stone-950" />
+      </div>
+
       {/* ------------------------------------------------------------- */}
       {/* 1. HERO HEADER */}
       {/* ------------------------------------------------------------- */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 sm:mb-28">
-        <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-artisan-gold/10 border border-artisan-gold/30 text-xs font-bold text-artisan-charcoal">
+        <div className="text-center max-w-3xl mx-auto space-y-4 bg-white/80 dark:bg-stone-900/80 backdrop-blur-md rounded-3xl p-6 sm:p-10 border border-white/70 dark:border-stone-800 shadow-soft-lux">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-artisan-gold/10 border border-artisan-gold/30 text-xs font-bold text-artisan-charcoal dark:text-stone-200">
             <Sparkles className="w-3.5 h-3.5 text-artisan-gold" />
             <span>{artistProfile?.yearsExperience || '12+'} of Devoted Artistic Practice</span>
           </div>
-          <h1 className="font-serif text-4xl sm:text-6xl font-bold tracking-tight text-[#1A1816] leading-[1.1]">
+          <h1 className="font-serif text-4xl sm:text-6xl font-bold tracking-tight text-[#1A1816] dark:text-white leading-[1.1]">
             {artistProfile?.bioHeadline || 'A Life Dedicated to the Alchemy of Light, Oil & Form.'}
           </h1>
-          <p className="text-stone-600 text-base sm:text-lg leading-relaxed">
+          <p className="text-stone-600 dark:text-stone-300 text-base sm:text-lg leading-relaxed">
             {bioStory[0] || 'Artist Kuldeep Singh has spent over a decade perfecting the discipline of classical fine art.'}
           </p>
         </div>
@@ -122,11 +136,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
         {/* Large Visual Feature Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mt-12">
           <div className="lg:col-span-7 relative group">
-            <div className="relative aspect-[16/10] rounded-3xl overflow-hidden shadow-2xl border border-stone-200">
+            <div className="relative aspect-[16/10] rounded-3xl overflow-hidden shadow-2xl border border-stone-200 dark:border-stone-800 bg-stone-900">
               <img
-                src={artistProfile?.studioImage || 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=1200&auto=format&fit=crop'}
+                src="/images/artist-kuldeep-singh.jpg"
                 alt={artistProfile?.name || 'Artist Kuldeep Singh'}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                className="w-full h-full object-cover object-[center_20%] group-hover:scale-105 transition-transform duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               <div className="absolute bottom-6 left-6 text-white">
