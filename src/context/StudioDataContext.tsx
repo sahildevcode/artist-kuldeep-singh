@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { PromoCode, StoreDeliverySettings, Artwork, Course, CourseModule, CourseLecture, ArtistProfile, AchievementTimelineItem, Award, EnrolledStudent, LiveBroadcastStatus, UpcomingCourse, CollectorReview } from '../types';
 import { ARTWORKS } from '../data/artworks';
 import { COURSES } from '../data/courses';
@@ -235,7 +235,8 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     try {
       const saved = localStorage.getItem('kuldeep_studio_courses');
       const loaded: Course[] = saved ? JSON.parse(saved) : [];
-      const clean = (Array.isArray(loaded) && loaded.length > 0 ? loaded : []).filter((c: any) => !DUMMY_COURSE_IDS.includes(c.id) && Number(c.price) > 100);
+      // Only filter out known dummy/demo course IDs - don't filter by price (price check was causing real courses to be hidden)
+      const clean = (Array.isArray(loaded) && loaded.length > 0 ? loaded : []).filter((c: any) => !DUMMY_COURSE_IDS.includes(c.id));
       return normalizeCourses(clean);
     } catch {
       return [];
@@ -369,10 +370,16 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         if (artRes.ok) {
           const cloudArtworks: Artwork[] = await artRes.json();
           if (Array.isArray(cloudArtworks) && isMounted) {
-            setArtworks(cloudArtworks);
-            try {
-              localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(cloudArtworks));
-            } catch {}
+            // Guard: never wipe local data with empty cloud response (cold-start protection)
+            setArtworks((prev) => {
+              if (cloudArtworks.length === 0 && prev.length > 0) return prev;
+              return cloudArtworks;
+            });
+            if (cloudArtworks.length > 0) {
+              try {
+                localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(cloudArtworks));
+              } catch {}
+            }
           }
         }
 
@@ -383,10 +390,16 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           if (Array.isArray(cloudCourses) && isMounted) {
             const clean = cloudCourses.filter((c) => !DUMMY_COURSE_IDS.includes(c.id));
             const normalized = normalizeCourses(clean);
-            setCourses(normalized);
-            try {
-              localStorage.setItem('kuldeep_studio_courses', JSON.stringify(normalized));
-            } catch {}
+            // Guard: never wipe local courses with empty cloud response (cold-start protection)
+            setCourses((prev) => {
+              if (normalized.length === 0 && prev.length > 0) return prev;
+              return normalized;
+            });
+            if (normalized.length > 0) {
+              try {
+                localStorage.setItem('kuldeep_studio_courses', JSON.stringify(normalized));
+              } catch {}
+            }
           }
         }
 
@@ -395,10 +408,16 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         if (stuRes.ok) {
           const cloudStudents: EnrolledStudent[] = await stuRes.json();
           if (Array.isArray(cloudStudents) && isMounted) {
-            setStudents(cloudStudents);
-            try {
-              localStorage.setItem('kuldeep_studio_students', JSON.stringify(cloudStudents));
-            } catch {}
+            // Guard: never wipe local students with empty cloud response (cold-start protection)
+            setStudents((prev) => {
+              if (cloudStudents.length === 0 && prev.length > 0) return prev;
+              return cloudStudents;
+            });
+            if (cloudStudents.length > 0) {
+              try {
+                localStorage.setItem('kuldeep_studio_students', JSON.stringify(cloudStudents));
+              } catch {}
+            }
           }
         }
 
