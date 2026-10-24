@@ -13,7 +13,7 @@ const SHOWCASE_SECTIONS = [
     title: 'Originals',
     description:
       'One-of-one artworks created by Artist Kuldeep Singh. Each original painting is a unique expression of story, culture, and craftsmanship created entirely by hand and available to collectors seeking a singular piece of art.',
-    image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=1200&auto=format&fit=crop',
+    image: '/images/buddha-tree-of-life-painting.jpg',
     imageAlt: 'Artist Kuldeep Singh creating an original painting in studio',
     reverse: false,
     action: 'store',
@@ -24,7 +24,7 @@ const SHOWCASE_SECTIONS = [
     title: 'Prints',
     description:
       "These limited-edition prints make Artist Kuldeep Singh's work accessible while preserving the richness, detail, and emotion of the original piece.",
-    image: 'https://images.unsplash.com/photo-1582561424760-0321d75e81fa?q=80&w=1200&auto=format&fit=crop',
+    image: '/images/abstract-spiritual-canvas-print.jpg',
     imageAlt: 'Limited edition archival art print framed in architectural space',
     reverse: true,
     action: 'store',
@@ -35,7 +35,7 @@ const SHOWCASE_SECTIONS = [
     title: 'Projects',
     description:
       'From luxury brand collaborations and immersive installations to custom commissions and experiential spaces, discover how art transforms environments, products, and cultural conversations.',
-    image: 'https://images.unsplash.com/photo-1561214115-f2f134cc4912?q=80&w=1200&auto=format&fit=crop',
+    image: '/images/abstract-woman-leopard-eagle-painting.jpg',
     imageAlt: 'Curated artistic projects and architectural installations',
     reverse: false,
     action: null,
@@ -46,7 +46,7 @@ const SHOWCASE_SECTIONS = [
     title: 'Exhibitions',
     description:
       "A showcase of exhibitions, gallery presentations, and curated experiences that bring Artist Kuldeep Singh's artistic vision to life and invite viewers into his world of storytelling.",
-    image: 'https://images.unsplash.com/photo-1531247448606-44fa13e90a6c?q=80&w=1200&auto=format&fit=crop',
+    image: '/images/abstract-face-contemporary-painting.jpg',
     imageAlt: 'Curated gallery exhibition with art collectors',
     reverse: true,
     action: null,
@@ -93,19 +93,34 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
   const awardsList = Array.isArray(awards) ? awards : [];
 
   return (
-    <div className="relative z-10 pt-24 sm:pt-28 pb-28 min-h-screen">
+    <div className="relative w-full min-h-screen">
       {/* ------------------------------------------------------------- */}
-      {/* 1. HERO ARTIST IMAGE (Full Width & Height, Face Focused)       */}
+      {/* 1. HERO ARTIST IMAGE (Fixed / Stays in place on scroll)        */}
       {/* ------------------------------------------------------------- */}
-      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-24">
-        <div className="w-full h-[65vh] sm:h-[80vh] rounded-3xl overflow-hidden shadow-2xl border border-stone-200 dark:border-stone-800 bg-stone-900">
-          <img
-            src="/images/artist-kuldeep-singh.jpg"
-            alt="Artist Kuldeep Singh"
-            className="w-full h-full object-cover object-[center_18%]"
-          />
-        </div>
+      <section className="fixed top-0 left-0 w-full h-[85vh] sm:h-screen min-h-[580px] max-h-[1080px] overflow-hidden bg-[#0E0C0A] select-none z-0">
+        {/* Full-bleed ambient backdrop for ultrawide screens */}
+        <img
+          src="/images/artist-kuldeep-singh.jpg"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover object-[center_55%] filter blur-xl scale-110 opacity-60 pointer-events-none"
+        />
+
+        {/* Sharp Portrait: 100% width and height, perfectly centered on face */}
+        <img
+          src="/images/artist-kuldeep-singh.jpg"
+          alt="Artist Kuldeep Singh"
+          className="relative z-10 w-full h-full object-cover object-[center_55%] sm:object-[center_52%]"
+        />
+
+        {/* Subtle top & bottom atmospheric vignette */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none z-20" />
       </section>
+
+      {/* ------------------------------------------------------------- */}
+      {/* 2. OVERLAY PAGE CONTENT (Slides UP OVER the image on scroll)   */}
+      {/* ------------------------------------------------------------- */}
+      <div className="relative z-10 mt-[80vh] sm:mt-[95vh] bg-[#FDFBF7] dark:bg-[#0E0C0A] rounded-t-[2.5rem] sm:rounded-t-[3.5rem] shadow-[0_-25px_60px_rgba(0,0,0,0.35)] border-t border-stone-200/80 dark:border-stone-800/80 pb-28 pt-8 sm:pt-14">
 
       {/* ------------------------------------------------------------- */}
       {/* 2. EDITORIAL SHOWCASE (ORIGINALS, PRINTS, PROJECTS, EXHIBITIONS) */}
@@ -305,6 +320,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
           </div>
         </div>
       </section>
+      </div>
     </div>
   );
 };

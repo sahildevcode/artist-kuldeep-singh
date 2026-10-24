@@ -4,7 +4,6 @@ import { AuthProvider } from './context/AuthContext';
 import { StudioDataProvider, useStudioData } from './context/StudioDataContext';
 import { AudioProvider } from './context/AudioContext';
 import { ThemeProvider } from './context/ThemeContext';
-import { ThreeBackground } from './components/3d/ThreeBackground';
 import { IntroSplash } from './components/layout/IntroSplash';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
@@ -145,7 +144,6 @@ const AppInner: React.FC = () => {
       {showSplash && <IntroSplash onFinish={() => setShowSplash(false)} />}
 
       {/* 3D WebGL Layer (Interactive Paintbrush & Palette in Background) */}
-      <ThreeBackground />
 
       {/* Dynamic Calligraphy Handwriting Signature Background with Luminous Halo */}
 
