@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle2, Sparkles, MapPin, ArrowRight, ChevronDown } from 'lucide-react';
+import { CheckCircle2, MapPin, ArrowRight, ChevronDown } from 'lucide-react';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { useStudioData } from '../context/StudioDataContext';
 
@@ -83,116 +83,27 @@ const FAQS = [
 ];
 
 export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
-  const { artistProfile, awards } = useStudioData();
+  const { awards } = useStudioData();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const toggleFaq = (idx: number) => {
     setOpenFaq(prev => (prev === idx ? null : idx));
   };
 
-  const bioStory = Array.isArray(artistProfile?.bioStory) && artistProfile.bioStory.length > 0
-    ? artistProfile.bioStory
-    : [
-        'Artist Kuldeep Singh has spent over a decade perfecting the discipline of classical European oil painting, anatomical draftsmanship, and pigment chemistry, bringing historical reverence into modern gallery spaces.',
-        'In an era dominated by instantaneous digital algorithms, the act of grinding raw mineral earth into cold-pressed oil and applying it layer-by-layer to hand-stretched linen is an act of spiritual defiance.',
-        'A painting should possess physical gravity. It should change as the sun moves across your room, revealing hidden glazes at twilight that were invisible at noon.'
-      ];
-
   const awardsList = Array.isArray(awards) ? awards : [];
 
   return (
-    <div className="relative z-10 pt-28 sm:pt-36 pb-28 min-h-screen">
+    <div className="relative z-10 pt-24 sm:pt-28 pb-28 min-h-screen">
       {/* ------------------------------------------------------------- */}
-      {/* ARTIST PORTRAIT FULL PAGE BACKGROUND (100% Width & 100% Height) */}
+      {/* 1. HERO ARTIST IMAGE (Full Width & Height, Face Focused)       */}
       {/* ------------------------------------------------------------- */}
-      <div className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <img
-          src="/images/artist-kuldeep-singh.jpg"
-          alt="Artist Kuldeep Singh"
-          className="w-full h-full object-cover object-[center_18%] sm:object-[center_15%] opacity-45 dark:opacity-30 filter contrast-110 brightness-100"
-        />
-        {/* Atmospheric luxury tint & gentle vignette for readability */}
-        <div className="absolute inset-0 bg-[#FDFBF7]/55 dark:bg-[#0E0C0A]/70" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#FDFBF7]/30 via-transparent to-[#FDFBF7]/80 dark:from-[#0E0C0A]/30 dark:via-transparent dark:to-[#0E0C0A]/80" />
-      </div>
-
-      {/* ------------------------------------------------------------- */}
-      {/* 1. HERO HEADER */}
-      {/* ------------------------------------------------------------- */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 sm:mb-28">
-        <div className="text-center max-w-3xl mx-auto space-y-4 bg-white/80 dark:bg-stone-900/80 backdrop-blur-md rounded-3xl p-6 sm:p-10 border border-white/70 dark:border-stone-800 shadow-soft-lux">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-artisan-gold/10 border border-artisan-gold/30 text-xs font-bold text-artisan-charcoal dark:text-stone-200">
-            <Sparkles className="w-3.5 h-3.5 text-artisan-gold" />
-            <span>{artistProfile?.yearsExperience || '12+'} of Devoted Artistic Practice</span>
-          </div>
-          <h1 className="font-serif text-4xl sm:text-6xl font-bold tracking-tight text-[#1A1816] dark:text-white leading-[1.1]">
-            {artistProfile?.bioHeadline || 'A Life Dedicated to the Alchemy of Light, Oil & Form.'}
-          </h1>
-          <p className="text-stone-600 dark:text-stone-300 text-base sm:text-lg leading-relaxed">
-            {bioStory[0] || 'Artist Kuldeep Singh has spent over a decade perfecting the discipline of classical fine art.'}
-          </p>
-        </div>
-
-        {/* Large Visual Feature Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mt-12">
-          <div className="lg:col-span-7 relative group">
-            <div className="relative aspect-[16/10] rounded-3xl overflow-hidden shadow-2xl border border-stone-200 dark:border-stone-800 bg-stone-900">
-              <img
-                src="/images/artist-kuldeep-singh.jpg"
-                alt={artistProfile?.name || 'Artist Kuldeep Singh'}
-                className="w-full h-full object-cover object-[center_20%] group-hover:scale-105 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-              <div className="absolute bottom-6 left-6 text-white">
-                <span className="text-xs uppercase tracking-widest text-artisan-gold font-bold block">
-                  Studio Focus
-                </span>
-                <h3 className="font-serif font-bold text-xl sm:text-2xl mt-1">
-                  {artistProfile?.sanctuaryTitle || 'The Sanctuary in Chelsea, New York'}
-                </h3>
-                <p className="text-xs text-stone-300">
-                  {artistProfile?.sanctuaryLocation || 'Where centuries-old techniques meet boundless contemporary scale'}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="lg:col-span-5 space-y-6">
-            <div className="p-8 rounded-3xl bg-white/80 backdrop-blur-md border border-stone-200 shadow-soft-lux space-y-4">
-              <h3 className="font-serif font-bold text-2xl text-stone-900">
-                The Creative Philosophy
-              </h3>
-              <p className="text-xs sm:text-sm text-stone-600 leading-relaxed italic">
-                "{artistProfile?.philosophyQuote || 'Every stroke of oil on linen is a conversation between human patience and natural light.'}"
-              </p>
-              {bioStory.slice(1).map((para, i) => (
-                <p key={i} className="text-xs sm:text-sm text-stone-600 leading-relaxed">
-                  {para}
-                </p>
-              ))}
-              <div className="pt-2 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-artisan-charcoal text-white font-serif flex items-center justify-center font-bold">
-                  KS
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-stone-900">{artistProfile?.name || 'Artist Kuldeep Singh'}</h4>
-                  <p className="text-[11px] text-stone-500">{artistProfile?.title || 'Master Painter & Atelier Founder'}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Metrics */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-5 bg-white rounded-2xl border border-stone-200">
-                <span className="font-serif font-bold text-3xl text-artisan-crimson">{artistProfile?.yearsExperience || '12+'}</span>
-                <p className="text-xs text-stone-600 font-medium mt-1">Years Continuous Practice</p>
-              </div>
-              <div className="p-5 bg-white rounded-2xl border border-stone-200">
-                <span className="font-serif font-bold text-3xl text-artisan-gold">{artistProfile?.artworksCount || '450+'}</span>
-                <p className="text-xs text-stone-600 font-medium mt-1">Original Works in Collections</p>
-              </div>
-            </div>
-          </div>
+      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 sm:mb-24">
+        <div className="w-full h-[65vh] sm:h-[80vh] rounded-3xl overflow-hidden shadow-2xl border border-stone-200 dark:border-stone-800 bg-stone-900">
+          <img
+            src="/images/artist-kuldeep-singh.jpg"
+            alt="Artist Kuldeep Singh"
+            className="w-full h-full object-cover object-[center_18%]"
+          />
         </div>
       </section>
 
