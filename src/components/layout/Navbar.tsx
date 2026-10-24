@@ -128,11 +128,14 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                   setActivePage('home');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className="text-left group flex items-center gap-2 sm:gap-3 focus:outline-none cursor-pointer"
+                className="text-left group flex items-center gap-2.5 sm:gap-3.5 focus:outline-none cursor-pointer"
               >
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-stone-900 border border-white/20 text-white flex items-center justify-center font-serif text-lg sm:text-xl font-bold shadow-md group-hover:scale-105 transition-transform duration-300 relative overflow-hidden">
-                  <span className="relative z-10">K</span>
-                  <span className="absolute inset-0 bg-gradient-to-tr from-artisan-crimson/50 to-artisan-ochre/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#F0EFEA] border border-stone-200/80 flex items-center justify-center p-1 shadow-md group-hover:scale-105 transition-transform duration-300 overflow-hidden shrink-0">
+                  <img
+                    src="/images/brand-logo.png"
+                    alt="Artist Kuldeep Singh Logo"
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 <div>
                   <span className="font-display font-bold text-lg sm:text-xl tracking-tight text-white block leading-none">
@@ -349,8 +352,12 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
         {/* Top Header of Drawer: Monogram + Title + Close Button */}
         <div className="p-5 border-b border-white/10 flex items-center justify-between bg-black/40">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-stone-900 border border-artisan-gold/40 text-artisan-gold flex items-center justify-center font-serif text-base font-bold shadow-md">
-              K
+            <div className="w-10 h-10 rounded-xl bg-[#F0EFEA] border border-stone-200/80 flex items-center justify-center p-1 shadow-md overflow-hidden shrink-0">
+              <img
+                src="/images/brand-logo.png"
+                alt="Artist Kuldeep Logo"
+                className="w-full h-full object-contain"
+              />
             </div>
             <div>
               <div className="font-display font-bold text-base tracking-tight text-white leading-tight">
