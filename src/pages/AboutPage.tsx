@@ -105,14 +105,14 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
       {/* ------------------------------------------------------------- */}
       {/* 1. HERO ARTIST IMAGE (Sticky Top: Works on Mobile & Desktop)   */}
       {/* ------------------------------------------------------------- */}
-      <section className="sticky top-0 w-full h-[75vh] sm:h-screen min-h-[500px] max-h-[1080px] overflow-hidden bg-[#0E0C0A] select-none z-0 transform-gpu will-change-transform">
+      <section className="relative w-full h-screen min-h-screen overflow-hidden bg-[#0E0C0A] select-none z-0">
         {/* Sharp High-Res Portrait - Smooth Cinematic Fade-In, perfectly centered on face */}
         <img
           ref={heroImgRef}
           src="/images/artist-kuldeep-singh.jpg"
           alt="Artist Kuldeep Singh"
           onLoad={() => setIsHeroLoaded(true)}
-          className={`w-full h-full object-cover object-[center_55%] sm:object-[center_52%] animate-hero-fade transition-opacity duration-1000 ease-out ${
+          className={`w-full h-full object-cover object-[center_35%] sm:object-[center_30%] animate-hero-fade transition-opacity duration-1000 ease-out ${
             isHeroLoaded ? 'opacity-100' : 'opacity-0'
           }`}
         />
@@ -124,7 +124,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
       {/* ------------------------------------------------------------- */}
       {/* 2. OVERLAY PAGE CONTENT (Slides UP OVER Image on Mobile & Desktop) */}
       {/* ------------------------------------------------------------- */}
-      <div className="relative z-10 -mt-12 sm:-mt-20 bg-[#FDFBF7] dark:bg-[#0E0C0A] rounded-t-[2.5rem] sm:rounded-t-[3.5rem] shadow-[0_-12px_30px_rgba(0,0,0,0.18)] border-t border-stone-200/60 dark:border-stone-800/60 pb-28 pt-8 sm:pt-14 transform-gpu will-change-transform">
+      <div className="relative z-10 bg-[#FDFBF7] dark:bg-[#0E0C0A] border-t border-stone-200/60 dark:border-stone-800/60 pb-28 pt-12 sm:pt-20">
 
       {/* ------------------------------------------------------------- */}
       {/* 2. EDITORIAL SHOWCASE (ORIGINALS, PRINTS, PROJECTS, EXHIBITIONS) */}
