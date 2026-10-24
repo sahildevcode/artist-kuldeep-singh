@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { CartItem, OrderRecord, PromoCode } from '../types';
 import confetti from 'canvas-confetti';
 import { useAuth } from './AuthContext';
@@ -246,7 +246,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
       return 'http://localhost:5000';
     }
-    return 'https://kuldeep-singh-backend-q1di.onrender.com';
+    return 'https://kuldeep-singh-backend-nehy.onrender.com';
   };
 
   // Sync orders with backend database every 2.5s

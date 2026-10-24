@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+﻿import React, { useState, useMemo, useEffect } from 'react';
 import {
   MessageSquare,
   BookOpen,
@@ -170,7 +170,7 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
       try {
         const primaryUrl = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
           ? 'http://localhost:5000'
-          : 'https://kuldeep-singh-backend-q1di.onrender.com';
+          : 'https://kuldeep-singh-backend-nehy.onrender.com';
 
         const res = await fetch(`${primaryUrl}/api/session/heartbeat`, {
           method: 'POST',
@@ -224,7 +224,7 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
     try {
       const primaryUrl = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
         ? 'http://localhost:5000'
-        : 'https://kuldeep-singh-backend-q1di.onrender.com';
+        : 'https://kuldeep-singh-backend-nehy.onrender.com';
 
       const res = await fetch(`${primaryUrl}/api/session/takeover`, {
         method: 'POST',
@@ -896,7 +896,17 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
 
             {/* Video Player */}
             <div className="relative aspect-video rounded-2xl overflow-hidden bg-stone-950 border border-stone-800 shadow-inner flex items-center justify-center">
-              {streamingLecture.videoUrl && (streamingLecture.videoUrl.includes('youtube') || streamingLecture.videoUrl.includes('youtu.be')) ? (
+              {/* BunnyCDN / mediadelivery.net - must be checked FIRST before generic http check */}
+              {streamingLecture.videoUrl && (streamingLecture.videoUrl.includes('mediadelivery.net') || streamingLecture.videoUrl.includes('iframe.mediadelivery')) ? (
+                <iframe
+                  key={streamingLecture.videoUrl}
+                  src={streamingLecture.videoUrl}
+                  title={streamingLecture.title}
+                  className="w-full h-full border-0"
+                  allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+                  allowFullScreen
+                />
+              ) : streamingLecture.videoUrl && (streamingLecture.videoUrl.includes('youtube') || streamingLecture.videoUrl.includes('youtu.be')) ? (
                 <iframe
                   src={
                     streamingLecture.videoUrl.includes('watch?v=')

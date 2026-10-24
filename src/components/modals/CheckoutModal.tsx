@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { X, ShieldCheck, Truck, Lock, CreditCard, Banknote, CheckCircle2, User, Phone, Mail, MapPin } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
@@ -160,7 +160,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
 
         const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
           ? 'http://localhost:5000'
-          : (import.meta.env.VITE_API_URL || 'https://kuldeep-singh-backend-q1di.onrender.com');
+          : (import.meta.env.VITE_API_URL || 'https://kuldeep-singh-backend-nehy.onrender.com');
 
         const orderRes = await fetch(`${baseUrl}/api/create-order`, {
           method: 'POST',
