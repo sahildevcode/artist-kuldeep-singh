@@ -3,10 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
-    <script>
+                <script>
       (function() {
         if (window.location.hostname === 'artist-kuldeep-singh.vercel.app') {
           window.location.replace('https://artistkuldeepsingh.com' + window.location.pathname + window.location.search);
@@ -226,6 +223,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Great+Vibes&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Syne:wght@500;700;800&display=swap" rel="stylesheet">
     <!-- Preload Hero Background Video for Immediate Playback -->
     <link rel="preload" href="/videos/hero-cinematic.mp4" as="video" type="video/mp4" />
+  
+    <!-- Preload Critical Above-The-Fold Assets for Instant Zero-Delay Rendering -->
+    <link rel="preload" as="image" href="/images/artist-kuldeep-singh.jpg" fetchpriority="high" />
+    <link rel="prefetch" href="/images/buddha-tree-of-life-painting.jpg" />
+    <link rel="prefetch" href="/images/abstract-spiritual-canvas-print.jpg" />
+    <link rel="prefetch" href="/images/abstract-woman-leopard-eagle-painting.jpg" />
+    <link rel="prefetch" href="/images/krishna-god-traditional-painting.jpg" />
+    <link rel="prefetch" href="/images/abstract-face-contemporary-painting.jpg" />
+
   </head>
   <body class="bg-[#FDFBF7] text-[#1A1816] font-sans antialiased selection:bg-[#E63946] selection:text-white overflow-x-hidden">
     <div id="root"></div>

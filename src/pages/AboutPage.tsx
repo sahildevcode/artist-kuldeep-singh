@@ -299,12 +299,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
           <div className="lg:col-span-6">
             <div className="grid grid-cols-2 gap-4">
               <img
-                src="https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=600&auto=format&fit=crop"
+                src="/images/krishna-god-traditional-painting.jpg"
                 alt="Pigment mixing"
                 className="rounded-3xl aspect-[4/5] object-cover shadow-lg border border-stone-200"
               />
               <img
-                src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=600&auto=format&fit=crop"
+                src="/images/abstract-woman-leopard-eagle-painting.jpg"
                 alt="Studio drawing"
                 className="rounded-3xl aspect-[4/5] object-cover shadow-lg border border-stone-200 mt-8"
               />
