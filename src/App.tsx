@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { CartProvider, useCart } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { StudioDataProvider, useStudioData } from './context/StudioDataContext';
 import { AudioProvider } from './context/AudioContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ThreeBackground } from './components/3d/ThreeBackground';
-import { ScrollSignatureBackground } from './components/3d/ScrollSignatureBackground';
 import { IntroSplash } from './components/layout/IntroSplash';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
@@ -149,7 +148,6 @@ const AppInner: React.FC = () => {
       <ThreeBackground />
 
       {/* Dynamic Calligraphy Handwriting Signature Background with Luminous Halo */}
-      <ScrollSignatureBackground />
 
       {/* Navigation Bar */}
       <Navbar activePage={navbarActivePage} setActivePage={handlePageChange as any} />
