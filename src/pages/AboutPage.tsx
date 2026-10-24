@@ -95,32 +95,24 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
   return (
     <div className="relative w-full min-h-screen">
       {/* ------------------------------------------------------------- */}
-      {/* 1. HERO ARTIST IMAGE (Fixed / Stays in place on scroll)        */}
+      {/* 1. HERO ARTIST IMAGE (Sticky Top: Hardware Accelerated, 0 Lag) */}
       {/* ------------------------------------------------------------- */}
-      <section className="fixed top-0 left-0 w-full h-[85vh] sm:h-screen min-h-[580px] max-h-[1080px] overflow-hidden bg-[#0E0C0A] select-none z-0">
-        {/* Full-bleed ambient backdrop for ultrawide screens */}
-        <img
-          src="/images/artist-kuldeep-singh.jpg"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover object-[center_55%] filter blur-xl scale-110 opacity-60 pointer-events-none"
-        />
-
-        {/* Sharp Portrait: 100% width and height, perfectly centered on face */}
+      <section className="sticky top-0 w-full h-[88vh] sm:h-screen min-h-[580px] max-h-[1080px] overflow-hidden bg-[#0E0C0A] select-none z-0 transform-gpu will-change-transform">
+        {/* Sharp High-Res Portrait - 100% width and height, perfectly centered on face */}
         <img
           src="/images/artist-kuldeep-singh.jpg"
           alt="Artist Kuldeep Singh"
-          className="relative z-10 w-full h-full object-cover object-[center_55%] sm:object-[center_52%]"
+          className="w-full h-full object-cover object-[center_55%] sm:object-[center_52%]"
         />
 
         {/* Subtle top & bottom atmospheric vignette */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none z-20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none" />
       </section>
 
       {/* ------------------------------------------------------------- */}
-      {/* 2. OVERLAY PAGE CONTENT (Slides UP OVER the image on scroll)   */}
+      {/* 2. OVERLAY PAGE CONTENT (Slides UP OVER image: Pure Silk 200Hz) */}
       {/* ------------------------------------------------------------- */}
-      <div className="relative z-10 mt-[80vh] sm:mt-[95vh] bg-[#FDFBF7] dark:bg-[#0E0C0A] rounded-t-[2.5rem] sm:rounded-t-[3.5rem] shadow-[0_-25px_60px_rgba(0,0,0,0.35)] border-t border-stone-200/80 dark:border-stone-800/80 pb-28 pt-8 sm:pt-14">
+      <div className="relative z-10 -mt-14 sm:-mt-20 bg-[#FDFBF7] dark:bg-[#0E0C0A] rounded-t-[2.5rem] sm:rounded-t-[3.5rem] shadow-[0_-12px_30px_rgba(0,0,0,0.18)] border-t border-stone-200/60 dark:border-stone-800/60 pb-28 pt-8 sm:pt-14 transform-gpu will-change-transform">
 
       {/* ------------------------------------------------------------- */}
       {/* 2. EDITORIAL SHOWCASE (ORIGINALS, PRINTS, PROJECTS, EXHIBITIONS) */}
