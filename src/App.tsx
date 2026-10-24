@@ -1,3 +1,4 @@
+import { SmoothScroll } from './components/layout/SmoothScroll';
 ﻿import React, { useState, useEffect } from 'react';
 import { CartProvider, useCart } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
@@ -116,7 +117,11 @@ const AppInner: React.FC = () => {
     if (window.location.pathname !== targetPath || window.location.hash) {
       window.history.pushState({ page }, '', targetPath);
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (typeof window !== 'undefined' && (window as any).__lenis) {
+      (window as any).__lenis.scrollTo(0, { immediate: true });
+    } else {
+      window.scrollTo(0, 0);
+    }
   };
 
   const handleSelectCourse = (course: Course) => {
@@ -256,7 +261,9 @@ export const App: React.FC = () => {
         <AuthProvider>
           <CartProvider>
             <AudioProvider>
-              <AppInner />
+              <SmoothScroll>
+                <AppInner />
+              </SmoothScroll>
             </AudioProvider>
           </CartProvider>
         </AuthProvider>

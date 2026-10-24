@@ -141,9 +141,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                   <span className="font-display font-bold text-lg sm:text-xl tracking-tight text-white block leading-none">
                     KULDEEP <span className="font-light text-artisan-gold">SINGH</span>
                   </span>
-                  <span className="text-[9px] sm:text-[10px] tracking-[0.2em] uppercase text-stone-400 font-medium block mt-1">
-                    Artist • 12Y Fine Art Atelier
-                  </span>
                 </div>
               </button>
             </div>
