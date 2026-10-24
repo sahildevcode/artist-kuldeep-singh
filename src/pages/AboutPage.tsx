@@ -95,9 +95,9 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
   return (
     <div className="relative w-full min-h-screen">
       {/* ------------------------------------------------------------- */}
-      {/* 1. HERO ARTIST IMAGE (Mobile Native Flow, Desktop Sticky Curtain) */}
+      {/* 1. HERO ARTIST IMAGE (Sticky Top: Works on Mobile & Desktop)   */}
       {/* ------------------------------------------------------------- */}
-      <section className="relative md:sticky md:top-0 w-full h-[75vh] sm:h-[88vh] md:h-screen min-h-[500px] max-h-[1080px] overflow-hidden bg-[#0E0C0A] select-none z-0 transform-gpu will-change-transform">
+      <section className="sticky top-0 w-full h-[75vh] sm:h-screen min-h-[500px] max-h-[1080px] overflow-hidden bg-[#0E0C0A] select-none z-0 transform-gpu will-change-transform">
         {/* Sharp High-Res Portrait - 100% width and height, perfectly centered on face */}
         <img
           src="/images/artist-kuldeep-singh.jpg"
@@ -110,9 +110,9 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
       </section>
 
       {/* ------------------------------------------------------------- */}
-      {/* 2. OVERLAY PAGE CONTENT (0 Lag on Mobile, Silky on Desktop)    */}
+      {/* 2. OVERLAY PAGE CONTENT (Slides UP OVER Image on Mobile & Desktop) */}
       {/* ------------------------------------------------------------- */}
-      <div className="relative z-10 -mt-8 sm:-mt-14 md:-mt-20 bg-[#FDFBF7] dark:bg-[#0E0C0A] rounded-t-[2rem] sm:rounded-t-[3rem] shadow-[0_-10px_25px_rgba(0,0,0,0.15)] border-t border-stone-200/60 dark:border-stone-800/60 pb-28 pt-8 sm:pt-14 transform-gpu will-change-transform">
+      <div className="relative z-10 -mt-12 sm:-mt-20 bg-[#FDFBF7] dark:bg-[#0E0C0A] rounded-t-[2.5rem] sm:rounded-t-[3.5rem] shadow-[0_-12px_30px_rgba(0,0,0,0.18)] border-t border-stone-200/60 dark:border-stone-800/60 pb-28 pt-8 sm:pt-14 transform-gpu will-change-transform">
 
       {/* ------------------------------------------------------------- */}
       {/* 2. EDITORIAL SHOWCASE (ORIGINALS, PRINTS, PROJECTS, EXHIBITIONS) */}
