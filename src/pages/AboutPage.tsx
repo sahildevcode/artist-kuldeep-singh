@@ -103,17 +103,17 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
   return (
     <div className="relative z-10 pt-28 sm:pt-36 pb-28 min-h-screen">
       {/* ------------------------------------------------------------- */}
-      {/* ARTIST PORTRAIT PAGE BACKGROUND (Adjusted for Clear Face Focus) */}
+      {/* ARTIST PORTRAIT FULL PAGE BACKGROUND (100% Width & 100% Height) */}
       {/* ------------------------------------------------------------- */}
-      <div className="absolute top-0 left-0 right-0 h-[700px] sm:h-[880px] lg:h-[980px] overflow-hidden pointer-events-none -z-10">
+      <div className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <img
           src="/images/artist-kuldeep-singh.jpg"
           alt="Artist Kuldeep Singh"
-          className="w-full h-full object-cover object-[center_18%] sm:object-[center_15%] opacity-35 dark:opacity-25 filter contrast-110 brightness-100"
+          className="w-full h-full object-cover object-[center_18%] sm:object-[center_15%] opacity-45 dark:opacity-30 filter contrast-110 brightness-100"
         />
-        {/* Soft luxury atmospheric vignette for text clarity */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#FAF8F5]/40 via-[#FAF8F5]/75 to-[#FAF8F5] dark:from-stone-950/50 dark:via-stone-950/85 dark:to-stone-950" />
-        <div className="absolute inset-0 bg-radial from-transparent via-[#FAF8F5]/30 to-[#FAF8F5] dark:via-stone-950/40 dark:to-stone-950" />
+        {/* Atmospheric luxury tint & gentle vignette for readability */}
+        <div className="absolute inset-0 bg-[#FDFBF7]/55 dark:bg-[#0E0C0A]/70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#FDFBF7]/30 via-transparent to-[#FDFBF7]/80 dark:from-[#0E0C0A]/30 dark:via-transparent dark:to-[#0E0C0A]/80" />
       </div>
 
       {/* ------------------------------------------------------------- */}
