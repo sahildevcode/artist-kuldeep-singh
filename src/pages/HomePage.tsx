@@ -6,7 +6,6 @@ import { MagneticButton } from '../components/ui/MagneticButton';
 import { useCart } from '../context/CartContext';
 import { useStudioData } from '../context/StudioDataContext';
 import { UpcomingCoursesSection } from '../components/home/UpcomingCoursesSection';
-import { TestimonialAutoSlider } from '../components/home/TestimonialAutoSlider';
 
 interface HomePageProps {
   setActivePage: (page: 'home' | 'about' | 'courses' | 'store') => void;
@@ -344,14 +343,6 @@ export const HomePage: React.FC<HomePageProps> = ({
           </div>
         </div>
       </section>
-
-      {/* ------------------------------------------------------------- */}
-      {/* 5. AUTOMATIC CHANGING IMAGES & TESTIMONIAL SLIDESHOW          */}
-      {/* ------------------------------------------------------------- */}
-      <TestimonialAutoSlider
-        onExploreCourses={() => setActivePage('courses')}
-        onExploreStore={() => setActivePage('store')}
-      />
 
       {/* Press Quotes Bar */}
       <section className="pb-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
