@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { CheckCircle2, MapPin, ArrowRight, ChevronDown } from 'lucide-react';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { useStudioData } from '../context/StudioDataContext';
@@ -85,6 +85,14 @@ const FAQS = [
 export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
   const { awards } = useStudioData();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [isHeroLoaded, setIsHeroLoaded] = useState(false);
+  const heroImgRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    if (heroImgRef.current && heroImgRef.current.complete) {
+      setIsHeroLoaded(true);
+    }
+  }, []);
 
   const toggleFaq = (idx: number) => {
     setOpenFaq(prev => (prev === idx ? null : idx));
@@ -98,11 +106,15 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
       {/* 1. HERO ARTIST IMAGE (Sticky Top: Works on Mobile & Desktop)   */}
       {/* ------------------------------------------------------------- */}
       <section className="sticky top-0 w-full h-[75vh] sm:h-screen min-h-[500px] max-h-[1080px] overflow-hidden bg-[#0E0C0A] select-none z-0 transform-gpu will-change-transform">
-        {/* Sharp High-Res Portrait - 100% width and height, perfectly centered on face */}
+        {/* Sharp High-Res Portrait - Smooth Cinematic Fade-In, perfectly centered on face */}
         <img
+          ref={heroImgRef}
           src="/images/artist-kuldeep-singh.jpg"
           alt="Artist Kuldeep Singh"
-          className="w-full h-full object-cover object-[center_55%] sm:object-[center_52%]"
+          onLoad={() => setIsHeroLoaded(true)}
+          className={`w-full h-full object-cover object-[center_55%] sm:object-[center_52%] animate-hero-fade transition-opacity duration-1000 ease-out ${
+            isHeroLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
         />
 
         {/* Subtle top & bottom atmospheric vignette */}
