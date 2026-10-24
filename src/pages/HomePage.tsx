@@ -1,6 +1,5 @@
 import React, { useRef, useEffect } from 'react';
 import { ArrowRight, Eye } from 'lucide-react';
-import { PRESS_LOGOS } from '../data/reviews';
 import type { Artwork, Course } from '../types';
 import { MagneticButton } from '../components/ui/MagneticButton';
 import { useCart } from '../context/CartContext';
@@ -340,32 +339,6 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <ArrowRight className="w-4 h-4 ml-2" />
               </MagneticButton>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Press Quotes Bar */}
-      <section className="pb-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="pt-8 border-t border-stone-200 dark:border-stone-800">
-          <div className="text-center mb-6">
-            <span className="text-[10px] uppercase font-bold tracking-widest text-stone-400 dark:text-stone-500">
-              Featured in International Art Publications & Press
-            </span>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {PRESS_LOGOS.map((press, idx) => (
-              <div
-                key={idx}
-                className="p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 shadow-xs flex flex-col justify-between text-center"
-              >
-                <h4 className="font-display font-bold text-xs tracking-widest text-stone-900 dark:text-stone-100">
-                  {press.name}
-                </h4>
-                <p className="text-[11px] text-stone-500 dark:text-stone-400 italic mt-3">
-                  "{press.quote}"
-                </p>
-              </div>
-            ))}
           </div>
         </div>
       </section>
