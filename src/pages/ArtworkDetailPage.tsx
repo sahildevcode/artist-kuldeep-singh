@@ -435,55 +435,48 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
                     </div>
                   </div>
 
-                  {/* Detail Thumbnails & Versions Strip */}
-                  {activeArtwork.detailImages && activeArtwork.detailImages.length > 0 && (
-                    <div className="w-full mt-6 p-4 rounded-2xl bg-white/80 border border-stone-200/90 shadow-xs">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-stone-700 flex items-center gap-1.5">
-                          <Palette className="w-3.5 h-3.5 text-artisan-crimson" />
-                          <span>Painting Versions & High-Res Angles ({activeArtwork.detailImages.length + 1} Views)</span>
-                        </span>
-                        <span className="text-[10px] text-stone-500 font-medium">Tap photo to switch view</span>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-3">
-                        <button
-                          onClick={() => setSelectedImage(null)}
-                          className={`group relative w-16 h-16 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
-                            selectedImage === null
-                              ? 'border-artisan-crimson ring-2 ring-artisan-crimson/30 scale-105 shadow-md'
-                              : 'border-stone-200 opacity-75 hover:opacity-100 hover:border-stone-400'
-                          }`}
-                          title="Original / Primary View"
-                        >
-                          <img src={activeArtwork.image} alt="Primary" className="w-full h-full object-cover" />
-                          <span className="absolute bottom-0 inset-x-0 bg-black/75 text-[9px] text-white font-semibold text-center py-0.5">
-                            Primary
+                  {/* Multi-Photo Gallery for THIS Painting (Uploaded from Admin) */}
+                  {(() => {
+                    const allPhotos = [activeArtwork.image, ...(activeArtwork.detailImages || [])].filter(Boolean);
+                    if (allPhotos.length <= 1) return null;
+                    return (
+                      <div className="w-full mt-5 p-4 rounded-2xl bg-white border border-stone-200/90 shadow-xs">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-stone-800 flex items-center gap-1.5">
+                            <Palette className="w-3.5 h-3.5 text-artisan-crimson" />
+                            <span>Painting Angles & Detail Shots ({allPhotos.length} Photos)</span>
                           </span>
-                        </button>
-                        {activeArtwork.detailImages.map((imgUrl, idx) => (
-                          <button
-                            key={idx}
-                            onClick={() => setSelectedImage(imgUrl)}
-                            className={`group relative w-16 h-16 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
-                              selectedImage === imgUrl
-                                ? 'border-artisan-crimson ring-2 ring-artisan-crimson/30 scale-105 shadow-md'
-                                : 'border-stone-200 opacity-75 hover:opacity-100 hover:border-stone-400'
-                            }`}
-                            title={`Version / Angle ${idx + 1}`}
-                          >
-                            <img
-                              src={imgUrl}
-                              alt={`Version ${idx + 1}`}
-                              className="w-full h-full object-cover"
-                            />
-                            <span className="absolute bottom-0 inset-x-0 bg-black/75 text-[9px] text-white font-semibold text-center py-0.5">
-                              Angle {idx + 1}
-                            </span>
-                          </button>
-                        ))}
+                          <span className="text-[10px] text-stone-500 font-medium">Click photo to switch main view</span>
+                        </div>
+                        <div className="flex items-center gap-3 overflow-x-auto pb-1">
+                          {allPhotos.map((imgUrl, idx) => {
+                            const isSelected = (selectedImage === null && idx === 0) || (selectedImage === imgUrl);
+                            return (
+                              <button
+                                key={idx}
+                                onClick={() => setSelectedImage(idx === 0 ? null : imgUrl)}
+                                className={`group relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all cursor-pointer shrink-0 ${
+                                  isSelected
+                                    ? 'border-artisan-crimson ring-2 ring-artisan-crimson/30 scale-105 shadow-md'
+                                    : 'border-stone-200 opacity-70 hover:opacity-100 hover:border-stone-400'
+                                }`}
+                                title={idx === 0 ? 'Primary / Cover View' : `Angle / Detail Shot ${idx + 1}`}
+                              >
+                                <img
+                                  src={imgUrl}
+                                  alt={`Photo ${idx + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
+                                <span className="absolute bottom-0 inset-x-0 bg-black/80 text-[9px] text-white font-bold text-center py-0.5">
+                                  {idx === 0 ? 'Front' : `Angle ${idx + 1}`}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
                 </div>
               )}
 
@@ -498,56 +491,6 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
                 </button>
               </div>
 
-              {/* Quick Switch Between All Atelier Paintings Uploaded from Admin */}
-              <div className="w-full mt-6 pt-5 border-t border-stone-200/80">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-bold text-stone-900 uppercase tracking-wider flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-artisan-gold" />
-                    <span>All Atelier Paintings ({artworks.length} Uploaded)</span>
-                  </span>
-                  <span className="text-[11px] text-stone-500 font-medium">Tap to view painting</span>
-                </div>
-                <div className="flex items-center gap-3 overflow-x-auto pb-3 pt-1 scrollbar-none no-scrollbar">
-                  {artworks.map((art) => {
-                    const isCurrent = art.id === activeArtwork.id;
-                    return (
-                      <button
-                        key={art.id}
-                        onClick={() => onSelectArtwork(art)}
-                        className={`shrink-0 flex items-center gap-2.5 p-2 pr-3.5 rounded-2xl border transition-all text-left cursor-pointer ${
-                          isCurrent
-                            ? 'bg-white border-artisan-crimson ring-2 ring-artisan-crimson/20 shadow-md scale-102'
-                            : 'bg-white/70 hover:bg-white border-stone-200 hover:border-stone-400 opacity-80 hover:opacity-100 shadow-2xs'
-                        }`}
-                        title={art.title}
-                      >
-                        <img
-                          src={art.image}
-                          alt={art.title}
-                          className="w-12 h-12 rounded-xl object-cover shrink-0 shadow-2xs"
-                        />
-                        <div className="max-w-[130px]">
-                          <p className={`text-xs font-serif font-bold truncate ${isCurrent ? 'text-artisan-crimson' : 'text-stone-900'}`}>
-                            {art.title}
-                          </p>
-                          <p className="text-[10px] text-stone-500 font-medium">
-                            <span className="font-sans font-semibold mr-0.5">₹</span>{art.price.toLocaleString('en-IN')}
-                          </p>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="mt-6 flex items-center gap-3">
-                <button
-                  onClick={() => setViewOnWall(!viewOnWall)}
-                  className="px-5 py-2.5 rounded-full bg-white/90 hover:bg-white border border-stone-200/80 text-xs font-semibold text-stone-800 shadow-sm flex items-center gap-2 transition-all cursor-pointer"
-                >
-                  <Eye className="w-4 h-4 text-artisan-crimson" />
-                  <span>{viewOnWall ? 'Switch to Artwork Canvas View' : 'View on Collector Living Room Wall'}</span>
-                </button>
-              </div>
             </div>
           </div>
 
