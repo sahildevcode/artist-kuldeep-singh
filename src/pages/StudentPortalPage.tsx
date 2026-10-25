@@ -34,7 +34,7 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
   const { currentUser, deviceId, login, logout, setIsAuthModalOpen, isCourseUnlocked, sessionKickedOutAlert, clearSessionAlert } = useAuth();
   const { addToCart, setIsCheckoutModalOpen } = useCart();
 
-  // Selected Course (persists on reload)
+  // Selected Course (persists on reload, prioritizing enrolled courses or courses with content)
   const [selectedCourseId, setSelectedCourseId] = useState<string>(() => {
     try {
       const saved = localStorage.getItem('ks_student_selected_course');
@@ -42,8 +42,37 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
     } catch (e) {
       console.warn(e);
     }
-    return courses[0]?.id || 'course-oil-mastery';
+    const withContent = courses.find((c) => (c.modules || []).some((m) => (m.lectures || []).length > 0));
+    return withContent?.id || courses[0]?.id || 'course-oil-mastery';
   });
+
+  // Auto-switch to enrolled course or course with lectures if current selected course has 0 lectures
+  useEffect(() => {
+    if (courses.length > 0) {
+      const current = courses.find((c) => c.id === selectedCourseId);
+      const currentLecturesCount = (current?.modules || []).reduce((acc, m) => acc + (m.lectures || []).length, 0);
+      
+      // If student is enrolled in a course, prioritize that course
+      if (currentUser?.email) {
+        const enrolledCourse = courses.find((c) =>
+          isCourseUnlocked(c.id) ||
+          students.some((s) => s.courseId === c.id && s.email.toLowerCase() === currentUser.email.toLowerCase())
+        );
+        if (enrolledCourse && enrolledCourse.id !== selectedCourseId) {
+          setSelectedCourseId(enrolledCourse.id);
+          return;
+        }
+      }
+
+      // Otherwise if current course has no lectures, switch to one that does
+      if (currentLecturesCount === 0) {
+        const courseWithLectures = courses.find((c) => (c.modules || []).some((m) => (m.lectures || []).length > 0));
+        if (courseWithLectures && courseWithLectures.id !== selectedCourseId) {
+          setSelectedCourseId(courseWithLectures.id);
+        }
+      }
+    }
+  }, [courses, currentUser, students]);
 
   useEffect(() => {
     if (selectedCourseId) {
