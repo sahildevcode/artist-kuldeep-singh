@@ -220,6 +220,9 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
               try { localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(merged)); } catch {}
               return merged;
             }
+            if (valid.length < ARTWORKS.length) {
+              return ARTWORKS;
+            }
             return valid;
           }
         }
@@ -371,13 +374,23 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           const cloudArtworks: Artwork[] = await artRes.json();
           if (Array.isArray(cloudArtworks) && isMounted) {
             // Guard: never wipe local data with empty cloud response (cold-start protection)
-            setArtworks((prev) => {
-              if (cloudArtworks.length === 0 && prev.length > 0) return prev;
-              return cloudArtworks;
+                        // Normalize cloud artworks: preserve clean local /images/ paths where available
+            const normalizedArtworks = cloudArtworks.map((cArt) => {
+              const localMatch = ARTWORKS.find((a) => a.id === cArt.id);
+              if (localMatch && cArt.image && cArt.image.startsWith('data:')) {
+                return { ...cArt, image: localMatch.image };
+              }
+              return cArt;
             });
-            if (cloudArtworks.length > 0) {
+
+            setArtworks((prev) => {
+              if (normalizedArtworks.length === 0 && prev.length > 0) return prev;
+              return normalizedArtworks;
+            });
+
+            if (normalizedArtworks.length > 0) {
               try {
-                localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(cloudArtworks));
+                localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(normalizedArtworks));
               } catch {}
             }
           }

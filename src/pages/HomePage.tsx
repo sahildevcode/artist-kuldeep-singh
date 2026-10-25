@@ -19,7 +19,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 }) => {
   const { addToCart } = useCart();
   const { artworks, courses, artistProfile } = useStudioData();
-  const featuredArtworks = artworks.filter((a) => a.featured).slice(0, 4);
+  const featuredArtworks = artworks.filter((a) => a.featured).slice(0, 8);
   const featuredCourses = courses.slice(0, 3);
 
   const heroVideoRef = useRef<HTMLVideoElement>(null);
@@ -136,7 +136,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               size="md"
               className="mt-4 md:mt-0"
             >
-              <span>View All 8 Artworks in Store</span>
+              <span>View All {artworks.length} Artworks in Store</span>
               <ArrowRight className="w-4 h-4 ml-1.5" />
             </MagneticButton>
           </div>
