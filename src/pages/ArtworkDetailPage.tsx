@@ -528,7 +528,7 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
                 </span>
                 <div className="flex items-baseline gap-2.5 mt-0.5">
                   <span className="font-serif font-bold text-3xl text-artisan-crimson">
-                    ₹{inrPrice.toLocaleString('en-IN')}
+                    <span className="font-sans font-semibold mr-0.5">₹</span>{inrPrice.toLocaleString('en-IN')}
                   </span>
                 </div>
               </div>
@@ -730,7 +730,7 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
                     </p>
                     <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
                       <span className="font-serif font-bold text-lg text-artisan-crimson">
-                        ₹{rel.price.toLocaleString('en-IN')}
+                        <span className="font-sans font-semibold mr-0.5">₹</span>{rel.price.toLocaleString('en-IN')}
                       </span>
                       <span className="text-xs font-bold text-stone-800 group-hover:text-artisan-crimson flex items-center gap-1">
                         <span>View Masterwork</span>

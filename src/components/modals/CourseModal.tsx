@@ -120,7 +120,7 @@ export const CourseModal: React.FC<CourseModalProps> = ({ course, onClose }) => 
                   </span>
                 )}
                 <span className="font-serif font-bold text-2xl text-artisan-crimson">
-                  ₹{course.price.toLocaleString('en-IN')}
+                  <span className="font-sans font-semibold mr-0.5">₹</span>{course.price.toLocaleString('en-IN')}
                 </span>
               </div>
               <span className="text-[10px] text-stone-500 block">Lifetime Atelier Access</span>

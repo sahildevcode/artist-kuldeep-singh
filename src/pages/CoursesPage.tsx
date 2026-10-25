@@ -299,7 +299,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoTo
                               </span>
                             )}
                             <span className="font-serif font-bold text-2xl text-artisan-crimson">
-                              ₹{course.price.toLocaleString()}
+                              <span className="font-sans font-semibold mr-0.5">₹</span>{course.price.toLocaleString()}
                             </span>
                           </div>
                         </div>

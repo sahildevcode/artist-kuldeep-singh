@@ -146,7 +146,7 @@ export const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ onNavigate
                       Total Paid
                     </span>
                     <span className="font-serif font-bold text-sm text-artisan-crimson">
-                      ₹{order.totalAmount.toLocaleString('en-IN')}
+                      <span className="font-sans font-semibold mr-0.5">₹</span>{order.totalAmount.toLocaleString('en-IN')}
                     </span>
                   </div>
 

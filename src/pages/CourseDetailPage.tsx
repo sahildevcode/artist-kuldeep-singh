@@ -304,7 +304,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
                       </span>
                     )}
                     <span className="font-serif font-bold text-3xl sm:text-4xl text-artisan-crimson">
-                      ₹{course.price.toLocaleString()}
+                      <span className="font-sans font-semibold mr-0.5">₹</span>{course.price.toLocaleString()}
                     </span>
                   </div>
                   <p className="text-[11px] text-stone-500">

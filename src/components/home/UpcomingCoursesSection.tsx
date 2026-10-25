@@ -176,7 +176,7 @@ export const UpcomingCoursesSection: React.FC = () => {
                         </span>
                       )}
                       <span className="font-serif font-bold text-2xl text-stone-900 dark:text-amber-300">
-                        ₹{course.price.toLocaleString('en-IN')}
+                        <span className="font-sans font-semibold mr-0.5">₹</span>{course.price.toLocaleString('en-IN')}
                       </span>
                     </div>
                   </div>

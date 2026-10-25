@@ -219,3 +219,32 @@
   animation: heroCinematicFade 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: opacity, transform;
 }
+
+/* ============================================================== */
+/* CLEAN STANDARD INDIAN RUPEE SYMBOL (₹, U+20B9) TYPOGRAPHY      */
+/* ============================================================== */
+/* Overrides cursive/distorted serif fonts so ₹ always renders normal, crisp & clean */
+@font-face {
+  font-family: 'Playfair Display';
+  src: local('Plus Jakarta Sans'), local('Inter'), local('system-ui'), local('sans-serif');
+  unicode-range: U+20B9;
+}
+
+@font-face {
+  font-family: 'Playfair Display';
+  font-weight: 600 900;
+  src: local('Plus Jakarta Sans SemiBold'), local('Plus Jakarta Sans Bold'), local('Inter'), local('sans-serif');
+  unicode-range: U+20B9;
+}
+
+@font-face {
+  font-family: 'Syne';
+  src: local('Plus Jakarta Sans'), local('Inter'), local('system-ui'), local('sans-serif');
+  unicode-range: U+20B9;
+}
+
+@font-face {
+  font-family: 'Georgia';
+  src: local('Plus Jakarta Sans'), local('Inter'), local('system-ui'), local('sans-serif');
+  unicode-range: U+20B9;
+}

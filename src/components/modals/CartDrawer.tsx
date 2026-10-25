@@ -307,7 +307,7 @@ export const CartDrawer: React.FC = () => {
                 <div className="pt-2 border-t border-stone-200 flex justify-between text-sm font-bold text-stone-900">
                   <span>Total Amount</span>
                   <span className="text-base text-artisan-crimson font-serif font-bold">
-                    ₹{finalTotal.toLocaleString('en-IN')}
+                    <span className="font-sans font-semibold mr-0.5">₹</span>{finalTotal.toLocaleString('en-IN')}
                   </span>
                 </div>
               </div>

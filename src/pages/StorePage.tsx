@@ -261,7 +261,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
                         </span>
                         <div className="flex items-baseline gap-1.5">
                           <span className="font-serif font-bold text-xl text-stone-900">
-                            ₹{inrPrice.toLocaleString('en-IN')}
+                            <span className="font-sans font-semibold mr-0.5">₹</span>{inrPrice.toLocaleString('en-IN')}
                           </span>
                         </div>
                       </div>

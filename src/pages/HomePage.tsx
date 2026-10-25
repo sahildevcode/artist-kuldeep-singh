@@ -183,7 +183,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     <div>
                       <span className="text-[10px] text-stone-400 block uppercase font-semibold">Price</span>
                       <span className="font-serif font-bold text-lg text-stone-900 dark:text-amber-300">
-                        ₹{art.price.toLocaleString('en-IN')}
+                        <span className="font-sans font-semibold mr-0.5">₹</span>{art.price.toLocaleString('en-IN')}
                       </span>
                     </div>
 
@@ -285,7 +285,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                         </span>
                       )}
                       <span className="font-serif font-bold text-2xl text-artisan-crimson dark:text-red-400">
-                        ₹{course.price.toLocaleString('en-IN')}
+                        <span className="font-sans font-semibold mr-0.5">₹</span>{course.price.toLocaleString('en-IN')}
                       </span>
                     </div>
 

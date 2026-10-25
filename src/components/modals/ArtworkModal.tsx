@@ -476,7 +476,7 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({ artwork: initialArtw
                       </span>
                       <div className="flex items-baseline gap-2">
                         <span className="font-serif font-bold text-2xl text-artisan-crimson">
-                          ₹{inrPrice.toLocaleString('en-IN')}
+                          <span className="font-sans font-semibold mr-0.5">₹</span>{inrPrice.toLocaleString('en-IN')}
                         </span>
                       </div>
                     </div>
@@ -625,7 +625,7 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({ artwork: initialArtw
                         </h4>
                         <div className="flex items-center gap-2 mt-1">
                           <span className="font-serif font-bold text-xs text-artisan-crimson">
-                            ₹{rel.price.toLocaleString('en-IN')}
+                            <span className="font-sans font-semibold mr-0.5">₹</span>{rel.price.toLocaleString('en-IN')}
                           </span>
                           <span className={`text-[9px] font-semibold px-1.5 py-0.2 rounded-full uppercase ${
                             rel.status === 'available' ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-200 text-stone-600'
