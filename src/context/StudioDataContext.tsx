@@ -76,8 +76,8 @@ const DEFAULT_PROFILE: ArtistProfile = {
   heroShowcaseImage: 'https://vz-bb84e70d-4d1.b-cdn.net/c6dd45dc-ae17-4465-a95e-ef3e67c996a6/thumbnail.jpg',
   heroShowcaseVideoUrl: '/videos/hero-cinematic.mp4',
   heroShowcaseCertificateText: 'Archival Certificate',
-  aboutHeroBanner: '/images/artist-hero-banner.png',
-  aboutSection01Image: '/images/buddha-tree-of-life-painting.jpg',
+  aboutHeroBanner: '/images/about-hero-banner-custom.jpg',
+  aboutSection01Image: '/images/about-section-01-custom.jpg',
   aboutSection02Image: '/images/abstract-spiritual-canvas-print.jpg',
   aboutSection03Image: '/images/abstract-woman-leopard-eagle-painting.jpg',
   aboutSection04Image: '/images/abstract-face-contemporary-painting.jpg'
