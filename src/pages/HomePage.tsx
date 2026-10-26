@@ -151,9 +151,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               >
                 <div className="relative aspect-[4/5] overflow-hidden bg-stone-100 dark:bg-stone-800">
                   <img
-                    src={art.image}
-                    alt={art.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    src={art.image} alt={art.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                     <button

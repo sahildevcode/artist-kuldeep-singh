@@ -196,9 +196,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
                   {/* Artwork Canvas Image */}
                   <div className="relative aspect-[4/5] overflow-hidden bg-stone-100">
                     <img
-                      src={art.image}
-                      alt={art.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      src={art.image} alt={art.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                     
                     {/* Hover Quick Action */}

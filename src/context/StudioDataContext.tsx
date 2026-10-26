@@ -382,7 +382,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                         // Normalize cloud artworks: preserve clean local /images/ paths where available
             const normalizedArtworks = cloudArtworks.map((cArt) => {
               const localMatch = ARTWORKS.find((a) => a.id === cArt.id);
-              if (localMatch && cArt.image && cArt.image.startsWith('data:')) {
+              if (localMatch && localMatch.image) {
                 return { ...cArt, image: localMatch.image };
               }
               return cArt;
