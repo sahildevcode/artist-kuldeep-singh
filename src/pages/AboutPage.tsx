@@ -25,10 +25,10 @@ const SHOWCASE_SECTIONS: AboutSectionItem[] = [
     number: '01',
     title: 'ABOUT THE ARTIST',
     paragraphs: [
-      'Kuldeep Singh (b. 1998) is an Indian contemporary visual artist whose work explores the profound relationship between spirituality, human consciousness, and cultural heritage. Rooted in the philosophical traditions of India, his artistic practice moves beyond the visible, transforming painting into a contemplative exploration of existence, identity, and inner awareness.',
-      "He holds a Bachelor of Fine Arts (B.F.A.) from Bundelkhand University and a Master of Fine Arts (M.F.A.) in Painting from Raja Mansingh Tomar Music & Arts University, Gwalior. Drawing upon his academic training and India's rich artistic traditions, Singh has developed a distinctive visual language that brings traditional symbolism into dialogue with contemporary artistic expression."
+      'I am Kuldeep Singh (b. 1998), an Indian contemporary visual artist. My work explores the profound relationship between spirituality, human consciousness, and cultural heritage. Rooted in the philosophical traditions of India, my practice moves beyond the visible, transforming painting into a contemplative exploration of existence, identity, and inner awareness.',
+      "I hold a Bachelor of Fine Arts (B.F.A.) from Bundelkhand University and a Master of Fine Arts (M.F.A.) in Painting from Raja Mansingh Tomar Music & Arts University, Gwalior. Drawing upon my academic training and India's rich artistic traditions, I have developed a distinctive visual language that brings traditional symbolism into dialogue with contemporary expression."
     ],
-    image: '/images/buddha-tree-of-life-painting.jpg',
+    image: '/images/about-section-01-custom.jpg',
     imageAlt: 'Artist Kuldeep Singh creating artwork in studio',
     reverse: false,
     action: 'store',
@@ -39,9 +39,9 @@ const SHOWCASE_SECTIONS: AboutSectionItem[] = [
     number: '02',
     title: 'ARTISTIC VISION & PHILOSOPHY',
     paragraphs: [
-      'For Singh, art is a journey inward—a meeting point between the material world and the unseen dimensions of human consciousness. Inspired by Indian philosophy, spiritual narratives, and ancient symbolism, his work reflects on the nature of the self, the dissolution of ego, and the search for a deeper understanding of existence.',
-      'His signature series, Rahyasya and Beyond the Horizon, explore the tension between worldly attachments and spiritual aspirations. Through evocative imagery and contemplative compositions, these works invite viewers to look beyond appearances and engage with questions of identity, transformation, and inner awakening.',
-      'Working across oil and acrylic painting, charcoal, pen art, watercolour, and traditional Indian rangoli, Singh explores diverse ways of translating philosophical ideas and cultural memories into visual form. His practice brings together expressive mark-making, intricate detail, fluidity, and symbolism in an evolving dialogue between heritage and contemporary art.'
+      'For me, art is a journey inward — a meeting point between the material world and the unseen dimensions of human consciousness. Inspired by Indian philosophy, spiritual narratives, and ancient symbolism, my work reflects on the nature of the self, the dissolution of ego, and the search for a deeper understanding of existence.',
+      'My signature series, Rahyasya and Beyond the Horizon, explore the tension between worldly attachments and spiritual aspirations. Through evocative imagery and contemplative compositions, these works invite viewers to look beyond appearances and engage with questions of identity, transformation, and inner awakening.',
+      'Working across oil , acrylic, charcoal, pen art, watercolour, and traditional Indian rangoli, I explore diverse ways of translating philosophical ideas and cultural memories into visual form. My practice brings together expressive mark-making, intricate detail, fluidity, and symbolism in an evolving dialogue between heritage and contemporary art.'
     ],
     image: '/images/abstract-spiritual-canvas-print.jpg',
     imageAlt: 'Artistic Vision and Spiritual Philosophy Art by Kuldeep Singh',
@@ -54,8 +54,8 @@ const SHOWCASE_SECTIONS: AboutSectionItem[] = [
     number: '03',
     title: 'EXHIBITIONS & INTERNATIONAL PRESENCE',
     paragraphs: [
-      "Singh's artistic journey has connected his practice with art venues and cultural platforms in India and internationally. His exhibition and artistic engagements include AIFACS Art Gallery, New Delhi; State Gallery of Arts, Hyderabad; Kannauj Museum, Uttar Pradesh; Lighthouse Gallery, Puerto Rico; and Tons of Rock, Norway.",
-      'Through these engagements, Singh seeks to contribute to cross-cultural dialogue, bringing perspectives shaped by Indian philosophy and artistic heritage into conversation with diverse audiences.'
+      "My artistic journey has connected my practice with art venues and cultural platforms in India and internationally. My exhibitions and artistic engagements include AIFACS Art Gallery, New Delhi; State Gallery of Arts, Hyderabad; Kannauj Museum, Uttar Pradesh; Lighthouse Gallery, Puerto Rico; and Tons of Rock, Norway.",
+      'Through these engagements, I seek to contribute to cross-cultural dialogue, bringing perspectives shaped by Indian philosophy and artistic heritage into conversation with diverse audiences.'
     ],
     image: '/images/abstract-woman-leopard-eagle-painting.jpg',
     imageAlt: 'Exhibitions and International Presence',
@@ -68,9 +68,9 @@ const SHOWCASE_SECTIONS: AboutSectionItem[] = [
     number: '04',
     title: 'AWARDS, RECOGNITION & CONTINUING JOURNEY',
     paragraphs: [
-      "Singh's artistic achievements include The Kala Gaurav Award and The Raja Ravi Verma Award, along with recognition from the Rajya Lalit Kala Academy.",
-      'His artistic journey continues through creative exploration, exhibitions, live art demonstrations, and collaborative initiatives. Guided by an enduring interest in spirituality, consciousness, and cultural expression, he seeks to create works that encourage reflection beyond the surface of the image.',
-      'For Kuldeep Singh, art is not merely an act of seeing; it is an invitation to feel, question, and discover what lies within.'
+      'My artistic achievements include The Kala Gaurav Award and The Raja Ravi Verma Award, along with recognition from the Rajya Lalit Kala Academy.',
+      'My journey continues through creative exploration, exhibitions, live art demonstrations, and collaborative initiatives. Guided by an enduring interest in spirituality, consciousness, and cultural expression, I seek to create works that encourage reflection beyond the surface of the image.',
+      'For me, art is not merely an act of seeing; it is an invitation to feel, question, and discover what lies within.'
     ],
     image: '/images/abstract-face-contemporary-painting.jpg',
     imageAlt: 'Awards, Recognition & Continuing Journey of Kuldeep Singh',
