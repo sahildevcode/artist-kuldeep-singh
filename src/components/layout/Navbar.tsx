@@ -126,7 +126,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                 }}
                 className="text-left group flex items-center gap-2.5 sm:gap-3.5 focus:outline-none cursor-pointer"
               >
-                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#F0EFEA] border border-stone-200/80 flex items-center justify-center p-1 shadow-md group-hover:scale-105 transition-transform duration-300 overflow-hidden shrink-0">
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-black/40 backdrop-blur-xl border border-white/15 flex items-center justify-center p-1 shadow-md group-hover:scale-105 transition-transform duration-300 overflow-hidden shrink-0">
                   <img
                     src="/images/brand-logo.png"
                     alt="Artist Kuldeep Singh Logo"
@@ -142,7 +142,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
             </div>
 
             {/* Desktop Navigation Links (Compact, Single-Line, Elegant) */}
-            <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 bg-white/90 backdrop-blur-md p-1 rounded-full border border-stone-200/80 shadow-md">
+            <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 bg-black/40 backdrop-blur-xl p-1 rounded-full border border-white/15 shadow-xl">
               {navLinks.map((link) => {
                 const isActive = activePage === link.id;
                 return (
@@ -154,8 +154,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                     }}
                     className={`group relative px-2.5 py-1.5 lg:px-3.5 lg:py-1.5 rounded-full text-[11px] lg:text-xs font-semibold tracking-normal transition-all duration-300 flex items-center gap-1.5 select-none whitespace-nowrap shrink-0 cursor-pointer overflow-hidden ${
                       isActive
-                        ? 'text-white bg-[#1A1816] shadow-md shadow-black/20 ring-1 ring-white/10'
-                        : 'text-stone-700 hover:text-stone-950 hover:bg-stone-100 hover:shadow-[0_4px_16px_rgba(212,175,55,0.25)] hover:-translate-y-0.5 active:translate-y-0'
+                        ? 'text-white bg-white/20 shadow-md ring-1 ring-white/30 backdrop-blur-md'
+                        : 'text-white/80 hover:text-white hover:bg-white/10 hover:shadow-[0_4px_16px_rgba(212,175,55,0.25)] hover:-translate-y-0.5 active:translate-y-0'
                     }`}
                   >
                     {/* Golden Ambient Glow & Shimmer on Hover */}
@@ -189,24 +189,24 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
               <button
                 type="button"
                 onClick={toggleTheme}
-                className="hidden md:flex relative p-2 sm:p-2.5 rounded-full bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-amber-400 transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none cursor-pointer shrink-0 border border-stone-200/60 dark:border-stone-700"
+                className="hidden md:flex relative p-2 sm:p-2.5 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-xl text-stone-200 hover:text-amber-300 transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none cursor-pointer shrink-0 border border-white/15 shadow-sm"
                 aria-label={theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
                 title={theme === 'dark' ? 'Light Theme ☀️ (दिन का मोड)' : 'Dark Theme 🌙 (रात का मोड)'}
               >
                 {theme === 'dark' ? (
                   <Sun className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-amber-400" />
                 ) : (
-                  <Moon className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-stone-700" />
+                  <Moon className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-stone-200" />
                 )}
               </button>
 
               {/* Cart Button: Visible on both Desktop and Mobile */}
               <button
                 onClick={() => setIsCartOpen(true)}
-                className="relative p-2 sm:p-2.5 rounded-full bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-[#1A1816] dark:text-[#FDFBF7] transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none cursor-pointer shrink-0 border border-stone-200/60 dark:border-stone-700"
+                className="relative p-2 sm:p-2.5 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-xl text-white transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none cursor-pointer shrink-0 border border-white/15 shadow-sm"
                 aria-label="Open Cart"
               >
-                <ShoppingBag className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-stone-800 dark:text-stone-200" />
+                <ShoppingBag className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-stone-200" />
                 {totalItems > 0 && (
                   <span className="absolute -top-1 -right-1 bg-artisan-crimson text-white text-[10px] sm:text-[11px] font-bold w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center shadow-md animate-bounce">
                     {totalItems}
@@ -219,14 +219,14 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
                 <div className="hidden md:block relative">
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-1.5 sm:gap-2 p-1 sm:p-1.5 pr-2.5 sm:pr-3 rounded-full bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 transition-colors border border-stone-200 dark:border-stone-700 cursor-pointer whitespace-nowrap"
+                    className="flex items-center gap-1.5 sm:gap-2 p-1 sm:p-1.5 pr-2.5 sm:pr-3 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-xl transition-colors border border-white/15 cursor-pointer whitespace-nowrap text-white"
                   >
                     <img
                       src={currentUser.avatar}
                       alt={currentUser.name}
                       className="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover border border-white shrink-0"
                     />
-                    <span className="text-[11px] sm:text-xs font-semibold text-stone-800 dark:text-stone-200 max-w-[80px] sm:max-w-[90px] truncate">
+                    <span className="text-[11px] sm:text-xs font-semibold text-stone-200 max-w-[80px] sm:max-w-[90px] truncate">
                       {currentUser.name.split(' ')[0]}
                     </span>
                   </button>
@@ -292,9 +292,9 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
               ) : (
                 <button
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="hidden md:flex px-3.5 py-2 text-xs font-semibold tracking-wide text-stone-900 bg-white hover:bg-stone-100 rounded-full transition-all duration-200 shadow-sm hover:shadow-md items-center gap-1.5 active:scale-95 whitespace-nowrap cursor-pointer shrink-0"
+                  className="hidden md:flex px-3.5 py-2 text-xs font-semibold tracking-wide text-white bg-black/40 hover:bg-black/60 backdrop-blur-xl border border-white/20 hover:border-white/40 rounded-full transition-all duration-200 shadow-sm items-center gap-1.5 active:scale-95 whitespace-nowrap cursor-pointer shrink-0"
                 >
-                  <User className="w-3.5 h-3.5 shrink-0" />
+                  <User className="w-3.5 h-3.5 shrink-0 text-white" />
                   <span className="whitespace-nowrap">Sign In</span>
                 </button>
               )}
@@ -345,7 +345,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
         {/* Top Header of Drawer: Monogram + Title + Close Button */}
         <div className="p-5 border-b border-white/10 flex items-center justify-between bg-black/40">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#F0EFEA] border border-stone-200/80 flex items-center justify-center p-1 shadow-md overflow-hidden shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center p-1 shadow-md overflow-hidden shrink-0">
               <img
                 src="/images/brand-logo.png"
                 alt="Artist Kuldeep Logo"
