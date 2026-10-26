@@ -131,7 +131,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
       {/* ------------------------------------------------------------- */}
       {/* 1. HERO ARTIST BANNER (Full 100% Width, Crisp 4K & Natural Aspect Ratio) */}
       {/* ------------------------------------------------------------- */}
-      <section className="relative w-full bg-[#0E0C0A] select-none z-0 pt-16 sm:pt-20">
+      <section className="relative w-full bg-[#0E0C0A] select-none z-0">
         <div className="w-full relative overflow-hidden bg-[#0E0C0A]">
           <img
             ref={heroImgRef}

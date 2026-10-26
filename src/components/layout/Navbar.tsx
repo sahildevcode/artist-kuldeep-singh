@@ -74,11 +74,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-          isScrolled
-            ? 'bg-[#0E0C0A]/95 backdrop-blur-xl border-b border-white/[0.08] shadow-md shadow-black/40'
-            : 'bg-[#0E0C0A]/90 backdrop-blur-md border-b border-white/[0.06]'
-        }`}
+        className="fixed top-0 left-0 right-0 z-40 transition-all duration-300 bg-transparent border-none shadow-none"
       >
         {/* Real-Time Global Broadcast Alert Banner (ONLY for Enrolled Students of this course) */}
         {isUserEnrolledInLiveCourse && (
@@ -146,7 +142,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
             </div>
 
             {/* Desktop Navigation Links (Compact, Single-Line, Elegant) */}
-            <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 bg-white/95 backdrop-blur-md p-1 rounded-full border border-stone-200/80 shadow-md">
+            <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 bg-white/90 backdrop-blur-md p-1 rounded-full border border-stone-200/80 shadow-md">
               {navLinks.map((link) => {
                 const isActive = activePage === link.id;
                 return (
