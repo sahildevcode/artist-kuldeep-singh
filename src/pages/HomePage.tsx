@@ -219,7 +219,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               The Digital Atelier
             </span>
             <h2 className="font-serif text-3xl sm:text-5xl font-bold text-stone-900 dark:text-stone-100 tracking-tight">
-              Master the Craft: Online Académie
+              The Artist's Classroom
             </h2>
             <p className="text-sm text-stone-600 dark:text-stone-300 mt-2 max-w-xl">
               12 years of specialized knowledge distilled into crystal-clear video masterclasses covering Oil Painting, Realistic Sketching, and Color Theory.
