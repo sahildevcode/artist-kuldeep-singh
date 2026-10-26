@@ -158,57 +158,68 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
       {/* 2. EDITORIAL SHOWCASE (ORIGINALS, PRINTS, PROJECTS, EXHIBITIONS) */}
       {/* ------------------------------------------------------------- */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 space-y-20 sm:space-y-32">
-        {SHOWCASE_SECTIONS.map((sec) => (
-          <div
-            key={sec.id}
-            className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center"
-          >
-            {/* Image Column */}
-            <div className={sec.reverse ? 'order-1 md:order-2' : 'order-1 md:order-1'}>
-              <div className="relative aspect-[16/10] sm:aspect-[4/3] rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border border-stone-200/80 group bg-stone-100">
-                <img
-                  src={sec.image}
-                  alt={sec.imageAlt}
-                  loading="lazy"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
+        {SHOWCASE_SECTIONS.map((sec, idx) => {
+          const dynamicImage =
+            idx === 0
+              ? (artistProfile?.aboutSection01Image || sec.image)
+              : idx === 1
+              ? (artistProfile?.aboutSection02Image || sec.image)
+              : idx === 2
+              ? (artistProfile?.aboutSection03Image || sec.image)
+              : (artistProfile?.aboutSection04Image || sec.image);
+
+          return (
+            <div
+              key={sec.id}
+              className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center"
+            >
+              {/* Image Column */}
+              <div className={sec.reverse ? 'order-1 md:order-2' : 'order-1 md:order-1'}>
+                <div className="relative aspect-[16/10] sm:aspect-[4/3] rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border border-stone-200/80 group bg-stone-100">
+                  <img
+                    src={dynamicImage}
+                    alt={sec.imageAlt}
+                    loading="lazy"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Text Column */}
-            <div className={sec.reverse ? 'order-2 md:order-1' : 'order-2 md:order-2'}>
-              <div className="max-w-xl space-y-5">
-                <div className="flex items-center gap-3">
-                  <span className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-artisan-gold tracking-wider">
-                    {sec.number}
-                  </span>
-                  <div className="h-6 w-[1.5px] bg-artisan-gold/40" />
-                  <h2 className="font-serif text-2xl sm:text-3xl lg:text-3xl font-semibold tracking-wider uppercase text-stone-900 dark:text-stone-100">
-                    {sec.title}
-                  </h2>
-                </div>
-
-                <div className="space-y-4 text-stone-600 dark:text-stone-300 text-sm sm:text-base leading-relaxed font-sans font-light">
-                  {sec.paragraphs.map((p, pIdx) => (
-                    <p key={pIdx}>{p}</p>
-                  ))}
-                </div>
-
-                {sec.action && sec.actionText && (
-                  <div className="pt-2">
-                    <button
-                      onClick={() => setActivePage(sec.action as any)}
-                      className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-stone-900 dark:text-stone-100 hover:text-artisan-crimson transition-colors cursor-pointer border-b border-stone-900 dark:border-stone-100 hover:border-artisan-crimson pb-0.5"
-                    >
-                      <span>{sec.actionText}</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
+              {/* Text Column */}
+              <div className={sec.reverse ? 'order-2 md:order-1' : 'order-2 md:order-2'}>
+                <div className="max-w-xl space-y-5">
+                  <div className="flex items-center gap-3">
+                    <span className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-artisan-gold tracking-wider">
+                      {sec.number}
+                    </span>
+                    <div className="h-6 w-[1.5px] bg-artisan-gold/40" />
+                    <h2 className="font-serif text-2xl sm:text-3xl lg:text-3xl font-semibold tracking-wider uppercase text-stone-900 dark:text-stone-100">
+                      {sec.title}
+                    </h2>
                   </div>
-                )}
+
+                  <div className="space-y-4 text-stone-600 dark:text-stone-300 text-sm sm:text-base leading-relaxed font-sans font-light">
+                    {sec.paragraphs.map((p, pIdx) => (
+                      <p key={pIdx}>{p}</p>
+                    ))}
+                  </div>
+
+                  {sec.action && sec.actionText && (
+                    <div className="pt-2">
+                      <button
+                        onClick={() => setActivePage(sec.action as any)}
+                        className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-stone-900 dark:text-stone-100 hover:text-artisan-crimson transition-colors cursor-pointer border-b border-stone-900 dark:border-stone-100 hover:border-artisan-crimson pb-0.5"
+                      >
+                        <span>{sec.actionText}</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </section>
 
       {/* ------------------------------------------------------------- */}
