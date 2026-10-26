@@ -7,47 +7,73 @@ interface AboutPageProps {
   setActivePage: (page: 'home' | 'about' | 'courses' | 'store') => void;
 }
 
-const SHOWCASE_SECTIONS = [
+interface AboutSectionItem {
+  id: string;
+  number: string;
+  title: string;
+  paragraphs: string[];
+  image: string;
+  imageAlt: string;
+  reverse: boolean;
+  action?: 'store' | null;
+  actionText?: string | null;
+}
+
+const SHOWCASE_SECTIONS: AboutSectionItem[] = [
   {
-    id: 'originals',
-    title: 'Originals',
-    description:
-      'One-of-one artworks created by Artist Kuldeep Singh. Each original painting is a unique expression of story, culture, and craftsmanship created entirely by hand and available to collectors seeking a singular piece of art.',
+    id: 'about-the-artist',
+    number: '01',
+    title: 'ABOUT THE ARTIST',
+    paragraphs: [
+      'Kuldeep Singh (b. 1998) is an Indian contemporary visual artist whose work explores the profound relationship between spirituality, human consciousness, and cultural heritage. Rooted in the philosophical traditions of India, his artistic practice moves beyond the visible, transforming painting into a contemplative exploration of existence, identity, and inner awareness.',
+      "He holds a Bachelor of Fine Arts (B.F.A.) from Bundelkhand University and a Master of Fine Arts (M.F.A.) in Painting from Raja Mansingh Tomar Music & Arts University, Gwalior. Drawing upon his academic training and India's rich artistic traditions, Singh has developed a distinctive visual language that brings traditional symbolism into dialogue with contemporary artistic expression."
+    ],
     image: '/images/buddha-tree-of-life-painting.jpg',
-    imageAlt: 'Artist Kuldeep Singh creating an original painting in studio',
+    imageAlt: 'Artist Kuldeep Singh creating artwork in studio',
     reverse: false,
     action: 'store',
-    actionText: 'Explore Originals',
+    actionText: 'Explore Collection',
   },
   {
-    id: 'prints',
-    title: 'Prints',
-    description:
-      "These limited-edition prints make Artist Kuldeep Singh's work accessible while preserving the richness, detail, and emotion of the original piece.",
+    id: 'artistic-vision',
+    number: '02',
+    title: 'ARTISTIC VISION & PHILOSOPHY',
+    paragraphs: [
+      'For Singh, art is a journey inward—a meeting point between the material world and the unseen dimensions of human consciousness. Inspired by Indian philosophy, spiritual narratives, and ancient symbolism, his work reflects on the nature of the self, the dissolution of ego, and the search for a deeper understanding of existence.',
+      'His signature series, Rahyasya and Beyond the Horizon, explore the tension between worldly attachments and spiritual aspirations. Through evocative imagery and contemplative compositions, these works invite viewers to look beyond appearances and engage with questions of identity, transformation, and inner awakening.',
+      'Working across oil and acrylic painting, charcoal, pen art, watercolour, and traditional Indian rangoli, Singh explores diverse ways of translating philosophical ideas and cultural memories into visual form. His practice brings together expressive mark-making, intricate detail, fluidity, and symbolism in an evolving dialogue between heritage and contemporary art.'
+    ],
     image: '/images/abstract-spiritual-canvas-print.jpg',
-    imageAlt: 'Limited edition archival art print framed in architectural space',
+    imageAlt: 'Artistic Vision and Spiritual Philosophy Art by Kuldeep Singh',
     reverse: true,
-    action: 'store',
-    actionText: 'Browse Fine Art Prints',
+    action: null,
+    actionText: null,
   },
   {
-    id: 'projects',
-    title: 'Projects',
-    description:
-      'From luxury brand collaborations and immersive installations to custom commissions and experiential spaces, discover how art transforms environments, products, and cultural conversations.',
+    id: 'exhibitions-presence',
+    number: '03',
+    title: 'EXHIBITIONS & INTERNATIONAL PRESENCE',
+    paragraphs: [
+      "Singh's artistic journey has connected his practice with art venues and cultural platforms in India and internationally. His exhibition and artistic engagements include AIFACS Art Gallery, New Delhi; State Gallery of Arts, Hyderabad; Kannauj Museum, Uttar Pradesh; Lighthouse Gallery, Puerto Rico; and Tons of Rock, Norway.",
+      'Through these engagements, Singh seeks to contribute to cross-cultural dialogue, bringing perspectives shaped by Indian philosophy and artistic heritage into conversation with diverse audiences.'
+    ],
     image: '/images/abstract-woman-leopard-eagle-painting.jpg',
-    imageAlt: 'Curated artistic projects and architectural installations',
+    imageAlt: 'Exhibitions and International Presence',
     reverse: false,
     action: null,
     actionText: null,
   },
   {
-    id: 'exhibitions',
-    title: 'Exhibitions',
-    description:
-      "A showcase of exhibitions, gallery presentations, and curated experiences that bring Artist Kuldeep Singh's artistic vision to life and invite viewers into his world of storytelling.",
+    id: 'awards-recognition',
+    number: '04',
+    title: 'AWARDS, RECOGNITION & CONTINUING JOURNEY',
+    paragraphs: [
+      "Singh's artistic achievements include The Kala Gaurav Award and The Raja Ravi Verma Award, along with recognition from the Rajya Lalit Kala Academy.",
+      'His artistic journey continues through creative exploration, exhibitions, live art demonstrations, and collaborative initiatives. Guided by an enduring interest in spirituality, consciousness, and cultural expression, he seeks to create works that encourage reflection beyond the surface of the image.',
+      'For Kuldeep Singh, art is not merely an act of seeing; it is an invitation to feel, question, and discover what lies within.'
+    ],
     image: '/images/abstract-face-contemporary-painting.jpg',
-    imageAlt: 'Curated gallery exhibition with art collectors',
+    imageAlt: 'Awards, Recognition & Continuing Journey of Kuldeep Singh',
     reverse: true,
     action: null,
     actionText: null,
@@ -103,22 +129,23 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
   return (
     <div className="relative w-full min-h-screen">
       {/* ------------------------------------------------------------- */}
-      {/* 1. HERO ARTIST IMAGE (Sticky Top: Works on Mobile & Desktop)   */}
+      {/* 1. HERO ARTIST BANNER (Full Visual, Perfectly Framed & Responsive) */}
       {/* ------------------------------------------------------------- */}
-      <section className="relative w-full h-screen min-h-screen overflow-hidden bg-[#0E0C0A] select-none z-0">
-        {/* Sharp High-Res Portrait - Smooth Cinematic Fade-In, perfectly centered on face */}
-        <img
-          ref={heroImgRef}
-          src="/images/artist-kuldeep-singh.jpg"
-          alt="Artist Kuldeep Singh"
-          onLoad={() => setIsHeroLoaded(true)}
-          className={`w-full h-full object-cover object-[center_35%] sm:object-[center_30%] animate-hero-fade transition-opacity duration-1000 ease-out ${
-            isHeroLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
-        />
-
-        {/* Subtle top & bottom atmospheric vignette */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 pointer-events-none" />
+      <section className="relative w-full bg-[#0E0C0A] select-none z-0 pt-20 sm:pt-24 pb-4 flex items-center justify-center">
+        {/* Full Visible Cinematic Artist Banner */}
+        <div className="w-full max-w-[1500px] mx-auto px-2 sm:px-4 md:px-6">
+          <div className="relative w-full overflow-hidden rounded-2xl sm:rounded-3xl border border-white/10 shadow-2xl bg-black">
+            <img
+              ref={heroImgRef}
+              src="/images/artist-hero-banner.png"
+              alt="Artist Kuldeep Singh — Official Atelier Banner"
+              onLoad={() => setIsHeroLoaded(true)}
+              className={`w-full h-auto object-contain max-h-[85vh] mx-auto animate-hero-fade transition-opacity duration-700 ease-out ${
+                isHeroLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+          </div>
+        </div>
       </section>
 
       {/* ------------------------------------------------------------- */}
@@ -149,18 +176,28 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
 
             {/* Text Column */}
             <div className={sec.reverse ? 'order-2 md:order-1' : 'order-2 md:order-2'}>
-              <div className="max-w-lg space-y-4">
-                <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-stone-900 tracking-tight">
-                  {sec.title}
-                </h2>
-                <p className="text-stone-600 text-sm sm:text-base leading-relaxed font-sans">
-                  {sec.description}
-                </p>
+              <div className="max-w-xl space-y-5">
+                <div className="flex items-center gap-3">
+                  <span className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-artisan-gold tracking-wider">
+                    {sec.number}
+                  </span>
+                  <div className="h-6 w-[1.5px] bg-artisan-gold/40" />
+                  <h2 className="font-serif text-2xl sm:text-3xl lg:text-3xl font-semibold tracking-wider uppercase text-stone-900 dark:text-stone-100">
+                    {sec.title}
+                  </h2>
+                </div>
+
+                <div className="space-y-4 text-stone-600 dark:text-stone-300 text-sm sm:text-base leading-relaxed font-sans font-light">
+                  {sec.paragraphs.map((p, pIdx) => (
+                    <p key={pIdx}>{p}</p>
+                  ))}
+                </div>
+
                 {sec.action && sec.actionText && (
                   <div className="pt-2">
                     <button
                       onClick={() => setActivePage(sec.action as any)}
-                      className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-stone-900 hover:text-artisan-crimson transition-colors cursor-pointer border-b border-stone-900 hover:border-artisan-crimson pb-0.5"
+                      className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-stone-900 dark:text-stone-100 hover:text-artisan-crimson transition-colors cursor-pointer border-b border-stone-900 dark:border-stone-100 hover:border-artisan-crimson pb-0.5"
                     >
                       <span>{sec.actionText}</span>
                       <ArrowRight className="w-3.5 h-3.5" />
