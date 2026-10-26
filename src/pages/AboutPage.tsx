@@ -129,20 +129,21 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
   return (
     <div className="relative w-full min-h-screen">
       {/* ------------------------------------------------------------- */}
-      {/* 1. HERO ARTIST BANNER (Full 100% Width & Height Screen Cover)   */}
+      {/* 1. HERO ARTIST BANNER (Full 100% Width, Crisp 4K & Natural Aspect Ratio) */}
       {/* ------------------------------------------------------------- */}
-      <section className="relative w-full h-screen min-h-screen overflow-hidden bg-[#0E0C0A] select-none z-0">
-        <img
-          ref={heroImgRef}
-          src="/images/artist-hero-banner.png"
-          alt="Artist Kuldeep Singh — Official Atelier Banner"
-          onLoad={() => setIsHeroLoaded(true)}
-          className={`w-full h-full object-cover object-center animate-hero-fade transition-opacity duration-1000 ease-out ${
-            isHeroLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
-        />
-        {/* Subtle cinematic gradient vignette */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60 pointer-events-none" />
+      <section className="relative w-full bg-[#0E0C0A] select-none z-0 pt-16 sm:pt-20">
+        <div className="w-full relative overflow-hidden bg-[#0E0C0A]">
+          <img
+            ref={heroImgRef}
+            src="/images/artist-hero-banner.png"
+            alt="Artist Kuldeep Singh — Official Atelier Banner"
+            onLoad={() => setIsHeroLoaded(true)}
+            className={`w-full h-auto block select-none animate-hero-fade transition-opacity duration-700 ease-out ${
+              isHeroLoaded ? 'opacity-100' : 'opacity-0'
+            }`}
+            style={{ imageRendering: 'auto' }}
+          />
+        </div>
       </section>
 
       {/* ------------------------------------------------------------- */}
