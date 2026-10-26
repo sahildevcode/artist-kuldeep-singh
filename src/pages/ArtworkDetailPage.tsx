@@ -29,6 +29,35 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
 
   const [viewOnWall, setViewOnWall] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [fullDetailImages, setFullDetailImages] = useState<string[]>([]);
+  
+
+  // Lazy-load multi-photo detail shots on demand when opening this artwork
+  useEffect(() => {
+    if (!activeArtwork?.id) return;
+    if (activeArtwork.detailImages && activeArtwork.detailImages.length > 0) {
+      setFullDetailImages(activeArtwork.detailImages);
+      return;
+    }
+    // Fetch full single artwork from backend
+    let isCancelled = false;
+    
+    fetch(`https://kuldeep-singh-backend-nehy.onrender.com/api/artworks/${activeArtwork.id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!isCancelled && data && Array.isArray(data.detailImages)) {
+          setFullDetailImages(data.detailImages);
+        }
+      })
+      .catch((err) => console.warn('Could not load extra angles:', err))
+      .finally(() => {
+        
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [activeArtwork?.id]);
 
   // Fullscreen Texture Zoom Lightbox
   const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
@@ -437,7 +466,7 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
 
                   {/* Multi-Photo Gallery for THIS Painting (Uploaded from Admin) */}
                   {(() => {
-                    const allPhotos = [activeArtwork.image, ...(activeArtwork.detailImages || [])].filter(Boolean);
+                    const allPhotos = [activeArtwork.image, ...(fullDetailImages.length > 0 ? fullDetailImages : (activeArtwork.detailImages || []))].filter(Boolean);
                     if (allPhotos.length <= 1) return null;
                     return (
                       <div className="w-full mt-5 p-4 rounded-2xl bg-white border border-stone-200/90 shadow-xs">
