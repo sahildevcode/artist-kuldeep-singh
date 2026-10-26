@@ -574,7 +574,11 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
               updatedAt: data.updatedAt
             });
           } else if (type === 'PROFILE_UPDATED' && data) {
-            setArtistProfile((prev) => ({ ...prev, ...data }));
+            setArtistProfile((prev) => {
+            const updated = { ...prev, ...data };
+            try { localStorage.setItem('kuldeep_studio_profile', JSON.stringify(updated)); } catch {}
+            return updated;
+          });
           } else if (type === 'UPCOMING_COURSE_CREATED' && data) {
             setUpcomingCourses((prev) => [data, ...prev.filter((c) => c.id !== data.id)]);
           } else if (type === 'UPCOMING_COURSE_UPDATED' && data?.id) {

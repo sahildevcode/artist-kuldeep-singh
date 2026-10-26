@@ -175,7 +175,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
             >
               {/* Image Column */}
               <div className={sec.reverse ? 'order-1 md:order-2' : 'order-1 md:order-1'}>
-                <div className="relative aspect-[16/10] sm:aspect-[4/3] rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border border-stone-200/80 group bg-stone-100">
+                <div className="relative aspect-[3/4] sm:aspect-[4/5] max-h-[580px] rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border border-stone-200/80 group bg-stone-100 flex items-center justify-center">
                   <img
                     src={dynamicImage}
                     alt={sec.imageAlt}
