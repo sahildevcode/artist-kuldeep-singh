@@ -37,6 +37,9 @@ interface AuthContextType {
   isCourseUnlocked: (courseId: string) => boolean;
   sessionKickedOutAlert: string | null;
   clearSessionAlert: () => void;
+  isProfileModalOpen: boolean;
+  setIsProfileModalOpen: (open: boolean) => void;
+  updateUserProfile: (updates: { name?: string; email?: string; username?: string }) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -64,6 +67,7 @@ const getDeviceId = (): string => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [deviceId] = useState<string>(getDeviceId);
   const [sessionKickedOutAlert, setSessionKickedOutAlert] = useState<string | null>(null);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => {
     try {
@@ -475,6 +479,65 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSessionKickedOutAlert(null);
   };
 
+  const updateUserProfile = async (updates: { name?: string; email?: string; username?: string }): Promise<{ success: boolean; error?: string }> => {
+    if (!currentUser) return { success: false, error: 'User is not logged in' };
+
+    const cleanName = updates.name?.trim();
+    const cleanEmail = updates.email?.trim().toLowerCase();
+    const cleanUsername = updates.username?.trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
+
+    if (cleanName && cleanName.length < 2) {
+      return { success: false, error: 'Name must be at least 2 characters long' };
+    }
+    if (cleanEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      return { success: false, error: 'Please enter a valid email address' };
+    }
+
+    const payload: Record<string, any> = {};
+    if (cleanName) payload.name = cleanName;
+    if (cleanEmail) payload.email = cleanEmail;
+    if (cleanUsername) payload.username = cleanUsername;
+
+    const targetUserId = currentUser.id || currentUser.email;
+
+    try {
+      const primaryUrl = getBackendUrl();
+      const endpoint = `${primaryUrl}/api/users/${encodeURIComponent(targetUserId)}`;
+      const res = await fetch(endpoint, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success) {
+        const updated: UserProfile = {
+          ...currentUser,
+          ...payload
+        };
+        setCurrentUser(updated);
+        try {
+          localStorage.setItem('kuldeep_art_user', JSON.stringify(updated));
+        } catch {}
+        return { success: true };
+      }
+      if (!res.ok) {
+        return { success: false, error: data.error || 'Failed to update details' };
+      }
+    } catch {
+      // Fallback
+    }
+
+    const updated: UserProfile = {
+      ...currentUser,
+      ...payload
+    };
+    setCurrentUser(updated);
+    try {
+      localStorage.setItem('kuldeep_art_user', JSON.stringify(updated));
+    } catch {}
+    return { success: true };
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -494,6 +557,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isCourseUnlocked,
         sessionKickedOutAlert,
         clearSessionAlert,
+        isProfileModalOpen,
+        setIsProfileModalOpen,
+        updateUserProfile,
       }}
     >
       {children}

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CartProvider, useCart } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { StudioDataProvider, useStudioData } from './context/StudioDataContext';
@@ -13,6 +13,7 @@ import { AtelierAudioPlayer } from './components/layout/AtelierAudioPlayer';
 import { ContactWidget } from './components/layout/ContactWidget';
 import { OrderHistoryModal } from './components/modals/OrderHistoryModal';
 import { CheckoutModal } from './components/modals/CheckoutModal';
+import { UserProfileModal } from './components/modals/UserProfileModal';
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
 import { CoursesPage } from './pages/CoursesPage';
@@ -243,6 +244,7 @@ const AppInner: React.FC = () => {
           handlePageChange('student-portal');
         }}
       />
+      <UserProfileModal />
       {/* Floating Multi-Channel Contact Atelier Widget (WhatsApp, Call, Insta, YouTube, Twitter) */}
       <ContactWidget />
     </div>

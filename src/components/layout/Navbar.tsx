@@ -13,7 +13,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => {
   const { totalItems, setIsCartOpen, orders, setIsOrderHistoryOpen } = useCart();
-  const { currentUser, setIsAuthModalOpen, logout } = useAuth();
+  const { currentUser, setIsAuthModalOpen, logout, setIsProfileModalOpen } = useAuth();
   const { liveStatus } = useStudioData();
   const { theme, toggleTheme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -222,16 +222,12 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
               {currentUser ? (
                 <div className="hidden md:block relative">
                   <button
-                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-1.5 sm:gap-2 p-1 sm:p-1.5 pr-2.5 sm:pr-3 rounded-full bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 transition-colors border border-stone-200 dark:border-stone-700 cursor-pointer whitespace-nowrap"
+                    onClick={() => setIsProfileModalOpen(true)}
+                    title="Account Details (Name and Email)"
+                    className="flex items-center justify-center px-4 py-1.5 rounded-full bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 hover:border-artisan-gold/60 transition-all border border-stone-200 dark:border-stone-700 cursor-pointer whitespace-nowrap group shadow-sm"
                   >
-                    <img
-                      src={currentUser.avatar}
-                      alt={currentUser.name}
-                      className="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover border border-white shrink-0"
-                    />
-                    <span className="text-[11px] sm:text-xs font-semibold text-stone-800 dark:text-stone-200 max-w-[80px] sm:max-w-[90px] truncate">
-                      {currentUser.name.split(' ')[0]}
+                    <span className="text-xs font-semibold text-stone-800 dark:text-stone-200 max-w-[120px] truncate group-hover:text-artisan-gold transition-colors">
+                      {currentUser.name ? currentUser.name.split(' ')[0] : 'Account'}
                     </span>
                   </button>
 
@@ -380,17 +376,18 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, setActivePage }) => 
           {/* User Profile Card (if logged in) or Sign In Button */}
           {currentUser ? (
             <div className="p-3.5 rounded-2xl bg-white/[0.06] border border-white/10 space-y-3">
-              <div className="flex items-center gap-3">
-                <img
-                  src={currentUser.avatar}
-                  alt={currentUser.name}
-                  className="w-10 h-10 rounded-full object-cover border border-artisan-gold/50 shrink-0"
-                />
+              <div 
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setIsProfileModalOpen(true);
+                }}
+                className="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] transition-colors cursor-pointer group"
+              >
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-bold text-white truncate">{currentUser.name}</p>
-                  <p className="text-[10px] text-artisan-gold capitalize flex items-center gap-1">
+                  <p className="text-xs font-bold text-white group-hover:text-artisan-gold transition-colors truncate">{currentUser.name}</p>
+                  <p className="text-[10px] text-artisan-gold capitalize flex items-center gap-1 mt-0.5">
                     <Sparkles className="w-2.5 h-2.5" />
-                    {currentUser.role} Account
+                    {currentUser.role} Account • Edit Details
                   </p>
                 </div>
               </div>
