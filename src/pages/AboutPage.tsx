@@ -113,11 +113,39 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [isHeroLoaded, setIsHeroLoaded] = useState(false);
   const heroImgRef = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (heroImgRef.current && heroImgRef.current.complete) {
       setIsHeroLoaded(true);
     }
+  }, []);
+
+  // IntersectionObserver for 60FPS scroll-triggered animations
+  useEffect(() => {
+    const rootEl = containerRef.current;
+    if (!rootEl) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-revealed');
+          }
+        });
+      },
+      {
+        threshold: 0.12,
+        rootMargin: '0px 0px -40px 0px',
+      }
+    );
+
+    const elements = rootEl.querySelectorAll('.scroll-reveal');
+    elements.forEach((el) => observer.observe(el));
+
+    return () => {
+      observer.disconnect();
+    };
   }, []);
 
   const toggleFaq = (idx: number) => {
@@ -127,11 +155,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
   const awardsList = Array.isArray(awards) ? awards : [];
 
   return (
-    <div className="relative w-full min-h-screen">
+    <div ref={containerRef} className="relative w-full min-h-screen">
       {/* ------------------------------------------------------------- */}
       {/* 1. HERO ARTIST BANNER (Full 100% Width, Responsive Portrait for Mobile & Landscape for Desktop) */}
       {/* ------------------------------------------------------------- */}
-      <section className="relative w-full bg-[#0E0C0A] select-none z-0 pt-16 sm:pt-20">
+      <section className="relative w-full bg-[#0E0C0A] select-none z-0 pt-16 sm:pt-20 overflow-hidden">
         <div className="w-full relative overflow-hidden bg-[#0E0C0A]">
           <picture className="w-full block">
             <source media="(max-width: 639px)" srcSet="/images/artist-hero-banner-mobile.png" />
@@ -140,7 +168,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
               src={artistProfile?.aboutHeroBanner || "/images/artist-hero-banner.png"}
               alt="Artist Kuldeep Singh — Official Atelier Banner"
               onLoad={() => setIsHeroLoaded(true)}
-              className={`w-full h-auto block select-none animate-hero-fade transition-opacity duration-700 ease-out ${
+              className={`w-full h-auto block select-none animate-hero-fade animate-hero-zoom transition-all duration-1000 ease-out ${
                 isHeroLoaded ? 'opacity-100' : 'opacity-0'
               }`}
               style={{ imageRendering: 'auto' }}
@@ -174,19 +202,19 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
               className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center"
             >
               {/* Image Column */}
-              <div className={sec.reverse ? 'order-1 md:order-2' : 'order-1 md:order-1'}>
-                <div className="relative aspect-[3/4] sm:aspect-[4/5] max-h-[580px] rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border border-stone-200/80 group bg-stone-100 flex items-center justify-center">
+              <div className={`${sec.reverse ? 'order-1 md:order-2' : 'order-1 md:order-1'} scroll-reveal`}>
+                <div className="relative aspect-[3/4] sm:aspect-[4/5] max-h-[580px] rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border border-stone-200/80 group bg-stone-100 flex items-center justify-center gallery-card-hover">
                   <img
                     src={dynamicImage}
                     alt={sec.imageAlt}
                     loading="lazy"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
                 </div>
               </div>
 
               {/* Text Column */}
-              <div className={sec.reverse ? 'order-2 md:order-1' : 'order-2 md:order-2'}>
+              <div className={`${sec.reverse ? 'order-2 md:order-1' : 'order-2 md:order-2'} scroll-reveal scroll-reveal-delay-1`}>
                 <div className="max-w-xl space-y-5">
                   <div className="flex items-center gap-3">
                     <span className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-artisan-gold tracking-wider">
@@ -225,7 +253,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
       {/* ------------------------------------------------------------- */}
       {/* 3. FAQS SECTION */}
       {/* ------------------------------------------------------------- */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 scroll-reveal">
         <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-stone-900 text-center mb-10 sm:mb-14 tracking-tight">
           FAQs
         </h2>
@@ -264,7 +292,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
       {/* ------------------------------------------------------------- */}
       {/* 4. AWARDS & INSTITUTIONAL RECOGNITION */}
       {/* ------------------------------------------------------------- */}
-      <section className="py-20 bg-stone-100/60 border-y border-stone-200/80">
+      <section className="py-20 bg-stone-100/60 border-y border-stone-200/80 scroll-reveal">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-xl mx-auto mb-16 space-y-2">
             <span className="text-xs font-bold uppercase tracking-[0.2em] text-artisan-gold">
@@ -279,7 +307,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
             {awardsList.map((award, idx) => (
               <div
                 key={idx}
-                className="p-6 bg-white rounded-3xl border border-stone-200 shadow-sm flex flex-col justify-between space-y-4 hover:-translate-y-1 transition-transform duration-300"
+                className="p-6 bg-white rounded-3xl border border-stone-200 shadow-sm flex flex-col justify-between space-y-4 hover:-translate-y-1 transition-transform duration-300 gallery-card-hover"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-artisan-crimson">{award.year}</span>
@@ -308,7 +336,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
       {/* ------------------------------------------------------------- */}
       {/* 5. MATERIALS & ATELIER CRAFT */}
       {/* ------------------------------------------------------------- */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 scroll-reveal">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-6 space-y-6">
             <span className="text-xs font-bold uppercase tracking-[0.2em] text-artisan-crimson">
@@ -362,12 +390,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
               <img
                 src="/images/krishna-god-traditional-painting.jpg"
                 alt="Pigment mixing"
-                className="rounded-3xl aspect-[4/5] object-cover shadow-lg border border-stone-200"
+                className="rounded-3xl aspect-[4/5] object-cover shadow-lg border border-stone-200 transition-transform duration-700 hover:scale-105"
               />
               <img
                 src="/images/abstract-woman-leopard-eagle-painting.jpg"
                 alt="Studio drawing"
-                className="rounded-3xl aspect-[4/5] object-cover shadow-lg border border-stone-200 mt-8"
+                className="rounded-3xl aspect-[4/5] object-cover shadow-lg border border-stone-200 mt-8 transition-transform duration-700 hover:scale-105"
               />
             </div>
           </div>
