@@ -129,23 +129,20 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
   return (
     <div className="relative w-full min-h-screen">
       {/* ------------------------------------------------------------- */}
-      {/* 1. HERO ARTIST BANNER (Full Visual, Perfectly Framed & Responsive) */}
+      {/* 1. HERO ARTIST BANNER (Full 100% Width & Height Screen Cover)   */}
       {/* ------------------------------------------------------------- */}
-      <section className="relative w-full bg-[#0E0C0A] select-none z-0 pt-20 sm:pt-24 pb-4 flex items-center justify-center">
-        {/* Full Visible Cinematic Artist Banner */}
-        <div className="w-full max-w-[1500px] mx-auto px-2 sm:px-4 md:px-6">
-          <div className="relative w-full overflow-hidden rounded-2xl sm:rounded-3xl border border-white/10 shadow-2xl bg-black">
-            <img
-              ref={heroImgRef}
-              src="/images/artist-hero-banner.png"
-              alt="Artist Kuldeep Singh — Official Atelier Banner"
-              onLoad={() => setIsHeroLoaded(true)}
-              className={`w-full h-auto object-contain max-h-[85vh] mx-auto animate-hero-fade transition-opacity duration-700 ease-out ${
-                isHeroLoaded ? 'opacity-100' : 'opacity-0'
-              }`}
-            />
-          </div>
-        </div>
+      <section className="relative w-full h-screen min-h-screen overflow-hidden bg-[#0E0C0A] select-none z-0">
+        <img
+          ref={heroImgRef}
+          src="/images/artist-hero-banner.png"
+          alt="Artist Kuldeep Singh — Official Atelier Banner"
+          onLoad={() => setIsHeroLoaded(true)}
+          className={`w-full h-full object-cover object-center animate-hero-fade transition-opacity duration-1000 ease-out ${
+            isHeroLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
+        {/* Subtle cinematic gradient vignette */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60 pointer-events-none" />
       </section>
 
       {/* ------------------------------------------------------------- */}
