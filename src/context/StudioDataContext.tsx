@@ -75,7 +75,12 @@ const DEFAULT_PROFILE: ArtistProfile = {
   heroShowcasePrice: '₹4,12,250',
   heroShowcaseImage: 'https://vz-bb84e70d-4d1.b-cdn.net/c6dd45dc-ae17-4465-a95e-ef3e67c996a6/thumbnail.jpg',
   heroShowcaseVideoUrl: '/videos/hero-cinematic.mp4',
-  heroShowcaseCertificateText: 'Archival Certificate'
+  heroShowcaseCertificateText: 'Archival Certificate',
+  aboutHeroBanner: '/images/artist-hero-banner.png',
+  aboutSection01Image: '/images/buddha-tree-of-life-painting.jpg',
+  aboutSection02Image: '/images/abstract-spiritual-canvas-print.jpg',
+  aboutSection03Image: '/images/abstract-woman-leopard-eagle-painting.jpg',
+  aboutSection04Image: '/images/abstract-face-contemporary-painting.jpg'
 };
 
 const INITIAL_STUDENTS: EnrolledStudent[] = [];
@@ -591,67 +596,19 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       // fallback to polling
     }
 
-    // Smart Eco-Sync Polling (Saves 80%+ Bandwidth, Pauses when tab is hidden or phone locked)
-    let syncInterval: any = null;
-    let idleTimer: any = null;
-    let isUserIdle = false;
-
-    const startSync = () => {
-      if (syncInterval) clearInterval(syncInterval);
-      syncInterval = setInterval(() => {
-        if (!document.hidden && !isUserIdle) {
-          fetchAllCloudData();
-        }
-      }, 4000);
-    };
-
-    const stopSync = () => {
-      if (syncInterval) {
-        clearInterval(syncInterval);
-        syncInterval = null;
-      }
-    };
-
-    const handleUserActivity = () => {
-      if (isUserIdle) {
-        isUserIdle = false;
-        if (!document.hidden) {
-          fetchAllCloudData();
-          startSync();
-        }
-      }
-      if (idleTimer) clearTimeout(idleTimer);
-      // Mark idle after 3 minutes of no interaction
-      idleTimer = setTimeout(() => {
-        isUserIdle = true;
-        stopSync();
-      }, 180000);
-    };
-
+    // Smart Zero-Poll Sync (Zero repetitive polling intervals - saves 100% idle bandwidth on Render)
     const handleVisibilityChange = () => {
-      if (document.hidden) {
-        stopSync();
-      } else {
-        isUserIdle = false;
+      if (!document.hidden) {
         fetchAllCloudData();
-        startSync();
       }
     };
 
     const onFocus = () => {
-      isUserIdle = false;
       fetchAllCloudData();
-      startSync();
     };
-
-    startSync();
-    handleUserActivity();
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('focus', onFocus);
-    window.addEventListener('mousemove', handleUserActivity, { passive: true });
-    window.addEventListener('touchstart', handleUserActivity, { passive: true });
-    window.addEventListener('scroll', handleUserActivity, { passive: true });
 
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'kuldeep_studio_courses' && e.newValue) {
@@ -689,14 +646,9 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     return () => {
       isMounted = false;
-      stopSync();
-      if (idleTimer) clearTimeout(idleTimer);
       if (eventSource) eventSource.close();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('focus', onFocus);
-      window.removeEventListener('mousemove', handleUserActivity);
-      window.removeEventListener('touchstart', handleUserActivity);
-      window.removeEventListener('scroll', handleUserActivity);
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);

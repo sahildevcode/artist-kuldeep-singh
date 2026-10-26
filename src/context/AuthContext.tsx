@@ -131,10 +131,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
 
-    const interval = setInterval(validateCurrentSession, 12000);
+    validateCurrentSession();
+
+    const onVisible = () => {
+      if (!document.hidden) validateCurrentSession();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+
     return () => {
       isMounted = false;
-      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
     };
   }, [currentUser?.email, currentUser?.sessionToken, deviceId]);
 

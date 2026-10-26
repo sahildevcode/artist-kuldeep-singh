@@ -233,7 +233,7 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
     };
 
     checkHeartbeat();
-    const interval = setInterval(checkHeartbeat, 10000);
+    const interval = setInterval(checkHeartbeat, 30000);
 
     const onVisible = () => {
       if (!document.hidden) checkHeartbeat();

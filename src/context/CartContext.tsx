@@ -268,10 +268,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     fetchBackendOrders();
-    const interval = setInterval(fetchBackendOrders, 2500);
     return () => {
       isMounted = false;
-      clearInterval(interval);
     };
   }, []);
 

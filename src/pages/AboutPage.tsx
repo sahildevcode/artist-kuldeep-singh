@@ -109,7 +109,7 @@ const FAQS = [
 ];
 
 export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
-  const { awards } = useStudioData();
+  const { awards, artistProfile } = useStudioData();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [isHeroLoaded, setIsHeroLoaded] = useState(false);
   const heroImgRef = useRef<HTMLImageElement>(null);
@@ -137,7 +137,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
             <source media="(max-width: 639px)" srcSet="/images/artist-hero-banner-mobile.png" />
             <img
               ref={heroImgRef}
-              src="/images/artist-hero-banner.png"
+              src={artistProfile?.aboutHeroBanner || "/images/artist-hero-banner.png"}
               alt="Artist Kuldeep Singh — Official Atelier Banner"
               onLoad={() => setIsHeroLoaded(true)}
               className={`w-full h-auto block select-none animate-hero-fade transition-opacity duration-700 ease-out ${
