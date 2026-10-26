@@ -129,20 +129,23 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
   return (
     <div className="relative w-full min-h-screen">
       {/* ------------------------------------------------------------- */}
-      {/* 1. HERO ARTIST BANNER (Full 100% Width, Crisp 4K & Natural Aspect Ratio) */}
+      {/* 1. HERO ARTIST BANNER (Full 100% Width, Responsive Portrait for Mobile & Landscape for Desktop) */}
       {/* ------------------------------------------------------------- */}
       <section className="relative w-full bg-[#0E0C0A] select-none z-0 pt-16 sm:pt-20">
         <div className="w-full relative overflow-hidden bg-[#0E0C0A]">
-          <img
-            ref={heroImgRef}
-            src="/images/artist-hero-banner.png"
-            alt="Artist Kuldeep Singh — Official Atelier Banner"
-            onLoad={() => setIsHeroLoaded(true)}
-            className={`w-full h-auto block select-none animate-hero-fade transition-opacity duration-700 ease-out ${
-              isHeroLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
-            style={{ imageRendering: 'auto' }}
-          />
+          <picture className="w-full block">
+            <source media="(max-width: 639px)" srcSet="/images/artist-hero-banner-mobile.png" />
+            <img
+              ref={heroImgRef}
+              src="/images/artist-hero-banner.png"
+              alt="Artist Kuldeep Singh — Official Atelier Banner"
+              onLoad={() => setIsHeroLoaded(true)}
+              className={`w-full h-auto block select-none animate-hero-fade transition-opacity duration-700 ease-out ${
+                isHeroLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
+              style={{ imageRendering: 'auto' }}
+            />
+          </picture>
         </div>
       </section>
 
