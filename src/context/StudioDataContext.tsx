@@ -1,5 +1,5 @@
 ﻿import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { PromoCode, StoreDeliverySettings, Artwork, Course, CourseModule, CourseLecture, ArtistProfile, AchievementTimelineItem, Award, EnrolledStudent, LiveBroadcastStatus, UpcomingCourse, CollectorReview } from '../types';
+import type { SiteSettings, PromoCode, StoreDeliverySettings, Artwork, Course, CourseModule, CourseLecture, ArtistProfile, AchievementTimelineItem, Award, EnrolledStudent, LiveBroadcastStatus, UpcomingCourse, CollectorReview } from '../types';
 import { ARTWORKS } from '../data/artworks';
 import { COURSES } from '../data/courses';
 import { TIMELINE, AWARDS } from '../data/achievements';
@@ -36,6 +36,42 @@ export const DEFAULT_PROMO_CODES: PromoCode[] = [
     description: '20% VIP Patron Discount'
   }
 ];
+
+
+export const DEFAULT_SITE_SETTINGS: SiteSettings = {
+  id: 'global_settings',
+  fontHeading: 'Playfair Display',
+  fontBody: 'Plus Jakarta Sans',
+  fontAccent: 'Alex Brush',
+  primaryColor: '#E63946',
+  goldColor: '#C5A059',
+  brandNameFirst: 'KULDEEP',
+  brandNameSecond: 'SINGH',
+  siteTagline: 'Master Classical Realist & Atelier Founder',
+  heroPreTitle: 'The Art of',
+  heroMainTitle: 'Artist Kuldeep Singh',
+  heroButtonText: 'Discover The Artist',
+  statsYearsLabel: 'Years of Devoted Mastery',
+  statsYearsValue: '18',
+  statsArtworksLabel: 'Original Works Collected',
+  statsArtworksValue: '450+',
+  statsExhibitionsLabel: 'International Exhibitions',
+  statsExhibitionsValue: '24',
+  statsStudentsLabel: 'Global Academy Students',
+  statsStudentsValue: '5.2K+',
+  galleryHeading: 'Acquire Original Paintings & Limited Edition Prints.',
+  gallerySubheading: 'Explore authentic museum-grade masterworks hand-crafted with archival minerals, oils, and charcoals. Delivered worldwide with hand-embossed Certificates of Authenticity.',
+  aboutStoryHeading: 'A Life Dedicated to the Alchemy of Light, Oil & Form.',
+  philosophyQuote: 'Every stroke of oil on linen is a conversation between human patience and natural light.',
+  contactEmail: 'artistkuldeepsingh26@gmail.com',
+  contactPhone: '+91 88580 60101',
+  studioAddress: 'Delhi, India',
+  whatsappNumber: '918858060101',
+  instagramUrl: 'https://www.instagram.com/artist_kuldeep_singh/',
+  youtubeUrl: 'https://www.youtube.com/@artistkuldeepsingh',
+  enableParticles: true,
+  enableAudioAmbiance: true
+};
 
 export const DEFAULT_DELIVERY_SETTINGS: StoreDeliverySettings = {
   deliveryFee: 0,
@@ -90,6 +126,8 @@ interface StudioDataContextType {
   courses: Course[];
   students: EnrolledStudent[];
   artistProfile: ArtistProfile;
+  siteSettings: SiteSettings;
+  updateSiteSettings: (updates: Partial<SiteSettings>) => Promise<void>;
   timeline: AchievementTimelineItem[];
   awards: Award[];
   liveStatus: LiveBroadcastStatus;
@@ -252,6 +290,31 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   });
 
   // 3. Artist Profile State
+  const [siteSettings, setSiteSettings] = useState<SiteSettings>(() => {
+    try {
+      const saved = localStorage.getItem('kuldeep_studio_settings');
+      return saved ? JSON.parse(saved) : DEFAULT_SITE_SETTINGS;
+    } catch {
+      return DEFAULT_SITE_SETTINGS;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('kuldeep_studio_settings', JSON.stringify(siteSettings));
+    } catch {}
+    
+    // Apply dynamic fonts and CSS variables to document root
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement;
+      if (siteSettings.fontHeading) root.style.setProperty('--font-heading', `'${siteSettings.fontHeading}', Georgia, serif`);
+      if (siteSettings.fontBody) root.style.setProperty('--font-body', `'${siteSettings.fontBody}', Inter, sans-serif`);
+      if (siteSettings.fontAccent) root.style.setProperty('--font-accent', `'${siteSettings.fontAccent}', cursive`);
+      if (siteSettings.primaryColor) root.style.setProperty('--color-primary', siteSettings.primaryColor);
+      if (siteSettings.goldColor) root.style.setProperty('--color-gold', siteSettings.goldColor);
+    }
+  }, [siteSettings]);
+
   const [artistProfile, setArtistProfile] = useState<ArtistProfile>(() => {
     try {
       const saved = localStorage.getItem('kuldeep_studio_profile');
@@ -504,7 +567,13 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           const type = raw.type;
           const data = raw.data || raw.payload;
 
-          if (type === 'ARTWORK_CREATED' && data) {
+          if (type === 'SETTINGS_UPDATED' && data) {
+            setSiteSettings(prev => ({ ...prev, ...data }));
+            try { localStorage.setItem('kuldeep_studio_settings', JSON.stringify(data)); } catch {}
+          } else if (type === 'ARTWORKS_REORDERED' && data?.artworks) {
+            setArtworks(data.artworks);
+            try { localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(data.artworks)); } catch {}
+          } else if (type === 'ARTWORK_CREATED' && data) {
             setArtworks((prev) => {
               if (prev.some((a) => a.id === data.id)) return prev;
               const next = [data, ...prev];
@@ -1213,6 +1282,28 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   // Factory Reset
+  const updateSiteSettings = async (updates: Partial<SiteSettings>) => {
+    const merged = { ...siteSettings, ...updates };
+    setSiteSettings(merged);
+    try {
+      localStorage.setItem('kuldeep_studio_settings', JSON.stringify(merged));
+    } catch {}
+
+    const backendUrls = ['https://kuldeep-singh-backend-nehy.onrender.com', 'http://localhost:5000'];
+    for (const base of backendUrls) {
+      try {
+        await fetch(`${base}/api/settings`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(merged)
+        });
+        break;
+      } catch (e) {
+        console.error('Failed to update settings on backend:', e);
+      }
+    }
+  };
+
   const resetToDefaults = () => {
     localStorage.removeItem('kuldeep_studio_artworks');
     localStorage.removeItem('kuldeep_studio_courses');
@@ -1239,6 +1330,8 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         courses,
         students,
         artistProfile,
+        siteSettings,
+        updateSiteSettings,
         timeline,
         awards,
         liveStatus,

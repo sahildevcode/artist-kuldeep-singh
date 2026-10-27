@@ -196,6 +196,28 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
               ? (artistProfile?.aboutSection03Image || sec.image)
               : (artistProfile?.aboutSection04Image || sec.image);
 
+          const dynamicTitle =
+            idx === 0
+              ? (artistProfile?.aboutSection01Title || sec.title)
+              : idx === 1
+              ? (artistProfile?.aboutSection02Title || sec.title)
+              : idx === 2
+              ? (artistProfile?.aboutSection03Title || sec.title)
+              : (artistProfile?.aboutSection04Title || sec.title);
+
+          const customRawText =
+            idx === 0
+              ? artistProfile?.aboutSection01Text
+              : idx === 1
+              ? artistProfile?.aboutSection02Text
+              : idx === 2
+              ? artistProfile?.aboutSection03Text
+              : artistProfile?.aboutSection04Text;
+
+          const dynamicParagraphs = customRawText && customRawText.trim()
+            ? customRawText.split('\n').map(p => p.trim()).filter(Boolean)
+            : sec.paragraphs;
+
           return (
             <div
               key={sec.id}
@@ -222,12 +244,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ setActivePage }) => {
                     </span>
                     <div className="h-6 w-[1.5px] bg-artisan-gold/40" />
                     <h2 className="font-serif text-2xl sm:text-3xl lg:text-3xl font-semibold tracking-wider uppercase text-stone-900 dark:text-stone-100">
-                      {sec.title}
+                      {dynamicTitle}
                     </h2>
                   </div>
 
                   <div className="space-y-4 text-stone-600 dark:text-stone-300 text-sm sm:text-base leading-relaxed font-sans font-light">
-                    {sec.paragraphs.map((p, pIdx) => (
+                    {dynamicParagraphs.map((p, pIdx) => (
                       <p key={pIdx}>{p}</p>
                     ))}
                   </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, ShoppingBag, ShieldCheck, Sparkles, Truck, MessageCircle, Layers, Palette } from 'lucide-react';
+import { Eye, ShoppingBag, ShieldCheck, Sparkles, Truck, MessageCircle, Layers, Palette, Star, ArrowRight } from 'lucide-react';
 import type { Artwork } from '../types';
 import { useCart } from '../context/CartContext';
 import { useStudioData } from '../context/StudioDataContext';
@@ -10,7 +10,7 @@ interface StorePageProps {
 
 export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
   const { addToCart } = useCart();
-  const { artworks } = useStudioData();
+  const { artworks, siteSettings } = useStudioData();
   
   // Top-level category: All vs Paintings vs Prints (Client handwritten requirement)
   const [topCategory, setTopCategory] = useState<'all' | 'paintings' | 'prints'>('all');
@@ -44,8 +44,15 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
     .sort((a, b) => {
       if (sortBy === 'price-asc') return a.price - b.price;
       if (sortBy === 'price-desc') return b.price - a.price;
-      return 0; // featured default
+      const orderA = typeof a.order === 'number' ? a.order : 999;
+      const orderB = typeof b.order === 'number' ? b.order : 999;
+      if (orderA !== orderB) return orderA - orderB;
+      return 0;
     });
+
+  // Highlighted / Selected Main Artwork logic (Client requirement)
+  const mainArtwork = artworks.find((a) => a.isMain) || filteredArtworks.find((a) => a.isMain) || filteredArtworks[0];
+  const gridArtworks = filteredArtworks.filter((a) => a.id !== mainArtwork?.id);
 
   return (
     <div className="relative z-10 pt-28 sm:pt-36 pb-28">
@@ -59,11 +66,10 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
             <span>Artist Kuldeep Singh Atelier & Fine Art Store</span>
           </div>
           <h1 className="font-serif text-4xl sm:text-6xl font-bold tracking-tight text-[#1A1816] leading-[1.1]">
-            Acquire Original Paintings & Limited Edition Prints.
+            {siteSettings?.galleryHeading || 'Acquire Original Paintings & Limited Edition Prints.'}
           </h1>
           <p className="text-stone-600 text-base sm:text-lg leading-relaxed">
-            Explore authentic museum-grade masterworks hand-crafted with archival minerals, oils, and charcoals. 
-            Delivered worldwide with hand-embossed Certificates of Authenticity.
+            {siteSettings?.gallerySubheading || 'Explore authentic museum-grade masterworks hand-crafted with archival minerals, oils, and charcoals. Delivered worldwide with hand-embossed Certificates of Authenticity.'}
           </p>
         </div>
 
@@ -162,6 +168,114 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
       </section>
 
       {/* ------------------------------------------------------------- */}
+      {/* 1.5 HIGHLIGHTED / MAIN FEATURED PAINTING (LARGE SHOWCASE) */}
+      {/* Client Requirement: Website par ek main painting badi dikhe, baki niche se start ho */}
+      {/* ------------------------------------------------------------- */}
+      {mainArtwork && topCategory !== 'prints' && selectedMedium === 'All' && statusFilter === 'all' && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 animate-fade-in">
+          <div className="bg-[#121110] rounded-3xl sm:rounded-[36px] overflow-hidden border border-amber-900/40 shadow-2xl relative text-white">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-artisan-gold/15 rounded-full blur-[100px] pointer-events-none" />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center p-6 sm:p-10 lg:p-12 relative z-10">
+              
+              {/* Left / Top: Master Large Canvas */}
+              <div className="lg:col-span-7 relative group cursor-pointer overflow-hidden rounded-2xl bg-black aspect-[4/3] sm:aspect-[16/10] border border-white/10 shadow-2xl" onClick={() => onSelectArtwork(mainArtwork)}>
+                <img
+                  src={mainArtwork.image}
+                  alt={mainArtwork.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute top-4 left-4 flex items-center gap-2">
+                  <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-amber-500 text-black uppercase tracking-wider flex items-center gap-1 shadow-lg">
+                    <Star className="w-3 h-3 fill-black" />
+                    Highlighted Centerpiece Masterwork
+                  </span>
+                </div>
+                <div className="absolute bottom-4 right-4">
+                  <span className="px-3.5 py-1.5 rounded-xl bg-white/95 text-stone-900 text-xs font-bold flex items-center gap-1.5 shadow-lg group-hover:bg-amber-400 transition-colors">
+                    <Eye className="w-4 h-4 text-artisan-crimson" />
+                    Inspect Details
+                  </span>
+                </div>
+              </div>
+
+              {/* Right: Masterwork Narrative & Quick Acquisition */}
+              <div className="lg:col-span-5 space-y-5">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Curator's Primary Spotlight</span>
+                </div>
+
+                <div className="space-y-2">
+                  <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white tracking-tight leading-tight">
+                    {mainArtwork.title}
+                  </h2>
+                  <p className="text-amber-200/80 text-sm italic font-serif">
+                    {mainArtwork.subtitle || 'Classical Atelier Museum Oil on Hand-Stretched Linen'}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 py-3 border-y border-white/10 text-xs">
+                  <div>
+                    <span className="text-stone-400 block text-[10px] uppercase tracking-wider">Medium</span>
+                    <span className="text-stone-100 font-semibold">{mainArtwork.medium}</span>
+                  </div>
+                  <div>
+                    <span className="text-stone-400 block text-[10px] uppercase tracking-wider">Dimensions</span>
+                    <span className="text-stone-100 font-semibold">{mainArtwork.dimensions}</span>
+                  </div>
+                  <div>
+                    <span className="text-stone-400 block text-[10px] uppercase tracking-wider">Status</span>
+                    <span className={`font-bold uppercase tracking-wider ${
+                      mainArtwork.status === 'available' ? 'text-emerald-400' : mainArtwork.status === 'reserved' ? 'text-amber-400' : 'text-red-400'
+                    }`}>
+                      {mainArtwork.status}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-stone-400 block text-[10px] uppercase tracking-wider">Acquisition</span>
+                    <span className="text-amber-300 font-serif font-bold text-base">₹{mainArtwork.price.toLocaleString('en-IN')}</span>
+                  </div>
+                </div>
+
+                <p className="text-stone-300 text-xs sm:text-sm line-clamp-3 leading-relaxed">
+                  {mainArtwork.description || 'A timeless original masterpiece crafted with traditional mineral pigments and layering glazes that capture authentic natural luminescence.'}
+                </p>
+
+                <div className="flex items-center gap-3 pt-2">
+                  <button
+                    onClick={() => onSelectArtwork(mainArtwork)}
+                    className="flex-1 py-3.5 px-5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer"
+                  >
+                    <span>View Primary Masterpiece</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                  {mainArtwork.status === 'available' && (
+                    <button
+                      onClick={() => addToCart({
+                        id: mainArtwork.id,
+                        type: 'artwork',
+                        title: mainArtwork.title,
+                        subtitle: mainArtwork.subtitle,
+                        price: mainArtwork.price,
+                        image: mainArtwork.image,
+                        mediumOrCategory: mainArtwork.medium
+                      })}
+                      className="p-3.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white transition-colors cursor-pointer"
+                      title="Add to Collection Cart"
+                    >
+                      <ShoppingBag className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ------------------------------------------------------------- */}
       {/* 2. ARTWORKS GRID */}
       {/* ------------------------------------------------------------- */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -181,8 +295,15 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredArtworks.map((art) => {
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h3 className="font-serif font-bold text-xl text-stone-900 flex items-center gap-2">
+                <span>Atelier Gallery Collection</span>
+                <span className="text-xs font-sans font-normal text-stone-500">({(mainArtwork && topCategory !== 'prints' && selectedMedium === 'All' && statusFilter === 'all') ? gridArtworks.length : filteredArtworks.length} Artworks)</span>
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {((mainArtwork && topCategory !== 'prints' && selectedMedium === 'All' && statusFilter === 'all') ? gridArtworks : filteredArtworks).map((art) => {
               const inrPrice = art.price;
               const commissionWhatsAppUrl = `https://wa.me/918858060101?text=${encodeURIComponent(
                 `Hello Artist Kuldeep Singh, I saw your artwork "${art.title}" (${art.medium}) on your store. Since it is ${art.status.toUpperCase()}, I would love to enquire about commissioning a similar custom piece. Please share details.`
@@ -309,6 +430,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
                 </div>
               );
             })}
+            </div>
           </div>
         )}
       </section>

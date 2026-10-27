@@ -18,7 +18,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   onSelectCourse,
 }) => {
   const { addToCart } = useCart();
-  const { artworks, courses, artistProfile } = useStudioData();
+  const { artworks, courses, artistProfile, siteSettings } = useStudioData();
   const featuredArtworks = artworks.filter((a) => a.featured).slice(0, 8);
   const featuredCourses = courses.slice(0, 3);
 
@@ -86,7 +86,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     }}
                     className="px-5 sm:px-10 py-2.5 sm:py-3.5 bg-black/85 hover:bg-black text-white hover:text-white border border-white/50 hover:border-white font-sans text-[11px] sm:text-xs font-semibold uppercase tracking-[0.16em] sm:tracking-[0.22em] transition-all duration-300 shadow-xl backdrop-blur-sm cursor-pointer hover:scale-[1.03] active:scale-[0.98]"
                   >
-                    <span>Discover The Artist</span>
+                    <span>{siteSettings?.heroButtonText || 'Discover The Artist'}</span>
                   </button>
                 </div>
               </div>
