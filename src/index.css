@@ -46,6 +46,109 @@
     background-color: #0E0C0A;
     color: #F5F2EB;
   }
+
+  /* ------------------------------------------------------------- */
+  /* UNIVERSAL PREMIUM DARK THEME ARCHITECTURE                     */
+  /* ------------------------------------------------------------- */
+
+  /* 1. Root & Base Colors */
+  .dark body {
+    background-color: #0E0C0A !important;
+    color: #F5F2EB !important;
+  }
+
+  /* 2. Text Color & Readability Across All Dark Surfaces */
+  .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+    color: #F8F6F0 !important;
+  }
+
+  .dark p, .dark span:not([class*="text-artisan-"]):not([class*="text-emerald-"]):not([class*="text-amber-"]):not([class*="text-red-"]) {
+    color: inherit;
+  }
+
+  .dark .text-stone-900,
+  .dark .text-stone-800,
+  .dark .text-\[\#1A1816\] {
+    color: #F8F6F0 !important;
+  }
+
+  .dark .text-stone-700,
+  .dark .text-stone-600 {
+    color: #E2DDD5 !important;
+  }
+
+  .dark .text-stone-500,
+  .dark .text-stone-400 {
+    color: #A8A29E !important;
+  }
+
+  /* 3. Automatic Conversion of Light Cards/Boxes into Luxurious Dark Containers (#121110 / #181614) */
+  .dark .bg-white,
+  .dark .bg-\[\#FAF8F5\],
+  .dark .bg-\[\#FDFBF7\],
+  .dark .bg-\[\#EFECE6\],
+  .dark .bg-stone-50,
+  .dark .bg-stone-100 {
+    background-color: #161412 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #F5F2EB !important;
+  }
+
+  .dark .bg-white\/95,
+  .dark .bg-white\/90,
+  .dark .bg-white\/80,
+  .dark .bg-white\/70 {
+    background-color: rgba(24, 21, 19, 0.92) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #F5F2EB !important;
+  }
+
+  /* 4. Inputs, Forms, Textareas, Select Dropdowns in Dark Mode */
+  .dark input:not([type="checkbox"]):not([type="radio"]),
+  .dark textarea,
+  .dark select {
+    background-color: #1A1816 !important;
+    color: #F8F6F0 !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+  }
+
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: #8C827A !important;
+  }
+
+  .dark input:focus,
+  .dark textarea:focus,
+  .dark select:focus {
+    border-color: #C5A059 !important;
+    box-shadow: 0 0 0 1px #C5A059 !important;
+  }
+
+  /* 5. Dividers & Borders in Dark Mode */
+  .dark .border-stone-200,
+  .dark .border-stone-100,
+  .dark .border-stone-300,
+  .dark .divide-stone-200 > :not([hidden]) ~ :not([hidden]) {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+  }
+
+  /* 6. Preserve Distinct Functional Accents */
+  .dark .bg-artisan-crimson,
+  .dark .hover\:bg-artisan-crimson:hover {
+    background-color: #C0262D !important;
+    color: #FFFFFF !important;
+  }
+
+  .dark .bg-emerald-600 {
+    background-color: #059669 !important;
+    color: #FFFFFF !important;
+  }
+
+  .dark .bg-artisan-gold,
+  .dark .bg-amber-400 {
+    color: #1A1816 !important;
+  }
+
   .dark ::-webkit-scrollbar-track {
     background: #0E0C0A;
   }
@@ -250,8 +353,30 @@
 }
 
 /* ============================================================== */
-/* LUXURY CINEMATIC SCROLL & REVEAL ANIMATION ENGINE               */
+/* LUXURY 3D CARD FLIP ENGINE                                     */
 /* ============================================================== */
+.perspective-1000 {
+  perspective: 1200px;
+}
+
+.transform-style-preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flip-card-inner {
+    transition: none !important;
+  }
+}
 @keyframes cinematicZoomSlow {
   0% {
     transform: scale(1.06);

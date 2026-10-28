@@ -92,27 +92,35 @@ export const AWARDS: Award[] = [
     award: 'International Fine Art Gold Medal',
     institution: 'Royal Society of Contemporary Painters',
     location: 'London, UK',
-    badgeText: 'Highest Honor'
+    badgeText: 'Highest Honor',
+    image: '/images/buddha-tree-of-life-painting.jpg',
+    artworkTitle: 'Buddha Tree of Life • Spiritual Canvas'
   },
   {
     year: '2024',
     award: 'Distinguished Figurative Artist Prize',
     institution: 'American Fine Art Salon',
     location: 'New York, USA',
-    badgeText: '1st Place'
+    badgeText: '1st Place',
+    image: '/images/surreal-conceptual-painting-floating-man-artw-art-1792911666894.jpg',
+    artworkTitle: 'Surreal Conceptual Painting • Floating Man'
   },
   {
     year: '2022',
     award: 'Venice Cultural Biennale Citation',
     institution: 'Venice Contemporary Art Foundation',
     location: 'Venice, Italy',
-    badgeText: 'Jury Special Mention'
+    badgeText: 'Jury Special Mention',
+    image: '/images/abstract-spiritual-canvas-print.jpg',
+    artworkTitle: 'Echoes of the Florentine Dusk'
   },
   {
     year: '2019',
     award: 'Master Draftsman Laureate',
     institution: 'Society of Figurative Artists',
     location: 'Chicago, USA',
-    badgeText: 'Gold Award'
+    badgeText: 'Gold Award',
+    image: '/images/abstract-woman-leopard-eagle-painting.jpg',
+    artworkTitle: 'Figurative Chiaroscuro • Master Draft'
   }
 ];

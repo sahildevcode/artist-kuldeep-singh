@@ -61,21 +61,21 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
       {/* ------------------------------------------------------------- */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-artisan-gold/10 border border-artisan-gold/30 text-xs font-bold text-stone-800">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-artisan-gold/10 dark:bg-artisan-gold/20 border border-artisan-gold/30 text-xs font-bold text-stone-800 dark:text-amber-200">
             <Sparkles className="w-3.5 h-3.5 text-artisan-gold" />
             <span>Artist Kuldeep Singh Atelier & Fine Art Store</span>
           </div>
-          <h1 className="font-serif text-4xl sm:text-6xl font-bold tracking-tight text-[#1A1816] leading-[1.1]">
+          <h1 className="font-serif text-4xl sm:text-6xl font-bold tracking-tight text-[#1A1816] dark:text-stone-50 leading-[1.1]">
             {siteSettings?.galleryHeading || 'Acquire Original Paintings & Limited Edition Prints.'}
           </h1>
-          <p className="text-stone-600 text-base sm:text-lg leading-relaxed">
+          <p className="text-stone-600 dark:text-stone-300 text-base sm:text-lg leading-relaxed">
             {siteSettings?.gallerySubheading || 'Explore authentic museum-grade masterworks hand-crafted with archival minerals, oils, and charcoals. Delivered worldwide with hand-embossed Certificates of Authenticity.'}
           </p>
         </div>
 
         {/* Top-Level Category Switcher (Paintings | Prints) */}
         <div className="mt-10 flex justify-center">
-          <div className="inline-flex p-1.5 rounded-full bg-stone-200/80 backdrop-blur-md border border-stone-300 shadow-inner">
+          <div className="inline-flex p-1.5 rounded-full bg-stone-200/80 dark:bg-stone-900 backdrop-blur-md border border-stone-300 dark:border-stone-800 shadow-inner">
             <button
               onClick={() => {
                 setTopCategory('all');
@@ -83,8 +83,8 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
               }}
               className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all ${
                 topCategory === 'all'
-                  ? 'bg-[#1A1816] text-white shadow-md'
-                  : 'text-stone-700 hover:text-black'
+                  ? 'bg-[#1A1816] dark:bg-stone-100 text-white dark:text-stone-900 shadow-md'
+                  : 'text-stone-700 dark:text-stone-300 hover:text-black dark:hover:text-white'
               }`}
             >
               All Artworks ({artworks.length})
@@ -96,8 +96,8 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
               }}
               className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all flex items-center gap-1.5 ${
                 topCategory === 'paintings'
-                  ? 'bg-[#1A1816] text-white shadow-md'
-                  : 'text-stone-700 hover:text-black'
+                  ? 'bg-[#1A1816] dark:bg-stone-100 text-white dark:text-stone-900 shadow-md'
+                  : 'text-stone-700 dark:text-stone-300 hover:text-black dark:hover:text-white'
               }`}
             >
               <Palette className="w-3.5 h-3.5" />
@@ -110,8 +110,8 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
               }}
               className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all flex items-center gap-1.5 ${
                 topCategory === 'prints'
-                  ? 'bg-[#1A1816] text-white shadow-md'
-                  : 'text-stone-700 hover:text-black'
+                  ? 'bg-[#1A1816] dark:bg-stone-100 text-white dark:text-stone-900 shadow-md'
+                  : 'text-stone-700 dark:text-stone-300 hover:text-black dark:hover:text-white'
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
@@ -121,7 +121,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
         </div>
 
         {/* Secondary Filters & Controls */}
-        <div className="mt-8 p-4 rounded-3xl bg-white/80 backdrop-blur-md border border-stone-200 shadow-soft-lux flex flex-col lg:flex-row items-center justify-between gap-4">
+        <div className="mt-8 p-4 rounded-3xl bg-white/80 dark:bg-stone-900/90 backdrop-blur-md border border-stone-200 dark:border-stone-800 shadow-soft-lux flex flex-col lg:flex-row items-center justify-between gap-4">
           {/* Mediums (shown when not filtered exclusively to prints) */}
           <div className="flex flex-wrap items-center gap-1.5 w-full lg:w-auto">
             {mediums.map((med) => (
@@ -131,7 +131,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
                 className={`px-3.5 py-1.5 rounded-2xl text-xs font-semibold tracking-wide transition-all ${
                   selectedMedium === med
                     ? 'bg-artisan-crimson text-white shadow-xs'
-                    : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
+                    : 'text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800'
                 }`}
               >
                 {med}
@@ -145,7 +145,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-stone-50 border border-stone-200 text-xs font-semibold text-stone-800 rounded-xl px-3 py-2 focus:outline-none focus:border-stone-800"
+              className="bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs font-semibold text-stone-800 dark:text-stone-200 rounded-xl px-3 py-2 focus:outline-none focus:border-stone-800 dark:focus:border-stone-600"
             >
               <option value="all">All Availability</option>
               <option value="available">Available Only</option>
@@ -157,7 +157,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="bg-stone-50 border border-stone-200 text-xs font-semibold text-stone-800 rounded-xl px-3 py-2 focus:outline-none focus:border-stone-800"
+              className="bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-xs font-semibold text-stone-800 dark:text-stone-200 rounded-xl px-3 py-2 focus:outline-none focus:border-stone-800 dark:focus:border-stone-600"
             >
               <option value="featured">Featured Curation</option>
               <option value="price-asc">Price: Low to High</option>
@@ -280,16 +280,16 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
       {/* ------------------------------------------------------------- */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {filteredArtworks.length === 0 ? (
-          <div className="py-20 text-center space-y-3 bg-white rounded-3xl border border-stone-200">
-            <h3 className="font-serif text-lg font-bold text-stone-800">No artworks match your selected criteria</h3>
-            <p className="text-xs text-stone-500">Try broadening your category or availability filters.</p>
+          <div className="py-20 text-center space-y-3 bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800">
+            <h3 className="font-serif text-lg font-bold text-stone-800 dark:text-stone-100">No artworks match your selected criteria</h3>
+            <p className="text-xs text-stone-500 dark:text-stone-400">Try broadening your category or availability filters.</p>
             <button
               onClick={() => {
                 setTopCategory('all');
                 setSelectedMedium('All');
                 setStatusFilter('all');
               }}
-              className="text-xs font-bold text-artisan-crimson underline"
+              className="text-xs font-bold text-artisan-crimson dark:text-red-400 underline cursor-pointer"
             >
               Reset All Filters
             </button>
@@ -297,9 +297,9 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
         ) : (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h3 className="font-serif font-bold text-xl text-stone-900 flex items-center gap-2">
+              <h3 className="font-serif font-bold text-xl text-stone-900 dark:text-stone-100 flex items-center gap-2">
                 <span>Atelier Gallery Collection</span>
-                <span className="text-xs font-sans font-normal text-stone-500">({(mainArtwork && topCategory !== 'prints' && selectedMedium === 'All' && statusFilter === 'all') ? gridArtworks.length : filteredArtworks.length} Artworks)</span>
+                <span className="text-xs font-sans font-normal text-stone-500 dark:text-stone-400">({(mainArtwork && topCategory !== 'prints' && selectedMedium === 'All' && statusFilter === 'all') ? gridArtworks.length : filteredArtworks.length} Artworks)</span>
               </h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -312,10 +312,10 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
               return (
                 <div
                   key={art.id}
-                  className="bg-white rounded-3xl overflow-hidden border border-stone-200 shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between group hover:-translate-y-2"
+                  className="bg-white dark:bg-stone-900 rounded-3xl overflow-hidden border border-stone-200 dark:border-stone-800 shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between group hover:-translate-y-2"
                 >
                   {/* Artwork Canvas Image */}
-                  <div className="relative aspect-[4/5] overflow-hidden bg-stone-100">
+                  <div className="relative aspect-[4/5] overflow-hidden bg-stone-100 dark:bg-stone-800">
                     <img
                       src={art.image} alt={art.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
@@ -324,7 +324,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-5">
                       <button
                         onClick={() => onSelectArtwork(art)}
-                        className="w-full py-3 bg-white/95 backdrop-blur-md rounded-2xl text-xs font-bold text-stone-900 shadow-lg flex items-center justify-center gap-2 hover:bg-white transition-colors"
+                        className="w-full py-3 bg-white/95 dark:bg-stone-900/95 backdrop-blur-md rounded-2xl text-xs font-bold text-stone-900 dark:text-stone-100 shadow-lg flex items-center justify-center gap-2 hover:bg-white dark:hover:bg-stone-850 transition-colors cursor-pointer"
                       >
                         <Eye className="w-4 h-4 text-artisan-crimson" />
                         Explore & Inspect Zoom Details
@@ -333,7 +333,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
 
                     {/* Medium Badge */}
                     <div className="absolute top-4 left-4 flex items-center gap-2">
-                      <span className="bg-white/95 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-stone-800 uppercase tracking-wider shadow-xs">
+                      <span className="bg-white/95 dark:bg-stone-900/95 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-stone-800 dark:text-stone-200 uppercase tracking-wider shadow-xs border border-stone-200/50 dark:border-stone-700/50">
                         {art.medium}
                       </span>
                     </div>
@@ -357,13 +357,13 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
                   {/* Details */}
                   <div className="p-6 flex-1 flex flex-col justify-between space-y-5">
                     <div className="space-y-2">
-                      <h3 className="font-serif font-bold text-xl text-stone-900 group-hover:text-artisan-crimson transition-colors">
+                      <h3 className="font-serif font-bold text-xl text-stone-900 dark:text-stone-100 group-hover:text-artisan-crimson dark:group-hover:text-red-400 transition-colors">
                         {art.title}
                       </h3>
-                      <p className="text-xs text-stone-500 italic line-clamp-1">
+                      <p className="text-xs text-stone-500 dark:text-stone-400 italic line-clamp-1">
                         {art.subtitle}
                       </p>
-                      <div className="flex items-center gap-3 text-xs text-stone-600 pt-1">
+                      <div className="flex items-center gap-3 text-xs text-stone-600 dark:text-stone-400 pt-1">
                         <span>{art.dimensions}</span>
                         <span>•</span>
                         <span>{art.year}</span>
@@ -373,13 +373,13 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
                     </div>
 
                     {/* Price & Action Buttons */}
-                    <div className="pt-4 border-t border-stone-100 flex items-center justify-between gap-3">
+                    <div className="pt-4 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between gap-3">
                       <div>
-                        <span className="text-[10px] text-stone-400 block uppercase font-bold">
+                        <span className="text-[10px] text-stone-400 dark:text-stone-400 block uppercase font-bold">
                           Acquisition Value
                         </span>
                         <div className="flex items-baseline gap-1.5">
-                          <span className="font-serif font-bold text-xl text-stone-900">
+                          <span className="font-serif font-bold text-xl text-stone-900 dark:text-stone-100">
                             <span className="font-sans font-semibold mr-0.5">₹</span>{inrPrice.toLocaleString('en-IN')}
                           </span>
                         </div>
@@ -388,7 +388,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => onSelectArtwork(art)}
-                          className="p-2.5 rounded-xl border border-stone-200 hover:bg-stone-100 text-stone-700 transition-colors"
+                          className="p-2.5 rounded-xl border border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
                           title="Quick View & Zoom"
                         >
                           <Eye className="w-4 h-4" />
@@ -407,7 +407,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
                                 mediumOrCategory: art.medium,
                               })
                             }
-                            className="px-4 py-2.5 rounded-xl text-xs font-bold bg-[#1A1816] hover:bg-artisan-crimson text-white active:scale-95 transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+                            className="px-4 py-2.5 rounded-xl text-xs font-bold bg-[#1A1816] hover:bg-artisan-crimson dark:bg-stone-800 dark:hover:bg-artisan-crimson text-white active:scale-95 transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
                           >
                             <ShoppingBag className="w-3.5 h-3.5" />
                             <span>Acquire</span>
@@ -417,10 +417,10 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
                             href={commissionWhatsAppUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="px-3 py-2.5 rounded-xl text-[11px] font-serif font-semibold bg-stone-100 hover:bg-stone-200 text-stone-900 border border-stone-300 hover:border-artisan-gold transition-all shadow-xs flex items-center gap-1.5"
+                            className="px-3 py-2.5 rounded-xl text-[11px] font-serif font-semibold bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 border border-stone-300 dark:border-stone-700 hover:border-artisan-gold transition-all shadow-xs flex items-center gap-1.5"
                             title="Enquire & Commission similar custom artwork"
                           >
-                            <MessageCircle className="w-3.5 h-3.5 text-stone-700" />
+                            <MessageCircle className="w-3.5 h-3.5 text-stone-700 dark:text-stone-300" />
                             <span>Commission</span>
                           </a>
                         )}

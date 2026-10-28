@@ -101,6 +101,8 @@ export interface Award {
   institution: string;
   location: string;
   badgeText: string;
+  image?: string;
+  artworkTitle?: string;
 }
 
 export interface CollectorReview {

@@ -66,6 +66,9 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
   const [fsDragging, setFsDragging] = useState(false);
   const fsDragStart = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
+  // Living Room Mockup Aspect Ratio State: 'original' | '1:1' | '16:9' | '9:16' | '4:5' | '3:4'
+  const [mockupRatio, setMockupRatio] = useState<'original' | '1:1' | '16:9' | '9:16' | '4:5' | '3:4'>('original');
+
   // Share Popover States
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -201,7 +204,7 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
   const handleFsMouseUp = () => setFsDragging(false);
 
   return (
-    <div className="relative z-10 pt-28 sm:pt-36 pb-32">
+    <div className="relative z-10 pt-28 sm:pt-36 pb-32 bg-[#FDFBF7] dark:bg-[#0E0C0A] text-stone-900 dark:text-stone-100 transition-colors duration-300">
       {/* ------------------------------------------------------------------ */}
       {/* 1. FULLSCREEN HIGH-RES CANVAS INSPECTOR (Portaled to body)         */}
       {/* ------------------------------------------------------------------ */}
@@ -233,7 +236,7 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
               title="Close Fullscreen (Esc)"
             >
               <X className="w-5 h-5 text-white" />
-              <span>Close / कट करें (✕)</span>
+              <span>Close (✕)</span>
             </button>
           </div>
 
@@ -337,10 +340,10 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Top Navigation & Share Toolbar */}
-        <div className="flex items-center justify-between mb-8 pb-4 border-b border-stone-200/80">
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-stone-200/80 dark:border-stone-800">
           <button
             onClick={onBack}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/90 border border-stone-200 text-xs font-bold text-stone-700 hover:text-black hover:bg-white shadow-xs transition-all duration-200 cursor-pointer group"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/90 dark:bg-stone-900/90 border border-stone-200 dark:border-stone-800 text-xs font-bold text-stone-700 dark:text-stone-200 hover:text-black dark:hover:text-white hover:bg-white dark:hover:bg-stone-800 shadow-xs transition-all duration-200 cursor-pointer group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             <span>Back to Gallery Store</span>
@@ -350,18 +353,18 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
           <div className="relative">
             <button
               onClick={() => setIsShareOpen(!isShareOpen)}
-              className="px-4 py-2 rounded-full bg-white/90 hover:bg-white text-stone-700 hover:text-black border border-stone-200 shadow-xs transition-all flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
+              className="px-4 py-2 rounded-full bg-white/90 dark:bg-stone-900/90 hover:bg-white dark:hover:bg-stone-800 text-stone-700 dark:text-stone-200 hover:text-black dark:hover:text-white border border-stone-200 dark:border-stone-800 shadow-xs transition-all flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
               title="Share Masterwork"
             >
-              <Share2 className="w-3.5 h-3.5 text-stone-700" />
+              <Share2 className="w-3.5 h-3.5 text-stone-700 dark:text-stone-300" />
               <span>Share Artwork</span>
             </button>
 
             {isShareOpen && (
-              <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-stone-200 p-3 z-30 animate-in fade-in slide-in-from-top-2">
-                <div className="flex items-center justify-between pb-2 mb-2 border-b border-stone-100">
-                  <span className="text-xs font-bold text-stone-900">Share Painting</span>
-                  <button onClick={() => setIsShareOpen(false)} className="text-stone-400 hover:text-stone-700 cursor-pointer">
+              <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-stone-900 rounded-2xl shadow-2xl border border-stone-200 dark:border-stone-800 p-3 z-30 animate-in fade-in slide-in-from-top-2">
+                <div className="flex items-center justify-between pb-2 mb-2 border-b border-stone-100 dark:border-stone-800">
+                  <span className="text-xs font-bold text-stone-900 dark:text-stone-100">Share Painting</span>
+                  <button onClick={() => setIsShareOpen(false)} className="text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 cursor-pointer">
                     <X className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -369,7 +372,7 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
                 <div className="space-y-1.5">
                   <button
                     onClick={handleWhatsAppShare}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-stone-100 text-stone-800 text-xs font-medium transition-colors text-left cursor-pointer"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 text-xs font-medium transition-colors text-left cursor-pointer"
                   >
                     <MessageCircle className="w-4 h-4 text-emerald-600" />
                     <span>Share on WhatsApp</span>
@@ -377,7 +380,7 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
 
                   <button
                     onClick={handleInstagramShare}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-stone-100 text-stone-800 text-xs font-medium transition-colors text-left cursor-pointer"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 text-xs font-medium transition-colors text-left cursor-pointer"
                   >
                     <svg className="w-4 h-4 fill-pink-600" viewBox="0 0 24 24">
                       <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
@@ -387,9 +390,9 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
 
                   <button
                     onClick={handleCopyLink}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-stone-100 text-stone-800 text-xs font-medium transition-colors text-left cursor-pointer"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-800 dark:text-stone-200 text-xs font-medium transition-colors text-left cursor-pointer"
                   >
-                    {copiedLink ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-stone-600" />}
+                    {copiedLink ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-stone-600 dark:text-stone-400" />}
                     <span>{copiedLink ? 'Link Copied!' : 'Copy Direct Link'}</span>
                   </button>
                 </div>
@@ -405,10 +408,10 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
           
           {/* LEFT COLUMN: Visual Stage (Click to Inspect) */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="bg-[#EFECE6] rounded-3xl p-6 sm:p-10 border border-stone-200/90 shadow-xl relative flex flex-col items-center justify-center select-none overflow-hidden min-h-[460px] sm:min-h-[560px]">
+            <div className="bg-[#EFECE6] dark:bg-stone-900 rounded-3xl p-6 sm:p-10 border border-stone-200/90 dark:border-stone-800 shadow-xl relative flex flex-col items-center justify-center select-none overflow-hidden min-h-[460px] sm:min-h-[560px]">
               {viewOnWall ? (
                 /* Living Room Wall Preview Simulation */
-                <div className="relative w-full h-[400px] sm:h-[500px] rounded-2xl overflow-hidden shadow-inner flex flex-col justify-end items-center bg-stone-300">
+                <div className="relative w-full h-[420px] sm:h-[520px] rounded-2xl overflow-hidden shadow-inner flex flex-col justify-end items-center bg-stone-300">
                   <img
                     src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=1200&auto=format&fit=crop"
                     alt="Living Room Wall"
@@ -416,19 +419,61 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
                   />
                   <div className="absolute inset-0 bg-stone-900/10 backdrop-blur-[1px]" />
 
-                  {/* Framed Canvas Mockup */}
-                  <div className="relative z-10 mb-20 shadow-2xl transition-all duration-500 hover:scale-105">
-                    <div className="p-3 sm:p-4 bg-[#1A1816] rounded-sm shadow-[0_25px_50px_rgba(0,0,0,0.6)] border border-stone-800">
-                      <img
-                        src={currentImage}
-                        alt={activeArtwork.title}
-                        className="w-56 sm:w-80 max-h-72 object-cover"
-                      />
+                  {/* Ratio Selector Top Bar inside Living Room */}
+                  <div className="absolute top-2 sm:top-4 inset-x-2 sm:inset-x-4 z-20 flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-2 px-3 py-2 rounded-2xl bg-black/85 backdrop-blur-md border border-white/10 text-white shadow-xl">
+                    <span className="text-[10px] sm:text-[11px] font-bold tracking-wider uppercase text-amber-300 flex items-center gap-1">
+                      <span>Frame Ratio:</span>
+                    </span>
+                    <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto max-w-full pb-0.5 no-scrollbar">
+                      {[
+                        { id: 'original', label: 'Fit Original' },
+                        { id: '1:1', label: '1:1 Square' },
+                        { id: '4:5', label: '4:5 Classic' },
+                        { id: '3:4', label: '3:4 Portrait' },
+                        { id: '9:16', label: '9:16 Tall' },
+                        { id: '16:9', label: '16:9 Wide' },
+                      ].map((ratioOpt) => {
+                        const isCurrent = mockupRatio === ratioOpt.id;
+                        return (
+                          <button
+                            key={ratioOpt.id}
+                            onClick={() => setMockupRatio(ratioOpt.id as any)}
+                            className={`px-2 sm:px-2.5 py-1 rounded-lg text-[9px] sm:text-[10px] font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                              isCurrent
+                                ? 'bg-amber-400 text-stone-950 shadow-md font-extrabold'
+                                : 'bg-white/15 text-stone-200 hover:bg-white/25 hover:text-white'
+                            }`}
+                          >
+                            {ratioOpt.label}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
-                  <div className="absolute bottom-4 left-4 z-10 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-semibold text-stone-800 shadow-md">
-                    Simulated Scale • Living Room Collector View
+                  {/* Framed Canvas Mockup with Dynamic Aspect Ratio */}
+                  <div className="relative z-10 mb-16 shadow-2xl transition-all duration-500 hover:scale-105 flex items-center justify-center">
+                    <div className="p-2.5 sm:p-3.5 bg-[#1A1816] rounded-sm shadow-[0_25px_50px_rgba(0,0,0,0.7)] border-2 border-stone-800">
+                      <div
+                        className="overflow-hidden flex items-center justify-center bg-stone-950 transition-all duration-300"
+                        style={{
+                          width: mockupRatio === '16:9' ? '320px' : mockupRatio === '9:16' ? '180px' : mockupRatio === '1:1' ? '240px' : mockupRatio === '4:5' ? '210px' : mockupRatio === '3:4' ? '210px' : '260px',
+                          maxWidth: '82vw',
+                          aspectRatio: mockupRatio === '1:1' ? '1 / 1' : mockupRatio === '16:9' ? '16 / 9' : mockupRatio === '9:16' ? '9 / 16' : mockupRatio === '4:5' ? '4 / 5' : mockupRatio === '3:4' ? '3 / 4' : 'auto',
+                          maxHeight: '270px'
+                        }}
+                      >
+                        <img
+                          src={currentImage}
+                          alt={activeArtwork.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="absolute bottom-3 left-4 z-10 bg-white/95 dark:bg-stone-900/95 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-semibold text-stone-800 dark:text-stone-200 shadow-md border border-stone-200 dark:border-stone-800">
+                    Simulated Scale • Living Room Collector View ({mockupRatio === 'original' ? 'Original Ratio' : mockupRatio})
                   </div>
                 </div>
               ) : (
@@ -436,10 +481,10 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
                 <div className="relative w-full flex flex-col items-center">
                   <div 
                     onClick={() => setIsFullscreenOpen(true)}
-                    className="relative max-w-xl w-full bg-white rounded-2xl shadow-2xl border border-stone-200/90 p-3 sm:p-4 overflow-hidden group cursor-pointer"
+                    className="relative max-w-xl w-full bg-white dark:bg-stone-950 rounded-2xl shadow-2xl border border-stone-200/90 dark:border-stone-800 p-3 sm:p-4 overflow-hidden group cursor-pointer"
                     title="Click to open Fullscreen Texture Zoom"
                   >
-                    <div className="overflow-hidden rounded-xl flex items-center justify-center min-h-[340px] sm:min-h-[440px] bg-stone-50 relative">
+                    <div className="overflow-hidden rounded-xl flex items-center justify-center min-h-[340px] sm:min-h-[440px] bg-stone-50 dark:bg-stone-900 relative">
                       <img
                         src={currentImage}
                         alt={activeArtwork.title}
@@ -448,16 +493,16 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
 
                       {/* Hover Overlay Prompt */}
                       <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <span className="px-5 py-2.5 rounded-full bg-white/95 text-stone-900 font-serif font-bold text-xs shadow-2xl flex items-center gap-2 transform group-hover:scale-105 transition-transform">
+                        <span className="px-5 py-2.5 rounded-full bg-white/95 dark:bg-stone-900/95 text-stone-900 dark:text-stone-100 font-serif font-bold text-xs shadow-2xl flex items-center gap-2 transform group-hover:scale-105 transition-transform border border-stone-200 dark:border-stone-700">
                           <Maximize2 className="w-4 h-4 text-artisan-crimson" />
                           <span>Click for Fullscreen Zoom (Up to 400%)</span>
                         </span>
                       </div>
                     </div>
 
-                    <div className="mt-3 flex items-center justify-between px-2 text-xs text-stone-500">
+                    <div className="mt-3 flex items-center justify-between px-2 text-xs text-stone-500 dark:text-stone-400">
                       <span>Original Atelier High-Res Capture</span>
-                      <span className="flex items-center gap-1.5 text-stone-700 font-semibold">
+                      <span className="flex items-center gap-1.5 text-stone-700 dark:text-stone-300 font-semibold">
                         <ZoomIn className="w-4 h-4 text-artisan-gold" />
                         <span>Tap image to inspect fine impasto details</span>
                       </span>
@@ -469,13 +514,13 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
                     const allPhotos = [activeArtwork.image, ...(fullDetailImages.length > 0 ? fullDetailImages : (activeArtwork.detailImages || []))].filter(Boolean);
                     if (allPhotos.length <= 1) return null;
                     return (
-                      <div className="w-full mt-5 p-4 rounded-2xl bg-white border border-stone-200/90 shadow-xs">
+                      <div className="w-full mt-5 p-4 rounded-2xl bg-white dark:bg-stone-950 border border-stone-200/90 dark:border-stone-800 shadow-xs">
                         <div className="flex items-center justify-between mb-3">
-                          <span className="text-[11px] font-bold uppercase tracking-wider text-stone-800 flex items-center gap-1.5">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-stone-800 dark:text-stone-200 flex items-center gap-1.5">
                             <Palette className="w-3.5 h-3.5 text-artisan-crimson" />
                             <span>Painting Angles & Detail Shots ({allPhotos.length} Photos)</span>
                           </span>
-                          <span className="text-[10px] text-stone-500 font-medium">Click photo to switch main view</span>
+                          <span className="text-[10px] text-stone-500 dark:text-stone-400 font-medium">Click photo to switch main view</span>
                         </div>
                         <div className="flex items-center gap-3 overflow-x-auto pb-1">
                           {allPhotos.map((imgUrl, idx) => {
@@ -487,7 +532,7 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
                                 className={`group relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all cursor-pointer shrink-0 ${
                                   isSelected
                                     ? 'border-artisan-crimson ring-2 ring-artisan-crimson/30 scale-105 shadow-md'
-                                    : 'border-stone-200 opacity-70 hover:opacity-100 hover:border-stone-400'
+                                    : 'border-stone-200 dark:border-stone-800 opacity-70 hover:opacity-100 hover:border-stone-400'
                                 }`}
                                 title={idx === 0 ? 'Primary / Cover View' : `Angle / Detail Shot ${idx + 1}`}
                               >
@@ -513,7 +558,7 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <button
                   onClick={() => setViewOnWall(!viewOnWall)}
-                  className="px-5 py-2.5 rounded-full bg-white/90 hover:bg-white border border-stone-200/80 text-xs font-semibold text-stone-800 shadow-sm flex items-center gap-2 transition-all cursor-pointer"
+                  className="px-5 py-2.5 rounded-full bg-white/90 dark:bg-stone-800/90 hover:bg-white dark:hover:bg-stone-800 border border-stone-200/80 dark:border-stone-700 text-xs font-semibold text-stone-800 dark:text-stone-100 shadow-sm flex items-center gap-2 transition-all cursor-pointer"
                 >
                   <Eye className="w-4 h-4 text-artisan-crimson" />
                   <span>{viewOnWall ? 'Switch to Artwork Canvas View' : 'View on Collector Living Room Wall'}</span>
@@ -528,21 +573,21 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
             
             {/* Status & Medium Tag */}
             <div className="flex items-center justify-between gap-3">
-              <span className="text-xs font-bold uppercase tracking-wider px-3.5 py-1 rounded-full bg-stone-200/80 text-stone-800">
+              <span className="text-xs font-bold uppercase tracking-wider px-3.5 py-1 rounded-full bg-stone-200/80 dark:bg-stone-800 text-stone-800 dark:text-stone-200 border border-transparent dark:border-stone-700">
                 {activeArtwork.medium}
               </span>
 
               <span
                 className={`text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1.5 shadow-xs ${
                   activeArtwork.status === 'available'
-                    ? 'bg-emerald-50 text-emerald-800 border border-emerald-300'
+                    ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700/60'
                     : activeArtwork.status === 'reserved'
-                    ? 'bg-amber-50 text-amber-900 border border-amber-300'
-                    : 'bg-red-50 text-red-700 border border-red-300'
+                    ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-700/60'
+                    : 'bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-700/60'
                 }`}
               >
                 <span className={`w-2 h-2 rounded-full ${
-                  activeArtwork.status === 'available' ? 'bg-emerald-600' : activeArtwork.status === 'reserved' ? 'bg-amber-600' : 'bg-red-600'
+                  activeArtwork.status === 'available' ? 'bg-emerald-600 dark:bg-emerald-400' : activeArtwork.status === 'reserved' ? 'bg-amber-600 dark:bg-amber-400' : 'bg-red-600 dark:bg-red-400'
                 }`} />
                 {activeArtwork.status === 'available' && 'Available in Atelier'}
                 {activeArtwork.status === 'reserved' && 'Reserved for Exhibition'}
@@ -552,45 +597,45 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
 
             {/* Title & Subtitle */}
             <div className="space-y-1.5">
-              <h1 className="font-serif text-3xl sm:text-5xl font-bold text-[#1A1816] tracking-tight leading-tight">
+              <h1 className="font-serif text-3xl sm:text-5xl font-bold text-[#1A1816] dark:text-stone-50 tracking-tight leading-tight">
                 {activeArtwork.title}
               </h1>
-              <p className="text-sm text-stone-500 font-medium italic">
+              <p className="text-sm text-stone-500 dark:text-stone-400 font-medium italic">
                 {activeArtwork.subtitle} ({activeArtwork.year})
               </p>
             </div>
 
             {/* Price Acquisition Card */}
-            <div className="p-5 bg-white rounded-3xl border border-stone-200 shadow-md flex items-center justify-between">
+            <div className="p-5 bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-md flex items-center justify-between">
               <div>
-                <span className="text-[10px] text-stone-400 uppercase tracking-widest block font-bold">
+                <span className="text-[10px] text-stone-400 dark:text-stone-400 uppercase tracking-widest block font-bold">
                   Acquisition Value
                 </span>
                 <div className="flex items-baseline gap-2.5 mt-0.5">
-                  <span className="font-serif font-bold text-3xl text-artisan-crimson">
+                  <span className="font-serif font-bold text-3xl text-artisan-crimson dark:text-red-400">
                     <span className="font-sans font-semibold mr-0.5">₹</span>{inrPrice.toLocaleString('en-IN')}
                   </span>
                 </div>
               </div>
-              <div className="text-right text-[11px] text-stone-500 leading-tight">
-                <span className="font-semibold text-stone-700 block">Museum Frame Included</span>
+              <div className="text-right text-[11px] text-stone-500 dark:text-stone-400 leading-tight">
+                <span className="font-semibold text-stone-700 dark:text-stone-200 block">Museum Frame Included</span>
                 <span>Insured Global Wooden Crate Transit</span>
               </div>
             </div>
 
             {/* Narrative & Story */}
             <div className="space-y-3">
-              <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 leading-relaxed">
                 {activeArtwork.description}
               </p>
 
               {activeArtwork.story && (
-                <div className="p-4 bg-white/90 rounded-2xl border border-stone-200/90 text-xs text-stone-600 space-y-1.5 shadow-xs">
-                  <div className="flex items-center gap-1.5 font-bold text-stone-900 text-xs">
+                <div className="p-4 bg-white/90 dark:bg-stone-900/90 rounded-2xl border border-stone-200/90 dark:border-stone-800 text-xs text-stone-600 dark:text-stone-300 space-y-1.5 shadow-xs">
+                  <div className="flex items-center gap-1.5 font-bold text-stone-900 dark:text-stone-100 text-xs">
                     <Sparkles className="w-3.5 h-3.5 text-artisan-gold" />
                     <span>Artist Insight & Studio Notes</span>
                   </div>
-                  <p className="text-[11px] leading-relaxed italic text-stone-500 pl-4 border-l-2 border-artisan-gold/40">
+                  <p className="text-[11px] leading-relaxed italic text-stone-500 dark:text-stone-400 pl-4 border-l-2 border-artisan-gold/40">
                     "{activeArtwork.story}"
                   </p>
                 </div>
@@ -599,13 +644,13 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
 
             {/* Technical Specifications Matrix */}
             <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="p-3 bg-white rounded-2xl border border-stone-200 shadow-xs">
-                <span className="text-[10px] text-stone-400 block uppercase font-bold tracking-wider">Dimensions</span>
-                <span className="font-bold text-stone-800 text-xs">{activeArtwork.dimensions}</span>
+              <div className="p-3 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-xs">
+                <span className="text-[10px] text-stone-400 dark:text-stone-400 block uppercase font-bold tracking-wider">Dimensions</span>
+                <span className="font-bold text-stone-800 dark:text-stone-100 text-xs">{activeArtwork.dimensions}</span>
               </div>
-              <div className="p-3 bg-white rounded-2xl border border-stone-200 shadow-xs">
-                <span className="text-[10px] text-stone-400 block uppercase font-bold tracking-wider">Framing</span>
-                <span className="font-bold text-stone-800 text-xs">
+              <div className="p-3 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-xs">
+                <span className="text-[10px] text-stone-400 dark:text-stone-400 block uppercase font-bold tracking-wider">Framing</span>
+                <span className="font-bold text-stone-800 dark:text-stone-100 text-xs">
                   {activeArtwork.framed ? 'Bespoke Solid Hardwood' : 'Gallery Stretched Wrap'}
                 </span>
               </div>
@@ -613,16 +658,16 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
 
             {/* Pigments Used */}
             {activeArtwork.paletteColors && activeArtwork.paletteColors.length > 0 && (
-              <div className="p-3.5 bg-white rounded-2xl border border-stone-200/80 shadow-xs">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-stone-700 mb-2">
-                  <Palette className="w-3.5 h-3.5 text-stone-500" />
+              <div className="p-3.5 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200/80 dark:border-stone-800 shadow-xs">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-stone-700 dark:text-stone-300 mb-2">
+                  <Palette className="w-3.5 h-3.5 text-stone-500 dark:text-stone-400" />
                   <span>Primary Pigment Signature:</span>
                 </div>
                 <div className="flex items-center gap-2">
                   {activeArtwork.paletteColors.map((col, idx) => (
                     <div
                       key={idx}
-                      className="w-7 h-7 rounded-full border border-stone-300 shadow-xs"
+                      className="w-7 h-7 rounded-full border border-stone-300 dark:border-stone-700 shadow-xs"
                       style={{ backgroundColor: col }}
                       title={`Pigment ${col}`}
                     />
@@ -633,7 +678,7 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
 
             {/* Actions: Add To Cart & WhatsApp Commission */}
             <div className="pt-2 space-y-3">
-              <div className="flex items-center gap-2 text-[11px] text-stone-500">
+              <div className="flex items-center gap-2 text-[11px] text-stone-500 dark:text-stone-400">
                 <ShieldCheck className="w-4 h-4 text-artisan-gold flex-shrink-0" />
                 <span>Accompanied by Hand-Embossed Certificate of Authenticity</span>
               </div>
@@ -643,7 +688,7 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
                   <MagneticButton
                     onClick={handleAddToCart}
                     variant="primary"
-                    className="flex-1 py-4 text-xs font-bold flex items-center justify-center gap-2 shadow-xl shadow-artisan-crimson/20"
+                    className="flex-1 py-4 text-xs font-bold flex items-center justify-center gap-2 shadow-xl shadow-artisan-crimson/20 cursor-pointer"
                   >
                     <ShoppingBag className="w-4 h-4" />
                     <span>Acquire Original Work (Add to Cart)</span>
@@ -656,21 +701,21 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
                   rel="noopener noreferrer"
                   className={`flex items-center justify-center gap-2 px-6 py-4 rounded-full font-serif font-semibold text-xs transition-all shadow-sm ${
                     activeArtwork.status !== 'available'
-                      ? 'flex-1 bg-[#1A1816] hover:bg-artisan-crimson text-white'
-                      : 'bg-white hover:bg-stone-100 text-stone-900 border border-stone-300'
+                      ? 'flex-1 bg-[#1A1816] hover:bg-artisan-crimson text-white dark:bg-stone-800 dark:hover:bg-artisan-crimson'
+                      : 'bg-white hover:bg-stone-100 text-stone-900 border border-stone-300 dark:bg-stone-800 dark:text-stone-100 dark:border-stone-700 dark:hover:bg-stone-700'
                   }`}
                 >
-                  <MessageCircle className="w-4 h-4 text-emerald-600" />
+                  <MessageCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                   <span>Enquire & Commission Similar</span>
                 </a>
               </div>
 
               {/* Direct Studio Phone Call */}
-              <div className="flex items-center justify-between text-xs text-stone-500 pt-1">
+              <div className="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400 pt-1">
                 <span>Inquiries or bespoke private viewings?</span>
                 <a 
                   href="tel:+919810088231" 
-                  className="flex items-center gap-1 font-bold text-stone-800 hover:text-artisan-crimson transition-colors"
+                  className="flex items-center gap-1 font-bold text-stone-800 dark:text-stone-200 hover:text-artisan-crimson dark:hover:text-red-400 transition-colors"
                 >
                   <Phone className="w-3.5 h-3.5" />
                   <span>+91 98100 88231</span>
@@ -683,38 +728,38 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
         {/* ------------------------------------------------------------- */}
         {/* 3. COLLECTOR TRUST & PROVENANCE STRIP                         */}
         {/* ------------------------------------------------------------- */}
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 pt-12 border-t border-stone-200">
-          <div className="p-6 rounded-3xl bg-white border border-stone-200/80 shadow-soft-lux flex items-start gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-artisan-crimson/10 flex items-center justify-center text-artisan-crimson shrink-0">
+        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 pt-12 border-t border-stone-200 dark:border-stone-800">
+          <div className="p-6 rounded-3xl bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 shadow-soft-lux flex items-start gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-artisan-crimson/10 dark:bg-artisan-crimson/20 flex items-center justify-center text-artisan-crimson dark:text-red-400 shrink-0">
               <Award className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="font-serif font-bold text-base text-stone-900">Certificate of Authenticity</h4>
-              <p className="text-xs text-stone-600 mt-1 leading-relaxed">
+              <h4 className="font-serif font-bold text-base text-stone-900 dark:text-stone-100">Certificate of Authenticity</h4>
+              <p className="text-xs text-stone-600 dark:text-stone-300 mt-1 leading-relaxed">
                 Every original painting is accompanied by a hand-signed, embossed archival Certificate of Authenticity.
               </p>
             </div>
           </div>
 
-          <div className="p-6 rounded-3xl bg-white border border-stone-200/80 shadow-soft-lux flex items-start gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-artisan-gold/15 flex items-center justify-center text-artisan-gold shrink-0">
+          <div className="p-6 rounded-3xl bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 shadow-soft-lux flex items-start gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-artisan-gold/15 dark:bg-artisan-gold/25 flex items-center justify-center text-artisan-gold dark:text-amber-400 shrink-0">
               <Truck className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="font-serif font-bold text-base text-stone-900">Climate-Controlled Wooden Crate</h4>
-              <p className="text-xs text-stone-600 mt-1 leading-relaxed">
+              <h4 className="font-serif font-bold text-base text-stone-900 dark:text-stone-100">Climate-Controlled Wooden Crate</h4>
+              <p className="text-xs text-stone-600 dark:text-stone-300 mt-1 leading-relaxed">
                 Custom bespoke wooden crating, fully insured worldwide door-to-door transit with live satellite tracking.
               </p>
             </div>
           </div>
 
-          <div className="p-6 rounded-3xl bg-white border border-stone-200/80 shadow-soft-lux flex items-start gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-artisan-ultramarine/10 flex items-center justify-center text-artisan-ultramarine shrink-0">
+          <div className="p-6 rounded-3xl bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 shadow-soft-lux flex items-start gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-artisan-ultramarine/10 dark:bg-artisan-ultramarine/20 flex items-center justify-center text-artisan-ultramarine dark:text-blue-400 shrink-0">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="font-serif font-bold text-base text-stone-900">Archival 100-Year Longevity</h4>
-              <p className="text-xs text-stone-600 mt-1 leading-relaxed">
+              <h4 className="font-serif font-bold text-base text-stone-900 dark:text-stone-100">Archival 100-Year Longevity</h4>
+              <p className="text-xs text-stone-600 dark:text-stone-300 mt-1 leading-relaxed">
                 Hand-ground raw earth minerals applied over archival Belgian linen or 640gsm handmade Fabriano cotton rag.
               </p>
             </div>
@@ -725,19 +770,19 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
         {/* 4. RELATED MASTERWORKS BY ARTIST KULDEEP SINGH                */}
         {/* ------------------------------------------------------------- */}
         {relatedArtworks.length > 0 && (
-          <div className="mt-20 pt-12 border-t border-stone-200">
+          <div className="mt-20 pt-12 border-t border-stone-200 dark:border-stone-800">
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h3 className="font-serif font-bold text-2xl sm:text-3xl text-stone-900">
+                <h3 className="font-serif font-bold text-2xl sm:text-3xl text-stone-900 dark:text-stone-100">
                   Other Masterpieces in Collection
                 </h3>
-                <p className="text-xs sm:text-sm text-stone-500 mt-1">
+                <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1">
                   Discover related collector canvases sharing similar medium or chromatic palette.
                 </p>
               </div>
               <button
                 onClick={onBack}
-                className="text-xs font-bold text-artisan-crimson hover:underline"
+                className="text-xs font-bold text-artisan-crimson dark:text-red-400 hover:underline cursor-pointer"
               >
                 Browse All Paintings →
               </button>
@@ -748,7 +793,7 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
                 <div
                   key={rel.id}
                   onClick={() => onSelectArtwork(rel)}
-                  className="bg-white rounded-3xl overflow-hidden border border-stone-200/90 shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1.5 cursor-pointer"
+                  className="bg-white dark:bg-stone-900 rounded-3xl overflow-hidden border border-stone-200/90 dark:border-stone-800 shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1.5 cursor-pointer"
                 >
                   <div className="relative h-64 overflow-hidden bg-stone-900">
                     <img
@@ -762,17 +807,17 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
                   </div>
 
                   <div className="p-6 space-y-3">
-                    <h4 className="font-serif font-bold text-lg text-stone-900 group-hover:text-artisan-crimson transition-colors line-clamp-1">
+                    <h4 className="font-serif font-bold text-lg text-stone-900 dark:text-stone-100 group-hover:text-artisan-crimson dark:group-hover:text-red-400 transition-colors line-clamp-1">
                       {rel.title}
                     </h4>
-                    <p className="text-xs text-stone-500 line-clamp-2">
+                    <p className="text-xs text-stone-500 dark:text-stone-400 line-clamp-2">
                       {rel.description}
                     </p>
-                    <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
-                      <span className="font-serif font-bold text-lg text-artisan-crimson">
+                    <div className="pt-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
+                      <span className="font-serif font-bold text-lg text-artisan-crimson dark:text-red-400">
                         <span className="font-sans font-semibold mr-0.5">₹</span>{rel.price.toLocaleString('en-IN')}
                       </span>
-                      <span className="text-xs font-bold text-stone-800 group-hover:text-artisan-crimson flex items-center gap-1">
+                      <span className="text-xs font-bold text-stone-800 dark:text-stone-200 group-hover:text-artisan-crimson dark:group-hover:text-red-400 flex items-center gap-1">
                         <span>View Masterwork</span>
                         <span>→</span>
                       </span>

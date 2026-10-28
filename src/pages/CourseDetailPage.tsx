@@ -192,12 +192,12 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({ course, onBa
               </span>
             </div>
 
-            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#1A1816] leading-tight">
+            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#1A1816] dark:text-stone-50 leading-tight">
               {course.title}
             </h1>
 
             {course.subtitle && (
-              <p className="text-base sm:text-lg text-stone-600 font-normal leading-relaxed italic">
+              <p className="text-base sm:text-lg text-stone-600 dark:text-stone-300 font-normal leading-relaxed italic">
                 "{course.subtitle}"
               </p>
             )}
