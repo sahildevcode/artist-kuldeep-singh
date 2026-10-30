@@ -48,7 +48,7 @@ const getBackendUrl = (): string => {
   if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
     return 'http://localhost:5000';
   }
-  return 'https://kuldeep-singh-backend-nehy.onrender.com';
+  return 'https://kuldeep-singh-backend.vercel.app';
 };
 
 const getDeviceId = (): string => {
@@ -100,7 +100,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const validateCurrentSession = async () => {
       try {
         const primaryUrl = getBackendUrl();
-        const urlsToTry = [primaryUrl, 'https://kuldeep-singh-backend-nehy.onrender.com'];
+        const urlsToTry = [primaryUrl, 'https://kuldeep-singh-backend.vercel.app'];
         const uniqueUrls = Array.from(new Set(urlsToTry));
 
         for (const baseUrl of uniqueUrls) {
@@ -155,7 +155,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { available: false, error: 'Username must be at least 3 characters long.' };
     }
     const primaryUrl = getBackendUrl();
-    const urlsToTry = [primaryUrl, 'https://kuldeep-singh-backend-nehy.onrender.com'];
+    const urlsToTry = [primaryUrl, 'https://kuldeep-singh-backend.vercel.app'];
     const uniqueUrls = Array.from(new Set(urlsToTry));
 
     for (const baseUrl of uniqueUrls) {
@@ -186,7 +186,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const cleanName = name.trim();
 
     const primaryUrl = getBackendUrl();
-    const urlsToTry = [primaryUrl, 'https://kuldeep-singh-backend-nehy.onrender.com'];
+    const urlsToTry = [primaryUrl, 'https://kuldeep-singh-backend.vercel.app'];
     const uniqueUrls = Array.from(new Set(urlsToTry));
 
     let lastError = 'Failed to send verification code. Kripya punah prayas karein.';
@@ -225,7 +225,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const cleanOtp = otp.trim();
 
     const primaryUrl = getBackendUrl();
-    const urlsToTry = [primaryUrl, 'https://kuldeep-singh-backend-nehy.onrender.com'];
+    const urlsToTry = [primaryUrl, 'https://kuldeep-singh-backend.vercel.app'];
     const uniqueUrls = Array.from(new Set(urlsToTry));
 
     let lastError = 'OTP verification failed. Kripya punah prayas karein.';
@@ -284,7 +284,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const cleanPassword = password.trim();
 
     const primaryUrl = getBackendUrl();
-    const urlsToTry = [primaryUrl, 'https://kuldeep-singh-backend-nehy.onrender.com'];
+    const urlsToTry = [primaryUrl, 'https://kuldeep-singh-backend.vercel.app'];
     const uniqueUrls = Array.from(new Set(urlsToTry));
 
     let lastError = 'Unable to connect to server. Kripya punah prayas karein.';
@@ -351,7 +351,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const cleanName = name.trim();
 
     const primaryUrl = getBackendUrl();
-    const urlsToTry = [primaryUrl, 'https://kuldeep-singh-backend-nehy.onrender.com'];
+    const urlsToTry = [primaryUrl, 'https://kuldeep-singh-backend.vercel.app'];
     const uniqueUrls = Array.from(new Set(urlsToTry));
 
     let lastError = 'Registration failed. Kripya punah prayas karein.';

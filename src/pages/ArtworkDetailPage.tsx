@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { 
   ArrowLeft, ShoppingBag, Eye, ShieldCheck, Sparkles, Palette, 
@@ -42,7 +42,7 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
     // Fetch full single artwork from backend
     let isCancelled = false;
     
-    fetch(`https://kuldeep-singh-backend-nehy.onrender.com/api/artworks/${activeArtwork.id}`)
+    fetch(`https://kuldeep-singh-backend.vercel.app/api/artworks/${activeArtwork.id}`)
       .then((res) => res.json())
       .then((data) => {
         if (!isCancelled && data && Array.isArray(data.detailImages)) {

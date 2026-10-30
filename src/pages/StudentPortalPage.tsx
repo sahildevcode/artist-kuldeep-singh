@@ -199,7 +199,7 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
       try {
         const primaryUrl = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
           ? 'http://localhost:5000'
-          : 'https://kuldeep-singh-backend-nehy.onrender.com';
+          : 'https://kuldeep-singh-backend.vercel.app';
 
         const res = await fetch(`${primaryUrl}/api/session/heartbeat`, {
           method: 'POST',
@@ -253,7 +253,7 @@ export const StudentPortalPage: React.FC<StudentPortalPageProps> = ({ setActiveP
     try {
       const primaryUrl = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
         ? 'http://localhost:5000'
-        : 'https://kuldeep-singh-backend-nehy.onrender.com';
+        : 'https://kuldeep-singh-backend.vercel.app';
 
       const res = await fetch(`${primaryUrl}/api/session/takeover`, {
         method: 'POST',

@@ -246,7 +246,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
       return 'http://localhost:5000';
     }
-    return 'https://kuldeep-singh-backend-nehy.onrender.com';
+    return 'https://kuldeep-singh-backend.vercel.app';
   };
 
   // Sync orders with backend database every 2.5s

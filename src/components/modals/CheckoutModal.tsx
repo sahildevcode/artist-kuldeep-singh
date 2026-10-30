@@ -160,7 +160,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
 
         const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
           ? 'http://localhost:5000'
-          : (import.meta.env.VITE_API_URL || 'https://kuldeep-singh-backend-nehy.onrender.com');
+          : (import.meta.env.VITE_API_URL || 'https://kuldeep-singh-backend.vercel.app');
 
         const orderRes = await fetch(`${baseUrl}/api/create-order`, {
           method: 'POST',
