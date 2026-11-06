@@ -532,7 +532,8 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
 
                   {/* Multi-Photo Gallery for THIS Painting (Uploaded from Admin) */}
                   {(() => {
-                    const allPhotos = [activeArtwork.image, ...(fullDetailImages.length > 0 ? fullDetailImages : (activeArtwork.detailImages || []))].filter(Boolean);
+                    const detailList = Array.isArray(fullDetailImages) ? fullDetailImages : (Array.isArray(activeArtwork.detailImages) ? activeArtwork.detailImages : []);
+                    const allPhotos = [activeArtwork.image, ...detailList].filter(Boolean);
                     if (allPhotos.length <= 1) return null;
                     return (
                       <div className="w-full mt-5 p-4 rounded-2xl bg-white dark:bg-stone-950 border border-stone-200/90 dark:border-stone-800 shadow-xs">
