@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { SiteSettings, PromoCode, StoreDeliverySettings, Artwork, Course, CourseModule, CourseLecture, ArtistProfile, AchievementTimelineItem, Award, EnrolledStudent, LiveBroadcastStatus, UpcomingCourse, CollectorReview } from '../types';
 import { ARTWORKS } from '../data/artworks';
 import { COURSES } from '../data/courses';
@@ -6,6 +6,25 @@ import { TIMELINE, AWARDS } from '../data/achievements';
 import { INITIAL_UPCOMING_COURSES } from '../data/upcomingCourses';
 import { REVIEWS } from '../data/reviews';
 
+
+export const getBackendUrls = (): string[] => {
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1') {
+      return [
+        'http://localhost:5000',
+        'http://127.0.0.1:5000',
+        'https://kuldeep-singh-backend-nehy.onrender.com',
+        'https://kuldeep-singh-backend.vercel.app'
+      ];
+    }
+  }
+  return [
+    'https://kuldeep-singh-backend-nehy.onrender.com',
+    'https://kuldeep-singh-backend.vercel.app',
+    'http://localhost:5000'
+  ];
+};
 
 export const DEFAULT_PROMO_CODES: PromoCode[] = [
   {
@@ -63,7 +82,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   gallerySubheading: 'Explore authentic museum-grade masterworks hand-crafted with archival minerals, oils, and charcoals. Delivered worldwide with hand-embossed Certificates of Authenticity.',
   aboutStoryHeading: 'A Life Dedicated to the Alchemy of Light, Oil & Form.',
   philosophyQuote: 'Every stroke of oil on linen is a conversation between human patience and natural light.',
-  contactEmail: 'artistkuldeepsingh26@gmail.com',
+  contactEmail: 'artistkuldeepsingh01@gmail.com',
   contactPhone: '+91 88580 60101',
   studioAddress: 'Delhi, India',
   whatsappNumber: '918858060101',
@@ -99,7 +118,7 @@ const DEFAULT_PROFILE: ArtistProfile = {
   philosophyQuote: 'Every stroke of oil on linen is a conversation between human patience and natural light.',
   sanctuaryTitle: 'The Sanctuary in Chelsea, New York',
   sanctuaryLocation: 'Where centuries-old techniques meet boundless contemporary scale',
-  contactEmail: 'artistkuldeepsingh26@gmail.com',
+  contactEmail: 'artistkuldeepsingh01@gmail.com',
   studioAddress: 'Delhi, India',
   studioVideoUrl: '/videos/hero-cinematic.mp4',
   studioVideoTitle: 'Artist Kuldeep Singh • Master Oil Painting in Atelier',
@@ -437,8 +456,15 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const fetchAllCloudData = async () => {
       try {
         // 1. Artworks
-        const artRes = await fetch('https://kuldeep-singh-backend.vercel.app/api/artworks');
-        if (artRes.ok) {
+        let artRes: Response | null = null;
+        for (const base of getBackendUrls()) {
+          try {
+            const r = await fetch(`${base}/api/artworks`);
+            if (r.ok) { artRes = r; break; }
+          } catch {}
+        }
+        if (!artRes) artRes = await fetch('https://kuldeep-singh-backend-nehy.onrender.com/api/artworks').catch(() => null);
+        if (artRes && artRes.ok) {
           const cloudArtworks: Artwork[] = await artRes.json();
           if (Array.isArray(cloudArtworks) && isMounted) {
             // Guard: never wipe local data with empty cloud response (cold-start protection)
@@ -465,8 +491,15 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
 
         // 2. Courses, Lectures & Live Status
-        const courseRes = await fetch('https://kuldeep-singh-backend.vercel.app/api/courses');
-        if (courseRes.ok) {
+        let courseRes: Response | null = null;
+        for (const base of getBackendUrls()) {
+          try {
+            const r = await fetch(`${base}/api/courses`);
+            if (r.ok) { courseRes = r; break; }
+          } catch {}
+        }
+        if (!courseRes) courseRes = await fetch('https://kuldeep-singh-backend-nehy.onrender.com/api/courses').catch(() => null);
+        if (courseRes && courseRes.ok) {
           const cloudCourses: Course[] = await courseRes.json();
           if (Array.isArray(cloudCourses) && isMounted) {
             const clean = cloudCourses.filter((c) => !DUMMY_COURSE_IDS.includes(c.id));

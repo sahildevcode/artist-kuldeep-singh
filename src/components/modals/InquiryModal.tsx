@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Send, Sparkles, CheckCircle2, Phone, MapPin, MessageSquare } from 'lucide-react';
 
 const getBackendUrls = (): string[] => {
@@ -173,7 +173,7 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({ isOpen, onClose, def
                 </div>
                 <div className="flex items-center justify-between text-stone-500 text-[11px]">
                   <span>Email:</span>
-                  <span className="font-semibold text-stone-800">artistkuldeepsingh26@gmail.com</span>
+                  <span className="font-semibold text-stone-800">artistkuldeepsingh01@gmail.com</span>
                 </div>
               </div>
 

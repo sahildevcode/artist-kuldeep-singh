@@ -182,7 +182,7 @@ export const ContactWidget: React.FC<ContactWidgetProps> = () => {
             {/* Studio Note / Location Footer */}
             <div className="bg-stone-100/80 border-t border-stone-200 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-stone-500 text-[11px]">
               <span>📍 Atelier & Studio: Delhi, India</span>
-              <span className="font-medium text-stone-700">artistkuldeepsingh26@gmail.com</span>
+              <span className="font-medium text-stone-700">artistkuldeepsingh01@gmail.com</span>
             </div>
           </div>
         </div>

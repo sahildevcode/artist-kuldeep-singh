@@ -52,7 +52,7 @@ export const Footer: React.FC<FooterProps> = ({ setActivePage }) => {
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span>Support: +91 8858060101 • artistkuldeepsingh26@gmail.com</span>
+                <span>Support: +91 8858060101 • artistkuldeepsingh01@gmail.com</span>
               </div>
             </div>
 
