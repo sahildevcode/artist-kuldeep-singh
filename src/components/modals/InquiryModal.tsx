@@ -228,7 +228,7 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({ isOpen, onClose, def
                     required
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="e.g. 98100 88231"
+                    placeholder="e.g. 98765 43210"
                     className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2.5 text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-artisan-gold"
                   />
                 </div>

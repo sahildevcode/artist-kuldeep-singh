@@ -179,7 +179,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ onSelectCourse, onGoTo
                 }
               };
 
-              const upcomingWhatsAppUrl = `https://wa.me/919810088231?text=${encodeURIComponent(
+              const upcomingWhatsAppUrl = `https://wa.me/918858060101?text=${encodeURIComponent(
                 `Hello Artist Kuldeep Singh, I would like to pre-register / enquire about the upcoming course "${course.title}". Please share details regarding the batch dates, syllabus, and seat confirmation.`
               )}`;
 

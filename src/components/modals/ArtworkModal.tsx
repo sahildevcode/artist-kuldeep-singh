@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   X, ShoppingBag, Eye, ShieldCheck, Sparkles, Palette, 
-  Share2, ZoomIn, ZoomOut, RotateCcw, Copy, Check, MessageCircle, Phone, Maximize2 
+  Share2, ZoomIn, ZoomOut, RotateCcw, Copy, Check, MessageCircle, Maximize2 
 } from 'lucide-react';
 import type { Artwork } from '../../types';
 import { useCart } from '../../context/CartContext';
@@ -569,17 +569,7 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({ artwork: initialArtw
                     </a>
                   </div>
 
-                  {/* Direct Studio Phone Call */}
-                  <div className="flex items-center justify-between text-[11px] text-stone-500 pt-1">
-                    <span>Questions about this canvas?</span>
-                    <a 
-                      href="tel:+919810088231" 
-                      className="flex items-center gap-1 font-semibold text-stone-800 hover:text-artisan-crimson"
-                    >
-                      <Phone className="w-3 h-3" />
-                      <span>Call Studio: +91 98100 88231</span>
-                    </a>
-                  </div>
+
                 </div>
               </div>
             </div>

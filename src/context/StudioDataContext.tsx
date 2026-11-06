@@ -463,7 +463,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             if (r.ok) { artRes = r; break; }
           } catch {}
         }
-        if (!artRes) artRes = await fetch('https://kuldeep-singh-backend-nehy.onrender.com/api/artworks').catch(() => null);
+        if (!artRes) artRes = await fetch('https://kuldeep-singh-backend-nehy.onrender.com/api/artworks?full=true').catch(() => null);
         if (artRes && artRes.ok) {
           const cloudArtworks: Artwork[] = await artRes.json();
           if (Array.isArray(cloudArtworks) && isMounted) {
@@ -471,9 +471,11 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                         // Normalize cloud artworks: preserve clean local /images/ paths where available
             const normalizedArtworks = cloudArtworks.map((cArt) => {
               const localMatch = ARTWORKS.find((a) => a.id === cArt.id);
+              const preservedDetails = Array.isArray(cArt.detailImages) && cArt.detailImages.length > 0 ? cArt.detailImages : (localMatch && Array.isArray(localMatch.detailImages) ? localMatch.detailImages : []);
               if (localMatch && localMatch.image) {
-                return { ...cArt, image: localMatch.image };
+                return { ...cArt, image: localMatch.image, detailImages: preservedDetails };
               }
+              return { ...cArt, detailImages: preservedDetails };
               return cArt;
             });
 

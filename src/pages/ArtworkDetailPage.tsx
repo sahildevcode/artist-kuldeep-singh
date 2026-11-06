@@ -1,8 +1,8 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { 
   ArrowLeft, ShoppingBag, Eye, ShieldCheck, Sparkles, Palette, 
-  Share2, ZoomIn, ZoomOut, RotateCcw, Copy, Check, MessageCircle, Phone, Maximize2, X,
+  Share2, ZoomIn, ZoomOut, RotateCcw, Copy, Check, MessageCircle, Maximize2, X,
   Truck, Award
 } from 'lucide-react';
 import type { Artwork } from '../types';
@@ -710,17 +710,7 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
                 </a>
               </div>
 
-              {/* Direct Studio Phone Call */}
-              <div className="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400 pt-1">
-                <span>Inquiries or bespoke private viewings?</span>
-                <a 
-                  href="tel:+919810088231" 
-                  className="flex items-center gap-1 font-bold text-stone-800 dark:text-stone-200 hover:text-artisan-crimson dark:hover:text-red-400 transition-colors"
-                >
-                  <Phone className="w-3.5 h-3.5" />
-                  <span>+91 98100 88231</span>
-                </a>
-              </div>
+
             </div>
           </div>
         </div>

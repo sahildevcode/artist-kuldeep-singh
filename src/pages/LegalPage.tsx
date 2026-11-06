@@ -441,8 +441,8 @@ export const LegalPage: React.FC<LegalPageProps> = ({ initialTab = 'terms', setA
                       </div>
                       <strong className="text-stone-900 block text-sm">Telephonic & WhatsApp</strong>
                       <p className="text-stone-600 leading-relaxed">
-                        Studio Hotline: <a href="tel:+919810088231" className="text-stone-900 font-bold hover:underline">+91 98100 88231</a><br />
-                        WhatsApp Support: <a href="https://wa.me/919810088231" target="_blank" rel="noreferrer" className="text-emerald-700 font-bold hover:underline">+91 98100 88231</a><br />
+                        Studio Hotline: <a href="tel:+918858060101" className="text-stone-900 font-bold hover:underline">+91 88580 60101</a><br />
+                        WhatsApp Support: <a href="https://wa.me/918858060101" target="_blank" rel="noreferrer" className="text-emerald-700 font-bold hover:underline">+91 88580 60101</a><br />
                         (Average response time: &lt; 2 hours)
                       </p>
                     </div>
