@@ -14,13 +14,11 @@ export const getBackendUrls = (): string[] => {
       return [
         'http://localhost:5000',
         'http://127.0.0.1:5000',
-        'https://kuldeep-singh-backend-nehy.onrender.com',
         'https://kuldeep-singh-backend.vercel.app'
       ];
     }
   }
   return [
-    'https://kuldeep-singh-backend-nehy.onrender.com',
     'https://kuldeep-singh-backend.vercel.app',
     'http://localhost:5000'
   ];
@@ -509,7 +507,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             if (r.ok) { courseRes = r; break; }
           } catch {}
         }
-        if (!courseRes) courseRes = await fetch('https://kuldeep-singh-backend-nehy.onrender.com/api/courses').catch(() => null);
+        if (!courseRes) courseRes = await fetch('https://kuldeep-singh-backend.vercel.app/api/courses').catch(() => null);
         if (courseRes && courseRes.ok) {
           const cloudCourses: Course[] = await courseRes.json();
           if (Array.isArray(cloudCourses) && isMounted) {
