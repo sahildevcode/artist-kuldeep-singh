@@ -29,35 +29,32 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
 
   const [viewOnWall, setViewOnWall] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [fullDetailImages, setFullDetailImages] = useState<string[]>([]);
-  
+  const [fullDetailImages, setFullDetailImages] = useState<string[]>(() => 
+    Array.isArray(activeArtwork?.detailImages) ? activeArtwork.detailImages : []
+  );
 
-  // Lazy-load multi-photo detail shots on demand when opening this artwork
+  // Instantly sync multi-photo detail shots with zero delay
   useEffect(() => {
     if (!activeArtwork?.id) return;
-    if (activeArtwork.detailImages && activeArtwork.detailImages.length > 0) {
-      setFullDetailImages(activeArtwork.detailImages);
+    if (activeArtwork.detailImages !== undefined) {
+      setFullDetailImages(Array.isArray(activeArtwork.detailImages) ? activeArtwork.detailImages : []);
       return;
     }
-    // Fetch full single artwork from backend
+    // Fallback only if artwork was loaded without detailImages field
     let isCancelled = false;
-    
-    fetch(`https://kuldeep-singh-backend.vercel.app/api/artworks/${activeArtwork.id}`)
+    fetch(`https://kuldeep-singh-backend.vercel.app/api/artworks/${activeArtwork.id}`, { cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => {
         if (!isCancelled && data && Array.isArray(data.detailImages)) {
           setFullDetailImages(data.detailImages);
         }
       })
-      .catch((err) => console.warn('Could not load extra angles:', err))
-      .finally(() => {
-        
-      });
+      .catch((err) => console.warn('Could not load extra angles:', err));
 
     return () => {
       isCancelled = true;
     };
-  }, [activeArtwork?.id]);
+  }, [activeArtwork?.id, activeArtwork?.detailImages]);
 
   // Fullscreen Texture Zoom Lightbox
   const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);

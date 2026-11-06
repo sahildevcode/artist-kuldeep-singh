@@ -455,28 +455,36 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
     const fetchAllCloudData = async () => {
       try {
-        // 1. Artworks
+        // 1. Artworks (Fast cloud sync with zero caching delay)
         let artRes: Response | null = null;
         for (const base of getBackendUrls()) {
           try {
-            const r = await fetch(`${base}/api/artworks`);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 6000);
+            const r = await fetch(`${base}/api/artworks?full=true`, {
+              cache: 'no-store',
+              signal: controller.signal
+            });
+            clearTimeout(timeoutId);
             if (r.ok) { artRes = r; break; }
           } catch {}
         }
-        if (!artRes) artRes = await fetch('https://kuldeep-singh-backend-nehy.onrender.com/api/artworks?full=true').catch(() => null);
+        if (!artRes) artRes = await fetch('https://kuldeep-singh-backend.vercel.app/api/artworks?full=true', { cache: 'no-store' }).catch(() => null);
         if (artRes && artRes.ok) {
           const cloudArtworks: Artwork[] = await artRes.json();
           if (Array.isArray(cloudArtworks) && isMounted) {
-            // Guard: never wipe local data with empty cloud response (cold-start protection)
-                        // Normalize cloud artworks: preserve clean local /images/ paths where available
             const normalizedArtworks = cloudArtworks.map((cArt) => {
               const localMatch = ARTWORKS.find((a) => a.id === cArt.id);
-              const preservedDetails = Array.isArray(cArt.detailImages) && cArt.detailImages.length > 0 ? cArt.detailImages : (localMatch && Array.isArray(localMatch.detailImages) ? localMatch.detailImages : []);
-              if (localMatch && localMatch.image) {
-                return { ...cArt, image: localMatch.image, detailImages: preservedDetails };
-              }
-              return { ...cArt, detailImages: preservedDetails };
-              return cArt;
+              // If cloud explicitly provides detailImages (including empty array []), respect it!
+              const detailImages = Array.isArray(cArt.detailImages)
+                ? cArt.detailImages
+                : (localMatch && Array.isArray(localMatch.detailImages) ? localMatch.detailImages : []);
+              const image = cArt.image || localMatch?.image || '';
+              return {
+                ...cArt,
+                image,
+                detailImages
+              };
             });
 
             setArtworks((prev) => {
