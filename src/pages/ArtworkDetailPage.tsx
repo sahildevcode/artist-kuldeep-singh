@@ -592,6 +592,14 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
               </span>
             </div>
 
+            {/* Series Highlight Banner */}
+            {activeArtwork.series && (
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-amber-500/15 to-amber-600/15 border border-amber-500/30 text-xs font-bold text-amber-700 dark:text-amber-300">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                <span>Curated Atelier Series: <strong>{activeArtwork.series}</strong></span>
+              </div>
+            )}
+
             {/* Title & Subtitle */}
             <div className="space-y-1.5">
               <h1 className="font-serif text-3xl sm:text-5xl font-bold text-[#1A1816] dark:text-stone-50 tracking-tight leading-tight">

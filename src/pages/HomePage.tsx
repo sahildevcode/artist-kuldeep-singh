@@ -167,10 +167,20 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <div className="absolute top-3 left-3 bg-white/90 dark:bg-stone-900/90 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold text-stone-800 dark:text-stone-200 uppercase tracking-wider">
                     {art.medium}
                   </div>
+                  {art.series && (
+                    <div className="absolute top-3 right-3 bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 font-extrabold px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider shadow-lg flex items-center gap-1 z-10">
+                      <span>✨ {art.series}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                   <div>
+                    {art.series && (
+                      <span className="inline-block px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wide mb-1">
+                        Series: {art.series}
+                      </span>
+                    )}
                     <h3 className="font-serif font-bold text-base text-stone-900 dark:text-stone-100 group-hover:text-artisan-crimson transition-colors line-clamp-1">
                       {art.title}
                     </h3>

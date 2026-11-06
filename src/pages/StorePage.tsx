@@ -336,6 +336,11 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
                       <span className="bg-white/95 dark:bg-stone-900/95 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-stone-800 dark:text-stone-200 uppercase tracking-wider shadow-xs border border-stone-200/50 dark:border-stone-700/50">
                         {art.medium}
                       </span>
+                      {art.series && (
+                        <span className="bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 font-extrabold px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider shadow-md backdrop-blur-md flex items-center gap-1">
+                          ✨ {art.series}
+                        </span>
+                      )}
                     </div>
 
                     {/* Status Badge: Available / Sold / Reserved */}
@@ -357,6 +362,11 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
                   {/* Details */}
                   <div className="p-6 flex-1 flex flex-col justify-between space-y-5">
                     <div className="space-y-2">
+                      {art.series && (
+                        <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-[10px] font-bold uppercase tracking-wider">
+                          <span>📁 Series: {art.series}</span>
+                        </div>
+                      )}
                       <h3 className="font-serif font-bold text-xl text-stone-900 dark:text-stone-100 group-hover:text-artisan-crimson dark:group-hover:text-red-400 transition-colors">
                         {art.title}
                       </h3>
