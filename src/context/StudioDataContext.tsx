@@ -171,6 +171,7 @@ interface StudioDataContextType {
   addArtwork: (artwork: Artwork) => void;
   updateArtwork: (id: string, updates: Partial<Artwork>) => void;
   deleteArtwork: (id: string) => void;
+  syncArtworkLocally: (artwork: Artwork) => void;
   // Courses CRUD
   addCourse: (course: Course) => void;
   updateCourse: (id: string, updates: Partial<Course>) => void;
@@ -1347,6 +1348,64 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   };
 
+  const syncArtworkLocally = (artwork: Artwork) => {
+    setArtworks((prev) => {
+      const next = prev.map((item) => (item.id === artwork.id ? { ...item, ...artwork } : item));
+      try {
+        localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  };
+
+  // Cross-tab real-time instant synchronization via BroadcastChannel & Storage event
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    let channel: BroadcastChannel | null = null;
+    if ('BroadcastChannel' in window) {
+      channel = new BroadcastChannel('ks_artwork_channel');
+      channel.onmessage = (event) => {
+        if (event.data?.type === 'ARTWORK_UPDATED' && event.data.artwork) {
+          const fresh = event.data.artwork;
+          setArtworks((prev) => {
+            const next = prev.map((item) => (item.id === fresh.id ? { ...item, ...fresh } : item));
+            try {
+              localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(next));
+            } catch {}
+            return next;
+          });
+        } else if (event.data?.type === 'ARTWORK_DELETED' && event.data.id) {
+          const delId = event.data.id;
+          setArtworks((prev) => {
+            const next = prev.filter((item) => item.id !== delId && (item as any)._id !== delId);
+            try {
+              localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(next));
+            } catch {}
+            return next;
+          });
+        }
+      };
+    }
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'kuldeep_studio_artworks' && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setArtworks(parsed);
+          }
+        } catch {}
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+
+    return () => {
+      if (channel) channel.close();
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, []);
+
   const resetToDefaults = () => {
     localStorage.removeItem('kuldeep_studio_artworks');
     localStorage.removeItem('kuldeep_studio_courses');
@@ -1395,6 +1454,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         addArtwork,
         updateArtwork,
         deleteArtwork,
+        syncArtworkLocally,
         addCourse,
         updateCourse,
         deleteCourse,

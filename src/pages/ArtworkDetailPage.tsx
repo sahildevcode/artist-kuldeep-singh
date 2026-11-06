@@ -22,10 +22,10 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
   onSelectArtwork
 }) => {
   const { addToCart } = useCart();
-  const { artworks } = useStudioData();
+  const { artworks, syncArtworkLocally } = useStudioData();
 
-  // Active artwork (fallback to first available if null)
-  const activeArtwork = propArtwork || artworks[0];
+  // Active artwork (live reactive sync from catalog)
+  const activeArtwork = (propArtwork && artworks.find((a) => a.id === propArtwork.id)) || propArtwork || artworks[0];
 
   const [viewOnWall, setViewOnWall] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -33,28 +33,52 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
     Array.isArray(activeArtwork?.detailImages) ? activeArtwork.detailImages : []
   );
 
-  // Instantly sync multi-photo detail shots with zero delay
+  // Instantly sync state whenever activeArtwork or its detailImages change
+  useEffect(() => {
+    if (activeArtwork?.detailImages !== undefined) {
+      setFullDetailImages(Array.isArray(activeArtwork.detailImages) ? activeArtwork.detailImages : []);
+    }
+  }, [activeArtwork?.id, activeArtwork?.detailImages]);
+
+  // High-speed direct cloud sync: fetch fresh details for THIS artwork (<200ms) with zero caching
+  // Plus live 2.5s polling so changes made in admin reflect instantly on screen without page reload
   useEffect(() => {
     if (!activeArtwork?.id) return;
-    if (activeArtwork.detailImages !== undefined) {
-      setFullDetailImages(Array.isArray(activeArtwork.detailImages) ? activeArtwork.detailImages : []);
-      return;
-    }
-    // Fallback only if artwork was loaded without detailImages field
     let isCancelled = false;
-    fetch(`https://kuldeep-singh-backend.vercel.app/api/artworks/${activeArtwork.id}`, { cache: 'no-store' })
-      .then((res) => res.json())
-      .then((data) => {
-        if (!isCancelled && data && Array.isArray(data.detailImages)) {
-          setFullDetailImages(data.detailImages);
+
+    const fetchLatestDetails = async () => {
+      try {
+        const res = await fetch(`https://kuldeep-singh-backend.vercel.app/api/artworks/${activeArtwork.id}?_t=${Date.now()}`, {
+          cache: 'no-store',
+          headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+        });
+        if (res.ok) {
+          const freshData = await res.json();
+          if (!isCancelled && freshData && freshData.id === activeArtwork.id) {
+            const freshDetail = Array.isArray(freshData.detailImages) ? freshData.detailImages : [];
+            setFullDetailImages(freshDetail);
+            // Auto-reset selectedImage if selected angle was deleted
+            setSelectedImage((curr) => {
+              if (curr && !freshDetail.includes(curr) && curr !== freshData.image) {
+                return null;
+              }
+              return curr;
+            });
+            // Keep StudioDataContext in sync
+            syncArtworkLocally(freshData);
+          }
         }
-      })
-      .catch((err) => console.warn('Could not load extra angles:', err));
+      } catch {}
+    };
+
+    fetchLatestDetails();
+    const intervalId = setInterval(fetchLatestDetails, 2500);
 
     return () => {
       isCancelled = true;
+      clearInterval(intervalId);
     };
-  }, [activeArtwork?.id, activeArtwork?.detailImages]);
+  }, [activeArtwork?.id, syncArtworkLocally]);
 
   // Fullscreen Texture Zoom Lightbox
   const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
