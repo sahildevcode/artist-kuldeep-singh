@@ -19,7 +19,9 @@ export const HomePage: React.FC<HomePageProps> = ({
 }) => {
   const { addToCart } = useCart();
   const { artworks, courses, artistProfile, siteSettings } = useStudioData();
-  const featuredArtworks = artworks.filter((a) => a.featured).slice(0, 8);
+  const featuredArtworks = (artworks.filter((a) => a.featured).length >= 8
+    ? artworks.filter((a) => a.featured)
+    : artworks).slice(0, 8);
   const featuredCourses = courses.slice(0, 3);
 
   const heroVideoRef = useRef<HTMLVideoElement>(null);
@@ -205,6 +207,25 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* See More Paintings Action Button */}
+          <div className="mt-14 flex flex-col items-center justify-center space-y-3">
+            <MagneticButton
+              onClick={() => {
+                setActivePage('store');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              variant="primary"
+              size="lg"
+              className="px-8 py-4 bg-stone-900 hover:bg-artisan-crimson dark:bg-stone-100 dark:hover:bg-artisan-crimson text-white dark:text-stone-900 dark:hover:text-white rounded-2xl text-xs sm:text-sm font-bold tracking-widest uppercase shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center gap-2 cursor-pointer group"
+            >
+              <span>See More Paintings</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
+            </MagneticButton>
+            <p className="text-xs text-stone-500 dark:text-stone-400">
+              Click to view all {artworks.length} original works in the Atelier Store
+            </p>
           </div>
         </div>
       </section>
