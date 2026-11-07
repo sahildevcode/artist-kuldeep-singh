@@ -711,15 +711,24 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       // fallback to polling
     }
 
-    // Smart Zero-Poll Sync (Zero repetitive polling intervals - saves 100% idle bandwidth on Render)
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
+    // Smart Zero-Poll Sync with 60s cooldown to protect Vercel Fast Origin Transfer
+    let lastCloudFetchTime = 0;
+    const throttledCloudFetch = () => {
+      const now = Date.now();
+      if (now - lastCloudFetchTime > 60000) {
+        lastCloudFetchTime = now;
         fetchAllCloudData();
       }
     };
 
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        throttledCloudFetch();
+      }
+    };
+
     const onFocus = () => {
-      fetchAllCloudData();
+      throttledCloudFetch();
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
