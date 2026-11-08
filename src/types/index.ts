@@ -10,6 +10,7 @@ export interface Artwork {
   price: number;
   image: string;
   detailImages?: string[];
+  detailImagesCount?: number;
   description: string;
   story: string;
   framed: boolean;
@@ -21,6 +22,8 @@ export interface Artwork {
   weight?: string;
   varnishType?: string;
   series?: string;
+  notes?: string;
+  test?: any;
   createdAt?: string;
   updatedAt?: string;
 }

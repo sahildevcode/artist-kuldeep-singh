@@ -5,6 +5,7 @@ import { COURSES } from '../data/courses';
 import { TIMELINE, AWARDS } from '../data/achievements';
 import { INITIAL_UPCOMING_COURSES } from '../data/upcomingCourses';
 import { REVIEWS } from '../data/reviews';
+import { idbGet, idbSet } from '../utils/idbStorage';
 
 
 export const getBackendUrls = (): string[] => {
@@ -265,7 +266,7 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setDeliverySettings((prev) => ({ ...prev, ...updates }));
   };
 
-  // 1. Artworks State - Real-time cloud sync; never load stale demo/dummy artworks
+  // 1. Artworks State - Real-time cloud sync with instant initial render from bundled ARTWORKS
   const [artworks, setArtworks] = useState<Artwork[]>(() => {
     try {
       const saved = localStorage.getItem('kuldeep_studio_artworks');
@@ -273,18 +274,13 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
           const valid = parsed.filter((a: any) => a.id && !a.id.startsWith('art-0') && Number(a.price) > 100);
+          if (valid.length >= ARTWORKS.length) {
+            return valid;
+          }
           if (valid.length > 0) {
             const cachedIds = new Set(valid.map((a: any) => a.id));
             const missing = ARTWORKS.filter((a) => !cachedIds.has(a.id));
-            if (missing.length > 0) {
-              const merged = [...valid, ...missing];
-              try { localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(merged)); } catch {}
-              return merged;
-            }
-            if (valid.length < ARTWORKS.length) {
-              return ARTWORKS;
-            }
-            return valid;
+            return [...valid, ...missing];
           }
         }
       }
@@ -293,6 +289,26 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       return ARTWORKS;
     }
   });
+
+  // Hydrate from IndexedDB immediately on mount (bypasses 5MB localStorage limit with 0 delay)
+  useEffect(() => {
+    let active = true;
+    idbGet<Artwork[]>('artworks_catalog').then((stored) => {
+      if (active && Array.isArray(stored) && stored.length > 0) {
+        setArtworks((curr) => {
+          if (stored.length >= curr.length) {
+            return stored;
+          }
+          const storedIds = new Set(stored.map((a) => a.id));
+          const extra = curr.filter((a) => !storedIds.has(a.id));
+          return [...stored, ...extra];
+        });
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // 2. Courses State - Real-time cloud sync; never load stale demo/dummy courses
   const [courses, setCourses] = useState<Course[]>(() => {
@@ -492,8 +508,11 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             });
 
             if (normalizedArtworks.length > 0) {
+              idbSet('artworks_catalog', normalizedArtworks).catch(() => {});
               try {
-                localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(normalizedArtworks));
+                // Store lightweight list in localStorage as secondary fast fallback
+                const light = normalizedArtworks.map(({ detailImages, ...rest }) => ({ ...rest, detailImages: [] }));
+                localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(light));
               } catch {}
             }
           }
@@ -614,24 +633,40 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             try { localStorage.setItem('kuldeep_studio_settings', JSON.stringify(data)); } catch {}
           } else if (type === 'ARTWORKS_REORDERED' && data?.artworks) {
             setArtworks(data.artworks);
-            try { localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(data.artworks)); } catch {}
+            idbSet('artworks_catalog', data.artworks).catch(() => {});
+            try { 
+              const light = data.artworks.map(({ detailImages, ...rest }: any) => ({ ...rest, detailImages: [] }));
+              localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(light)); 
+            } catch {}
           } else if (type === 'ARTWORK_CREATED' && data) {
             setArtworks((prev) => {
               if (prev.some((a) => a.id === data.id)) return prev;
               const next = [data, ...prev];
-              try { localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(next)); } catch {}
+              idbSet('artworks_catalog', next).catch(() => {});
+              try { 
+                const light = next.map(({ detailImages, ...rest }: any) => ({ ...rest, detailImages: [] }));
+                localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(light)); 
+              } catch {}
               return next;
             });
           } else if (type === 'ARTWORK_UPDATED' && data?.id) {
             setArtworks((prev) => {
               const next = prev.map((a) => a.id === data.id ? { ...a, ...data } : a);
-              try { localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(next)); } catch {}
+              idbSet('artworks_catalog', next).catch(() => {});
+              try { 
+                const light = next.map(({ detailImages, ...rest }: any) => ({ ...rest, detailImages: [] }));
+                localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(light)); 
+              } catch {}
               return next;
             });
           } else if (type === 'ARTWORK_DELETED' && data?.id) {
             setArtworks((prev) => {
               const next = prev.filter((a) => a.id !== data.id && (a as any)._id !== data.id);
-              try { localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(next)); } catch {}
+              idbSet('artworks_catalog', next).catch(() => {});
+              try { 
+                const light = next.map(({ detailImages, ...rest }: any) => ({ ...rest, detailImages: [] }));
+                localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(light)); 
+              } catch {}
               return next;
             });
           } else if (type === 'COURSE_ADDED' && data) {
@@ -777,12 +812,16 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     };
   }, []);
 
-  // Sync to LocalStorage
+  // Sync to LocalStorage & IndexedDB
   useEffect(() => {
-    try {
-      localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(artworks));
-    } catch (e) {
-      console.error(e);
+    if (Array.isArray(artworks) && artworks.length > 0) {
+      idbSet('artworks_catalog', artworks).catch(() => {});
+      try {
+        const light = artworks.map(({ detailImages, ...rest }) => ({ ...rest, detailImages: [] }));
+        localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(light));
+      } catch (e) {
+        console.error(e);
+      }
     }
   }, [artworks]);
 
@@ -842,8 +881,10 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const deleteArtwork = async (id: string) => {
     setArtworks((prev) => {
       const next = prev.filter((item) => item.id !== id && (item as any)._id !== id);
+      idbSet('artworks_catalog', next).catch(() => {});
       try {
-        localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(next));
+        const light = next.map(({ detailImages, ...rest }) => ({ ...rest, detailImages: [] }));
+        localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(light));
       } catch {}
       return next;
     });
@@ -1358,8 +1399,10 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const syncArtworkLocally = (artwork: Artwork) => {
     setArtworks((prev) => {
       const next = prev.map((item) => (item.id === artwork.id ? { ...item, ...artwork } : item));
+      idbSet('artworks_catalog', next).catch(() => {});
       try {
-        localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(next));
+        const light = next.map(({ detailImages, ...rest }) => ({ ...rest, detailImages: [] }));
+        localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(light));
       } catch {}
       return next;
     });
@@ -1377,8 +1420,10 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           const fresh = event.data.artwork;
           setArtworks((prev) => {
             const next = prev.map((item) => (item.id === fresh.id ? { ...item, ...fresh } : item));
+            idbSet('artworks_catalog', next).catch(() => {});
             try {
-              localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(next));
+              const light = next.map(({ detailImages, ...rest }) => ({ ...rest, detailImages: [] }));
+              localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(light));
             } catch {}
             return next;
           });
@@ -1386,8 +1431,10 @@ export const StudioDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           const delId = event.data.id;
           setArtworks((prev) => {
             const next = prev.filter((item) => item.id !== delId && (item as any)._id !== delId);
+            idbSet('artworks_catalog', next).catch(() => {});
             try {
-              localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(next));
+              const light = next.map(({ detailImages, ...rest }) => ({ ...rest, detailImages: [] }));
+              localStorage.setItem('kuldeep_studio_artworks', JSON.stringify(light));
             } catch {}
             return next;
           });
