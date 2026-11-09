@@ -84,7 +84,7 @@ const FAQS = [
   {
     question: 'Do the artworks come framed?',
     answer:
-      'Yes, all original paintings come encased in custom museum-grade, hand-crafted timber frames with archival museum backing. For limited-edition prints, you may select our bespoke framing option or receive them safely rolled inside heavy-duty archival tubes.',
+      'Artworks are delivered unframed (original canvas / fine art paper) so collectors can customize framing to complement their interior aesthetic. Each piece is safely packed in specialized protective materials for secure transit.',
   },
   {
     question: 'How are artworks shipped?',

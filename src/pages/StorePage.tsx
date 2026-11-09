@@ -478,10 +478,10 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
                 <Sparkles className="w-5 h-5" />
               </div>
               <h4 className="font-display font-bold text-sm text-stone-900">
-                Bespoke Hardwood Framing
+                Archival Canvas Care
               </h4>
               <p className="text-xs text-stone-500 leading-relaxed">
-                Framed selections feature hand-milled American Walnut or Florentine 22k gold-leaf moulding with museum-grade non-reflective UV70 anti-glare glass.
+                Original artworks are crafted on archival museum-grade linen and canvas, protected with high-density archival layers ready for your custom framing.
               </p>
             </div>
           </div>

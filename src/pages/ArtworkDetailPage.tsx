@@ -642,8 +642,8 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
                 </div>
               </div>
               <div className="text-right text-[11px] text-stone-500 dark:text-stone-400 leading-tight">
-                <span className="font-semibold text-stone-700 dark:text-stone-200 block">Museum Frame Included</span>
-                <span>Insured Global Wooden Crate Transit</span>
+                <span className="font-semibold text-stone-700 dark:text-stone-200 block">Insured Safe Transit</span>
+                <span>Direct Atelier Doorstep Delivery</span>
               </div>
             </div>
 
@@ -673,9 +673,9 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
                 <span className="font-bold text-stone-800 dark:text-stone-100 text-xs">{activeArtwork.dimensions}</span>
               </div>
               <div className="p-3 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-xs">
-                <span className="text-[10px] text-stone-400 dark:text-stone-400 block uppercase font-bold tracking-wider">Framing</span>
-                <span className="font-bold text-stone-800 dark:text-stone-100 text-xs">
-                  {activeArtwork.framed ? 'Bespoke Solid Hardwood' : 'Gallery Stretched Wrap'}
+                <span className="text-[10px] text-stone-400 dark:text-stone-400 block uppercase font-bold tracking-wider">Medium / Surface</span>
+                <span className="font-bold text-stone-800 dark:text-stone-100 text-xs truncate block">
+                  {activeArtwork.medium || 'Oil on Canvas'}
                 </span>
               </div>
             </div>

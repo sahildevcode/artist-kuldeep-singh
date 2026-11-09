@@ -481,7 +481,7 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({ artwork: initialArtw
                       </div>
                     </div>
                     <span className="text-[11px] text-stone-500 text-right">
-                      * Museum Frame Included<br />& Insured Shipping
+                      * Insured Safe Transit<br />& Doorstep Delivery
                     </span>
                   </div>
 
@@ -507,9 +507,9 @@ export const ArtworkModal: React.FC<ArtworkModalProps> = ({ artwork: initialArtw
                       <span className="font-semibold text-stone-800">{activeArtwork.dimensions}</span>
                     </div>
                     <div className="p-2.5 bg-stone-50 rounded-xl">
-                      <span className="text-[10px] text-stone-400 block uppercase font-bold">Framing</span>
-                      <span className="font-semibold text-stone-800">
-                        {activeArtwork.framed ? 'Bespoke Solid Hardwood' : 'Gallery Stretched Wrap'}
+                      <span className="text-[10px] text-stone-400 block uppercase font-bold">Medium / Surface</span>
+                      <span className="font-semibold text-stone-800 truncate block">
+                        {activeArtwork.medium || 'Oil on Canvas'}
                       </span>
                     </div>
                   </div>

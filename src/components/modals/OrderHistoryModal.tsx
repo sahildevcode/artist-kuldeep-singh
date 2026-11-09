@@ -304,7 +304,7 @@ export const OrderHistoryModal: React.FC<OrderHistoryModalProps> = ({ onNavigate
                         <div className="p-2.5 rounded-xl bg-white border border-stone-200/80 text-xs flex items-center gap-2 text-stone-800">
                           <Sparkles className="w-4 h-4 text-artisan-gold flex-shrink-0" />
                           <span>
-                            {currentStep === 2 && "Kuldeep Singh's studio has accepted this order. The artwork is being inspected, framed, and placed in an archival crate."}
+                            {currentStep === 2 && "Kuldeep Singh's studio has accepted this order. The artwork is being carefully inspected, securely packaged, and prepared for dispatch."}
                             {currentStep === 3 && `The artwork has been dispatched with ${order.carrierName || 'Secure Fine Art Logistics'}. Tracking: ${order.trackingNumber || 'Active'}`}
                             {currentStep === 4 && "This piece has been successfully delivered and signed by the patron. Provenance is sealed."}
                           </span>
