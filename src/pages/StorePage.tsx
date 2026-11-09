@@ -302,7 +302,7 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
                 <span className="text-xs font-sans font-normal text-stone-500 dark:text-stone-400">({(mainArtwork && topCategory !== 'prints' && selectedMedium === 'All' && statusFilter === 'all') ? gridArtworks.length : filteredArtworks.length} Artworks)</span>
               </h3>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
             {((mainArtwork && topCategory !== 'prints' && selectedMedium === 'All' && statusFilter === 'all') ? gridArtworks : filteredArtworks).map((art) => {
               const inrPrice = art.price;
               const commissionWhatsAppUrl = `https://wa.me/918858060101?text=${encodeURIComponent(
@@ -312,41 +312,41 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
               return (
                 <div
                   key={art.id}
-                  className="bg-white dark:bg-stone-900 rounded-3xl overflow-hidden border border-stone-200 dark:border-stone-800 shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col justify-between group hover:-translate-y-2"
+                  onClick={() => onSelectArtwork(art)}
+                  className="bg-white dark:bg-stone-900 rounded-2xl sm:rounded-3xl overflow-hidden border border-stone-200/90 dark:border-stone-800 shadow-xs hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1.5 cursor-pointer"
                 >
                   {/* Artwork Canvas Image */}
-                  <div className="relative aspect-[4/5] overflow-hidden bg-stone-100 dark:bg-stone-800">
+                  <div className="relative aspect-[3/4] sm:aspect-[4/5] overflow-hidden bg-stone-100 dark:bg-stone-800">
                     <img
                       src={art.image} alt={art.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                     
                     {/* Hover Quick Action */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-5">
-                      <button
-                        onClick={() => onSelectArtwork(art)}
-                        className="w-full py-3 bg-white/95 dark:bg-stone-900/95 backdrop-blur-md rounded-2xl text-xs font-bold text-stone-900 dark:text-stone-100 shadow-lg flex items-center justify-center gap-2 hover:bg-white dark:hover:bg-stone-850 transition-colors cursor-pointer"
+                    <div className="hidden sm:flex absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 items-end p-5">
+                      <span
+                        className="w-full py-3 bg-white/95 dark:bg-stone-900/95 backdrop-blur-md rounded-2xl text-xs font-bold text-stone-900 dark:text-stone-100 shadow-lg flex items-center justify-center gap-2 hover:bg-white dark:hover:bg-stone-850 transition-colors"
                       >
                         <Eye className="w-4 h-4 text-artisan-crimson" />
                         Explore & Inspect Zoom Details
-                      </button>
+                      </span>
                     </div>
 
                     {/* Medium Badge */}
-                    <div className="absolute top-4 left-4 flex items-center gap-2">
-                      <span className="bg-white/95 dark:bg-stone-900/95 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-stone-800 dark:text-stone-200 uppercase tracking-wider shadow-xs border border-stone-200/50 dark:border-stone-700/50">
+                    <div className="absolute top-2 left-2 sm:top-4 sm:left-4 flex items-center gap-1 sm:gap-2">
+                      <span className="bg-white/95 dark:bg-stone-900/95 backdrop-blur-md px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-bold text-stone-800 dark:text-stone-200 uppercase tracking-wider shadow-xs border border-stone-200/50 dark:border-stone-700/50">
                         {art.medium}
                       </span>
                       {art.series && (
-                        <span className="bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 font-extrabold px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider shadow-md backdrop-blur-md flex items-center gap-1">
+                        <span className="hidden sm:flex bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 font-extrabold px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider shadow-md backdrop-blur-md items-center gap-1">
                           ✨ {art.series}
                         </span>
                       )}
                     </div>
 
                     {/* Status Badge: Available / Sold / Reserved */}
-                    <div className="absolute top-4 right-4">
+                    <div className="absolute top-2 right-2 sm:top-4 sm:right-4">
                       <span
-                        className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur-md shadow-sm ${
+                        className={`px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-bold uppercase tracking-wider backdrop-blur-md shadow-sm ${
                           art.status === 'available'
                             ? 'bg-emerald-600 text-white'
                             : art.status === 'reserved'
@@ -360,48 +360,46 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
                   </div>
 
                   {/* Details */}
-                  <div className="p-6 flex-1 flex flex-col justify-between space-y-5">
-                    <div className="space-y-2">
+                  <div className="p-2.5 sm:p-5 flex-1 flex flex-col justify-between space-y-2 sm:space-y-4">
+                    <div className="space-y-1 sm:space-y-2">
                       {art.series && (
-                        <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-[10px] font-bold uppercase tracking-wider">
-                          <span>📁 Series: {art.series}</span>
+                        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">
+                          <span>📁 {art.series}</span>
                         </div>
                       )}
-                      <h3 className="font-serif font-bold text-xl text-stone-900 dark:text-stone-100 group-hover:text-artisan-crimson dark:group-hover:text-red-400 transition-colors">
+                      <h3 className="font-serif font-bold text-xs sm:text-lg text-stone-900 dark:text-stone-100 group-hover:text-artisan-crimson dark:group-hover:text-red-400 transition-colors line-clamp-2 leading-snug uppercase tracking-tight sm:tracking-normal">
                         {art.title}
                       </h3>
-                      <p className="text-xs text-stone-500 dark:text-stone-400 italic line-clamp-1">
+                      <p className="text-[10px] sm:text-xs text-stone-500 dark:text-stone-400 italic line-clamp-1">
                         {art.subtitle}
                       </p>
-                      <div className="flex items-center gap-3 text-xs text-stone-600 dark:text-stone-400 pt-1">
-                        <span>{art.dimensions}</span>
+                      <div className="flex items-center gap-1.5 sm:gap-3 text-[9px] sm:text-xs text-stone-600 dark:text-stone-400 pt-0.5">
+                        <span className="truncate">{art.dimensions}</span>
                         <span>•</span>
                         <span>{art.year}</span>
-                        <span>•</span>
-                        <span>{art.framed ? 'Framed' : 'Unframed'}</span>
                       </div>
                     </div>
 
                     {/* Price & Action Buttons */}
-                    <div className="pt-4 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between gap-3">
+                    <div className="pt-2 sm:pt-4 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between gap-1 sm:gap-3">
                       <div>
-                        <span className="text-[10px] text-stone-400 dark:text-stone-400 block uppercase font-bold">
-                          Acquisition Value
+                        <span className="text-[8px] sm:text-[10px] text-stone-400 dark:text-stone-400 block uppercase font-bold leading-none mb-0.5 sm:mb-1">
+                          Acquisition
                         </span>
-                        <div className="flex items-baseline gap-1.5">
-                          <span className="font-serif font-bold text-xl text-stone-900 dark:text-stone-100">
-                            <span className="font-sans font-semibold mr-0.5">₹</span>{inrPrice.toLocaleString('en-IN')}
+                        <div className="flex items-baseline gap-1">
+                          <span className="font-serif font-bold text-xs sm:text-lg text-stone-900 dark:text-stone-100">
+                            <span className="font-sans font-semibold mr-0.5 text-[10px] sm:text-sm">₹</span>{inrPrice.toLocaleString('en-IN')}
                           </span>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 sm:gap-2" onClick={(e) => e.stopPropagation()}>
                         <button
                           onClick={() => onSelectArtwork(art)}
-                          className="p-2.5 rounded-xl border border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
+                          className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl border border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 transition-colors cursor-pointer"
                           title="Quick View & Zoom"
                         >
-                          <Eye className="w-4 h-4" />
+                          <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         </button>
 
                         {art.status === 'available' ? (
@@ -417,21 +415,21 @@ export const StorePage: React.FC<StorePageProps> = ({ onSelectArtwork }) => {
                                 mediumOrCategory: art.medium,
                               })
                             }
-                            className="px-4 py-2.5 rounded-xl text-xs font-bold bg-[#1A1816] hover:bg-artisan-crimson dark:bg-stone-800 dark:hover:bg-artisan-crimson text-white active:scale-95 transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+                            className="px-2 sm:px-3.5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-bold bg-[#1A1816] hover:bg-artisan-crimson dark:bg-stone-800 dark:hover:bg-artisan-crimson text-white active:scale-95 transition-all shadow-xs flex items-center gap-1 cursor-pointer whitespace-nowrap"
                           >
-                            <ShoppingBag className="w-3.5 h-3.5" />
-                            <span>Acquire</span>
+                            <ShoppingBag className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                            <span className="hidden sm:inline">Acquire</span>
                           </button>
                         ) : (
                           <a
                             href={commissionWhatsAppUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="px-3 py-2.5 rounded-xl text-[11px] font-serif font-semibold bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 border border-stone-300 dark:border-stone-700 hover:border-artisan-gold transition-all shadow-xs flex items-center gap-1.5"
+                            className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[9px] sm:text-[11px] font-serif font-semibold bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 border border-stone-300 dark:border-stone-700 hover:border-artisan-gold transition-all shadow-xs flex items-center gap-1"
                             title="Enquire & Commission similar custom artwork"
                           >
-                            <MessageCircle className="w-3.5 h-3.5 text-stone-700 dark:text-stone-300" />
-                            <span>Commission</span>
+                            <MessageCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-stone-700 dark:text-stone-300" />
+                            <span className="hidden sm:inline">Commission</span>
                           </a>
                         )}
                       </div>

@@ -802,37 +802,37 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
               {relatedArtworks.map((rel) => (
                 <div
                   key={rel.id}
                   onClick={() => onSelectArtwork(rel)}
-                  className="bg-white dark:bg-stone-900 rounded-3xl overflow-hidden border border-stone-200/90 dark:border-stone-800 shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1.5 cursor-pointer"
+                  className="bg-white dark:bg-stone-900 rounded-2xl sm:rounded-3xl overflow-hidden border border-stone-200/90 dark:border-stone-800 shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1.5 cursor-pointer"
                 >
-                  <div className="relative h-64 overflow-hidden bg-stone-900">
+                  <div className="relative aspect-[3/4] sm:aspect-[4/3] overflow-hidden bg-stone-900">
                     <img
                       src={rel.image}
                       alt={rel.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
-                    <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-wider">
+                    <div className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-bold text-white uppercase tracking-wider">
                       {rel.medium}
                     </div>
                   </div>
 
-                  <div className="p-6 space-y-3">
-                    <h4 className="font-serif font-bold text-lg text-stone-900 dark:text-stone-100 group-hover:text-artisan-crimson dark:group-hover:text-red-400 transition-colors line-clamp-1">
+                  <div className="p-3 sm:p-6 space-y-1.5 sm:space-y-3">
+                    <h4 className="font-serif font-bold text-xs sm:text-lg text-stone-900 dark:text-stone-100 group-hover:text-artisan-crimson dark:group-hover:text-red-400 transition-colors line-clamp-2 uppercase">
                       {rel.title}
                     </h4>
-                    <p className="text-xs text-stone-500 dark:text-stone-400 line-clamp-2">
+                    <p className="text-[10px] sm:text-xs text-stone-500 dark:text-stone-400 line-clamp-1 sm:line-clamp-2">
                       {rel.description}
                     </p>
-                    <div className="pt-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
-                      <span className="font-serif font-bold text-lg text-artisan-crimson dark:text-red-400">
-                        <span className="font-sans font-semibold mr-0.5">₹</span>{rel.price.toLocaleString('en-IN')}
+                    <div className="pt-2 sm:pt-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
+                      <span className="font-serif font-bold text-xs sm:text-lg text-artisan-crimson dark:text-red-400">
+                        <span className="font-sans font-semibold mr-0.5 text-[10px] sm:text-sm">₹</span>{rel.price.toLocaleString('en-IN')}
                       </span>
-                      <span className="text-xs font-bold text-stone-800 dark:text-stone-200 group-hover:text-artisan-crimson dark:group-hover:text-red-400 flex items-center gap-1">
-                        <span>View Masterwork</span>
+                      <span className="text-[10px] sm:text-xs font-bold text-stone-800 dark:text-stone-200 group-hover:text-artisan-crimson dark:group-hover:text-red-400 flex items-center gap-1">
+                        <span>View</span>
                         <span>→</span>
                       </span>
                     </div>
