@@ -40,18 +40,14 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
     }
   }, [activeArtwork?.id, activeArtwork?.detailImages]);
 
-  // High-speed direct cloud sync: fetch fresh details for THIS artwork (<200ms) with zero caching
-  // Plus live 2.5s polling so changes made in admin reflect instantly on screen without page reload
+  // High-speed direct cloud sync: fetch fresh details for THIS artwork (<200ms) once on mount
   useEffect(() => {
     if (!activeArtwork?.id) return;
     let isCancelled = false;
 
     const fetchLatestDetails = async () => {
       try {
-        const res = await fetch(`https://kuldeep-singh-backend.vercel.app/api/artworks/${activeArtwork.id}?_t=${Date.now()}`, {
-          cache: 'no-store',
-          headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
-        });
+        const res = await fetch(`https://kuldeep-singh-backend.vercel.app/api/artworks/${activeArtwork.id}`);
         if (res.ok) {
           const freshData = await res.json();
           if (!isCancelled && freshData && freshData.id === activeArtwork.id) {
@@ -72,11 +68,9 @@ export const ArtworkDetailPage: React.FC<ArtworkDetailPageProps> = ({
     };
 
     fetchLatestDetails();
-    const intervalId = setInterval(fetchLatestDetails, 2500);
 
     return () => {
       isCancelled = true;
-      clearInterval(intervalId);
     };
   }, [activeArtwork?.id, syncArtworkLocally]);
 
